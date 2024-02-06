@@ -106,33 +106,6 @@ public class RenderBatch {
             hasRoom = false;
         }
     }
-    public void render() {
-        //for now, we will rebuffer all data every frame
-        glBindBuffer(GL_ARRAY_BUFFER, vboID);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
-
-        //use shader
-        shader.use();
-        shader.uploadMat4f("uProjection", Window.getScene().camera().getProjectionMatrix());
-        shader.uploadMat4f("uView", Window.getScene().camera().getViewMatrix());
-        shader.uploadMat4f("iso", Window.getScene().camera().getIsoMatrix());
-        shader.uploadFloat("uTime", (float) Time.getTime());
-        shader.uploadMat4f("scale", Window.getScene().camera().getScaleMatrix());
-
-        glBindVertexArray(vaoID);
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-
-        glDrawElements(GL_TRIANGLES, this.numSprites * 6, GL_UNSIGNED_INT, 0);
-
-        // unbind everything
-        glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1);
-        glBindVertexArray(0);
-
-        shader.detach();
-
-    }
 
     private void loadVertexProperties(int index) {
         SpriteRenderer sprite = this.sprites[index];
@@ -169,6 +142,37 @@ public class RenderBatch {
             offset += VERTEX_SIZE;
         }
     }
+
+    public void render() {
+        //for now, we will rebuffer all data every frame
+        glBindBuffer(GL_ARRAY_BUFFER, vboID);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+
+        //use shader
+        shader.use();
+        shader.uploadMat4f("uProjection", Window.getScene().camera().getProjectionMatrix());
+        shader.uploadMat4f("uView", Window.getScene().camera().getViewMatrix());
+        shader.uploadMat4f("iso", Window.getScene().camera().getIsoMatrix());
+        shader.uploadFloat("uTime", (float) Time.getTime());
+        shader.uploadMat4f("scale", Window.getScene().camera().getScaleMatrix());
+
+        glBindVertexArray(vaoID);
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+
+        glDrawElements(GL_TRIANGLES, this.numSprites * 6, GL_UNSIGNED_INT, 0);
+
+        // unbind everything
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+        glBindVertexArray(0);
+
+        shader.detach();
+
+    }
+
+
+
     public boolean hasRoom() {
         return this.hasRoom;
     }

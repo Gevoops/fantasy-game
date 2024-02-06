@@ -8,8 +8,10 @@ public class SpriteRenderer {
     private Vector4f color;
     public Transform transform;
 
-    public SpriteRenderer(Vector4f color) {
+
+    public SpriteRenderer(Vector4f color, Transform transform) {
         this.color = color;
+        this.transform = transform;
     }
 
 

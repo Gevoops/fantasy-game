@@ -1,6 +1,8 @@
 package engine;
 
 import org.joml.Vector2f;
+import org.joml.Vector4f;
+import renderer.SpriteRenderer;
 
 public class WorldEditorScene extends Scene {
     public WorldEditorScene() {
@@ -18,11 +20,16 @@ public class WorldEditorScene extends Scene {
         float sizeX = totalWidth / 100.0f;
         float sizeY = totalHeight / 100.0f;
 
-        for (int x = 0; x < 100; x ++) {
-            for (int y = 0; y < 100; y ++) {
+        for (int x = 0; x < 120; x ++) {
+            for (int y = 0; y < 120; y ++) {
                 float xPos = xOffset + (x * sizeX);
                 float yPos = yOffset + (y * sizeY);
 
+                GameObject ob = new GameObject("obj" + xPos + "," + yPos,
+                        new SpriteRenderer(new Vector4f(xPos / totalWidth,yPos / totalHeight,1 ,1),
+                        new Transform(new Vector2f(xPos,yPos),new Vector2f(sizeX,sizeY))));
+
+                this.addGameObjectToScene(ob);
 
             }
         }

@@ -1,5 +1,9 @@
 package renderer;
 
+import engine.GameObject;
+import engine.Scene;
+import engine.WorldEditorScene;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +15,13 @@ public class Renderer {
         this.batches = new ArrayList<>();
     }
 
-    private void add(SpriteRenderer spr) {
+    public void add(GameObject ob) {
+        SpriteRenderer spr = ob.sprite;
+        if(spr != null) {
+            this.add(spr);
+        }
+    }
+    public void add(SpriteRenderer spr) {
         boolean added = false;
         for (RenderBatch batch : batches) {
             if (batch.hasRoom()) {
