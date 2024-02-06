@@ -1,15 +1,14 @@
 package engine;
 
 import org.joml.Matrix4f;
-import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class Camera {
-    public Matrix4f projectionMatrix, viewMatrix, isoMatrix, scaleMatrix, inIsoMatrix;
+    public Matrix4f projectionMatrix, viewMatrix, isoMatrix, scaleMatrix;
     public Vector2f viewPoint;
     public float spriteHeight = 2.0f, spriteWidth = 2.0f;
-    public float scale = 1.0f;
+    public float scale = 1f;
 
 
     public Camera(Vector2f viewPoint ){
@@ -23,15 +22,11 @@ public class Camera {
                                       0.0f,                0.0f,                 1.0f, 0.0f,
                                       0.0f,                0.0f,                 0.0f, 1.0f);
 
-        // this.isoMatrix = new Matrix4f(0.25f, 0.125f, 0.0f, 0.0f, -0.25f, 0.125f,0.0f,
-        //                0.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f, 0.0f,0.0f, 1.0f);
 
-        this.scaleMatrix = new Matrix4f(1.0f * scale, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f * scale,0.0f,
+        this.scaleMatrix = new Matrix4f( scale, 0.0f, 0.0f, 0.0f, 0.0f,  scale,0.0f,
                 0.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f, 0.0f,0.0f, 1.0f);
         adjustProjection();
-       this.inIsoMatrix = new Matrix4f();
-       this.isoMatrix.get(this.isoMatrix);
-       this.inIsoMatrix.invert();
+
 
     }
 
