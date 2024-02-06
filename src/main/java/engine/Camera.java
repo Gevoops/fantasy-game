@@ -17,11 +17,12 @@ public class Camera {
         this.viewMatrix = new Matrix4f();
 
         //rows and columns are reversed! is it just a transpose??
-        this.isoMatrix = new Matrix4f(0.5f * spriteWidth,  0.35f * spriteHeight, 0.0f, 0.0f,
-                                      -0.5f * spriteWidth, 0.35f * spriteHeight, 0.0f, 0.0f,
+        this.isoMatrix = new Matrix4f(0.5f * spriteWidth,  -0.5f * spriteHeight, 0.0f, 0.0f,
+                                      0.25f * spriteWidth, 0.25f * spriteHeight, 0.0f, 0.0f,
                                       0.0f,                0.0f,                 1.0f, 0.0f,
                                       0.0f,                0.0f,                 0.0f, 1.0f);
 
+        //this.isoMatrix = this.isoMatrix.transpose();
 
         this.scaleMatrix = new Matrix4f( scale, 0.0f, 0.0f, 0.0f, 0.0f,  scale,0.0f,
                 0.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f, 0.0f,0.0f, 1.0f);
@@ -32,7 +33,7 @@ public class Camera {
 
     public void adjustProjection() {
         projectionMatrix.identity();
-        projectionMatrix.ortho(0.0f, 32.0f * 31f, 0.0f,32.0f * 15.0f, 0.0f,100.0f);
+        projectionMatrix.ortho(0.0f, 32.0f * 30f, 0.0f,32.0f * 15.0f, 0.0f,100.0f);
 
 
     }
