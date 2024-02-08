@@ -7,7 +7,6 @@ layout (location=3) in float aTexId;
 
 uniform mat4 uProjection;
 uniform mat4 uView;
-uniform mat4 iso;
 uniform mat4 scale;
 
 
@@ -22,8 +21,8 @@ void main()
     fColor = aColor;
     fTexCoords = aTexCoords;
     fTexId = aTexId;
-    gl_Position =    iso * uProjection * uView * vec4(aPos, 1.0);
-    // scale *
+    gl_Position =    uProjection * uView * vec4(aPos, 1.0);
+    // scale *iso *
 }
 
 #type fragment
@@ -40,12 +39,41 @@ out vec4 color;
 
 void main()
 {
-    int id = int(fTexId);
-    if(fTexId > 0) {
-        color = fColor * texture(uTextures[id - 1],fTexCoords);
-    } else {
+    switch (int(fTexId)) {
+        case 0:
         color = fColor;
+        break;
+        case 1:
+        color = fColor * texture(uTextures[1], fTexCoords);
+        break;
+        case 2:
+        color = fColor * texture(uTextures[2], fTexCoords);
+        break;
+        case 3:
+        color = fColor * texture(uTextures[3], fTexCoords);
+        break;
+        case 4:
+        color = fColor * texture(uTextures[4], fTexCoords);
+        break;
+        case 5:
+        color = fColor * texture(uTextures[5], fTexCoords);
+        break;
+        case 6:
+        color = fColor * texture(uTextures[6], fTexCoords);
+        break;
+        case 7:
+        color = fColor * texture(uTextures[7], fTexCoords);
+        break;
     }
+    /*int id = int(fTexId);
+    if(id > 0) {
+        color = fColor * texture(uTextures[id] ,fTexCoords);
+    } else {
+        color = fcolor;
+    }*/
+
+
+
     //(1,1,1,1) * (some color: x,w,y,z) = somecolor
 
 }

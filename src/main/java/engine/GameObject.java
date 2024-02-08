@@ -3,7 +3,7 @@ package engine;
 import renderer.SpriteRenderer;
 
 public class GameObject {
-    private String name;
+    protected String name;
     public SpriteRenderer sprite;
 
     public GameObject(String name, SpriteRenderer sprite)

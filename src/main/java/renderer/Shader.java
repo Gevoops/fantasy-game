@@ -75,6 +75,10 @@ public class Shader {
         //first load and compile vertex shader
         vertexID = glCreateShader(GL_VERTEX_SHADER);
 
+        //enable transparency
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         // pass the shader source code to GPU
         glShaderSource(vertexID, vertexSource);
         glCompileShader(vertexID);

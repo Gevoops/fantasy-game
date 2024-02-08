@@ -25,7 +25,7 @@ public class Renderer {
         boolean added = false;
         for (RenderBatch batch : batches) {
             if (batch.hasRoom()) {
-                batch.addSprite(spr);
+                    batch.addSprite(spr);
                 added = true;
                 break;
             }

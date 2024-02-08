@@ -5,9 +5,11 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class Camera {
-    public Matrix4f projectionMatrix, viewMatrix, isoMatrix, scaleMatrix;
+    public Matrix4f projectionMatrix;
+    public Matrix4f viewMatrix;
+    public Matrix4f scaleMatrix;
     public Vector2f viewPoint;
-    public float spriteHeight = 2.0f, spriteWidth = 2.0f;
+    public static float spriteHeight = 0.5f, spriteWidth = 1.0f;
     public float scale = 1f;
 
 
@@ -16,13 +18,7 @@ public class Camera {
         this.projectionMatrix = new Matrix4f();
         this.viewMatrix = new Matrix4f();
 
-        //rows and columns are reversed! is it just a transpose??
-        this.isoMatrix = new Matrix4f(0.5f * spriteWidth,  -0.5f * spriteHeight, 0.0f, 0.0f,
-                                      0.25f * spriteWidth, 0.25f * spriteHeight, 0.0f, 0.0f,
-                                      0.0f,                0.0f,                 1.0f, 0.0f,
-                                      0.0f,                0.0f,                 0.0f, 1.0f);
 
-        //this.isoMatrix = this.isoMatrix.transpose();
 
         this.scaleMatrix = new Matrix4f( scale, 0.0f, 0.0f, 0.0f, 0.0f,  scale,0.0f,
                 0.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f, 0.0f,0.0f, 1.0f);
@@ -55,9 +51,6 @@ public class Camera {
 
     public Matrix4f getProjectionMatrix(){
         return this.projectionMatrix;
-    }
-    public Matrix4f getIsoMatrix(){
-        return this.isoMatrix;
     }
     public Matrix4f getScaleMatrix(){
         return this.scaleMatrix;

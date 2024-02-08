@@ -21,8 +21,10 @@ public abstract class Scene {
     }
 
     public void start(){
+
             for(GameObject ob : gameObjects) {
                 this.renderer.add(ob);
+
             }
             isRunning = true;
     }

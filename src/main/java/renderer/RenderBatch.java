@@ -146,7 +146,7 @@ public class RenderBatch {
         if(sprite.getTexture() != null) {
             for (int i = 0; i < textures.size(); i++) {
                 if(textures.get(i) == sprite.getTexture()) {
-                    texId = i +1;
+                    texId = i + 1;
                     break;
                 }
             }
@@ -154,7 +154,7 @@ public class RenderBatch {
 
 
         // Add vertices with the appropriate properties
-        //going over the coordintes of a quad
+        //going over the coordinates of a quad
         float xAdd = 1.0f;
         float yAdd = 1.0f;
         for (int i = 0; i < 4; i ++) {
@@ -197,33 +197,33 @@ public class RenderBatch {
         shader.use();
         shader.uploadMat4f("uProjection", Window.getScene().camera().getProjectionMatrix());
         shader.uploadMat4f("uView", Window.getScene().camera().getViewMatrix());
-        shader.uploadMat4f("iso", Window.getScene().camera().getIsoMatrix());
         shader.uploadFloat("uTime", (float) Time.getTime());
         shader.uploadMat4f("scale", Window.getScene().camera().getScaleMatrix());
         for(int i =0; i < textures.size(); i ++) {
-            glActiveTexture(GL_TEXTURE + i);
+            glActiveTexture(GL_TEXTURE0 + i + 1);
             textures.get(i).bind();
         }
         shader.uploadIntArray("uTextures", texSlots);
 
+
+
         glBindVertexArray(vaoID);
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
-        glEnableVertexAttribArray(2);
-        glEnableVertexAttribArray(3);
+       /* glEnableVertexAttribArray(2);
+        glEnableVertexAttribArray(3);*/
 
         glDrawElements(GL_TRIANGLES, this.numSprites * 6, GL_UNSIGNED_INT, 0);
 
         // unbind everything
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
-        glDisableVertexAttribArray(2);
-        glDisableVertexAttribArray(3);
+       /* glDisableVertexAttribArray(2);
+        glDisableVertexAttribArray(3);*/
 
         glBindVertexArray(0);
 
         for(int i =0; i < textures.size(); i ++) {
-            glActiveTexture(GL_TEXTURE + i);
             textures.get(i).unbind();
         }
 
