@@ -16,7 +16,9 @@ public class Window {
     private final int height;
     private final String title;
     private long glfwWindow;
-
+    public boolean leftClicked = false;
+    public float clickX;
+    public float clickY;
 
     public float r = 0.4f,g = 0.5f,b = 0.7f,a = 1.0f;
 
@@ -120,16 +122,36 @@ public class Window {
         while (!glfwWindowShouldClose(glfwWindow)){
             //poll events
             glfwPollEvents();
-
             glClearColor(r, g, b, a);
             glClear(GL_COLOR_BUFFER_BIT);
+
+            if(MouseListener.mouseButtonDown(0)) {
+                this.clickX = MouseListener.getOrthoX();
+                this.clickY = MouseListener.getOrthoY();
+                this.leftClicked = true;
+            }
+
             currentScene.update(dt);
-           glfwSwapBuffers(glfwWindow);
+            glfwSwapBuffers(glfwWindow);
             endTime = Time.getTime();
             dt = endTime - beginTime;
             beginTime = endTime;
             Time.timePassed += dt;
         }
+    }
+
+    public static int getWidth() {
+        int[] width = new int[1];
+        int[] height = new int[1];
+        glfwGetWindowSize(get().glfwWindow, width,height);
+        return width[0];
+    }
+
+    public static int getHeight() {
+        int[] width = new int[1];
+        int[] height = new int[1];
+        glfwGetWindowSize(get().glfwWindow, width,height);
+        return height[0];
     }
 }
 

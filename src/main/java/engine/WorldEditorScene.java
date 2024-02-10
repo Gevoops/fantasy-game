@@ -8,12 +8,16 @@ import renderer.SpriteSheet;
 import renderer.Texture;
 import util.AssetPool;
 
+
 public class WorldEditorScene extends Scene {
-    public static Matrix2f isoMatrix = new Matrix2f(0.5f, -0.25f * 0.975f,
-                                                     1f, 0.5f * 0.99f );
+    public static Matrix2f isoMatrix = new Matrix2f(0.5f, -0.25f * 0.995f,
+                                                     1f, 0.5f * 0.95f );
     int frameCount = 0;
     int spriteIndex;
-    float move = 0;
+    float clickX = 0;
+    float clickY = 0;
+    float stepX =0;
+    float stepY = 0;
     GameObject ob1;
     SpriteSheet spriteSheet = null;
 
@@ -30,12 +34,14 @@ public class WorldEditorScene extends Scene {
         this.spriteSheet = AssetPool.getSpriteSheet("assets/sprites/Walking_KG_2.png");
 
 
-        int xOffset = -1000;
+        int xOffset = -1920;
         int yOffset = -100;
 
-        float sizeX = 64.0f;
-        float sizeY = 32.0f;
-        Texture tex = new Texture("assets/sprites/isoGrass1.png");
+        float sizeX = 128.0f;
+        float sizeY = 64.0f;
+        Texture tex = new Texture("assets/sprites/ground1.png");
+        Texture tex1 = new Texture("assets/sprites/isoGrass1.png");
+
 
 
         for (int y = 45; y > 0; y--) {
@@ -53,7 +59,8 @@ public class WorldEditorScene extends Scene {
             }
         }
 
-        this.ob1 = new GameObject("obj" + ",", spriteSheet.getSprite(6), new Transform(new Vector2f(300, 300), new Vector2f(50, 32)));
+        this.ob1 = new GameObject("obj" + ",", spriteSheet.getSprite(6),
+                new Transform(new Vector2f(300, 300), new Vector2f(100, 64)));
         this.addGameObjectToScene(this.ob1);
 
 
@@ -61,22 +68,45 @@ public class WorldEditorScene extends Scene {
 
     private void loadResources() {
         AssetPool.getShader("assets/shaders/default.glsl");
+
         AssetPool.addSpriteSheet("assets/sprites/Walking_KG_2.png",
                 new SpriteSheet(AssetPool.getTexture("assets/sprites/Walking_KG_2.png"),
                         100, 64, 7, 0));
+
+        AssetPool.addSpriteSheet("assets/sprites/Overworld - Forest - Flat 128x64.png",
+                new SpriteSheet(AssetPool.getTexture("assets/sprites/Overworld - Forest - Flat 128x64.png"),128,64,18,0));
     }
 
     @Override
     public void update(double dt) {
-        System.out.println(1.0f / dt);
+        //System.out.println(1.0f / dt);
+
+
         frameCount++;
         if(frameCount > 1) {
             frameCount =0;
             ob1.sprite = spriteSheet.getSprite(spriteIndex);
             spriteIndex = spriteIndex >= 6 ? 0 : spriteIndex + 1;
-            ob1.transform.position.x += 4;
-            ob1.update(dt);
         }
+        if(Window.get().leftClicked) {
+            clickX = Window.get().clickX;
+            clickY = Window.get().clickY;
+            float distance = (float) Math.sqrt(Math.pow(ob1.transform.position.x - clickX,2)
+            + Math.pow(ob1.transform.position.y - clickY,2));
+
+            stepX = (clickX - ob1.transform.position.x) / distance;
+            stepY = (clickY - ob1.transform.position.y) / distance;
+            Window.get().leftClicked = false;
+        }
+
+
+        if(Math.abs(ob1.transform.position.x - clickX) >= 2) {
+            ob1.transform.position.x += stepX * 4;
+        }
+        if(Math.abs(ob1.transform.position.y - clickY )>= 2) {
+            ob1.transform.position.y += stepY * 4;
+        }
+        ob1.update(dt);
         this.renderer.render();
     }
 }

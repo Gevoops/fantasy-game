@@ -2,6 +2,8 @@ package engine;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import engine.Window;
+import org.joml.Vector4f;
 
 public class MouseListener {
     private static MouseListener instance;
@@ -63,6 +65,27 @@ public class MouseListener {
 
     public static float getY(){
         return (float)get().y;
+    }
+
+    public static float getOrthoX() {
+        float currentX = getX();
+        currentX = currentX/(float)Window.getWidth() * 2f - 1f;
+
+        Vector4f tmp = new Vector4f(currentX,0,0,1);
+        tmp.mul(Window.getScene().camera.getInvProjectionMatrix()).mul(Window.getScene().camera.getInvViewMatrix());
+        currentX = tmp.x;
+        return currentX;
+    }
+
+    public static float getOrthoY() {
+        float currentY = getY();
+        currentY = currentY/(float)Window.getHeight() * 2f - 1f;
+        currentY *= -1; //something is being flipped idk
+
+        Vector4f tmp = new Vector4f(0,currentY,0,1);
+        tmp.mul(Window.getScene().camera.getInvProjectionMatrix()).mul(Window.getScene().camera.getInvViewMatrix());
+        currentY = tmp.y;
+        return currentY;
     }
 
     public static float getDx() {
