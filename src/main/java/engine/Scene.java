@@ -23,7 +23,7 @@ public abstract class Scene {
     public void start(){
 
             for(GameObject ob : gameObjects) {
-                this.renderer.add(ob);
+                this.renderer.addSprite(ob);
 
             }
             isRunning = true;
@@ -32,7 +32,7 @@ public abstract class Scene {
     public void addGameObjectToScene(GameObject ob) {
         gameObjects.add(ob);
         if(isRunning) {
-            this.renderer.add(ob);
+            this.renderer.addSprite(ob);
         }
     }
 

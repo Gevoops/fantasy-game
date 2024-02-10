@@ -1,8 +1,7 @@
 package renderer;
 
 import engine.GameObject;
-import engine.Scene;
-import engine.WorldEditorScene;
+import engine.Transform;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,26 +14,23 @@ public class Renderer {
         this.batches = new ArrayList<>();
     }
 
-    public void add(GameObject ob) {
-        SpriteRenderer spr = ob.sprite;
-        if(spr != null) {
-            this.add(spr);
-        }
-    }
-    public void add(SpriteRenderer spr) {
+    public void addSprite(GameObject ob) {
         boolean added = false;
         for (RenderBatch batch : batches) {
             if (batch.hasRoom()) {
-                    batch.addSprite(spr);
-                added = true;
-                break;
+                Texture tex = ob.sprite.getTexture();
+                if(tex != null && (batch.hasTexture(tex) || batch.hasTextureRoom())) {
+                    batch.addSprite(ob);
+                    added = true;
+                    break;
+                }
             }
         }
-        if(!added) {
+        if(!added && ob.sprite.getTexture() != null) {
             RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE);
             newBatch.start();
             batches.add(newBatch);
-            newBatch.addSprite(spr);
+            newBatch.addSprite(ob);
         }
     }
     public void render() {

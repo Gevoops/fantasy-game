@@ -9,7 +9,6 @@ public class Camera {
     public Matrix4f viewMatrix;
     public Matrix4f scaleMatrix;
     public Vector2f viewPoint;
-    public static float spriteHeight = 0.5f, spriteWidth = 1.0f;
     public float scale = 1f;
 
 

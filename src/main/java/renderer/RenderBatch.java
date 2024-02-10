@@ -1,5 +1,7 @@
 package renderer;
 
+import engine.GameObject;
+import engine.Transform;
 import engine.Window;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -33,7 +35,7 @@ public class RenderBatch {
     private final int VERTEX_SIZE = 9;
     private final int VERTEX_SIZE_BYTES = VERTEX_SIZE * Float.BYTES;
 
-    private SpriteRenderer[] sprites;
+    private GameObject[] gameObjects;
     private int numSprites;
     private boolean hasRoom;
     private float[] vertices;
@@ -47,7 +49,7 @@ public class RenderBatch {
 
     public RenderBatch(int maxBatchSize) {
         shader = AssetPool.getShader("assets/shaders/default.glsl");
-        this.sprites = new SpriteRenderer[maxBatchSize];
+        this.gameObjects = new GameObject[maxBatchSize];
         this.maxBatchSize = maxBatchSize;
 
         //4 = vertices per quad
@@ -112,18 +114,12 @@ public class RenderBatch {
         return elements;
     }
 
-    public void addSprite (SpriteRenderer spr) {
+    public void addSprite (GameObject ob) {
         // Get index and add RenderObject
         int index = this.numSprites;
-        this.sprites[index] = spr;
+        this.gameObjects[index] = ob;
         this.numSprites++;
-
-        if(spr.getTexture() != null) {
-            if(!textures.contains(spr.getTexture())) {
-                textures.add(spr.getTexture());
-            }
-        }
-
+        textures.add(ob.sprite.getTexture());
         //Add properties to local vertices array
         loadVertexProperties(index);
 
@@ -133,7 +129,9 @@ public class RenderBatch {
     }
 
     private void loadVertexProperties(int index) {
-        SpriteRenderer sprite = this.sprites[index];
+        GameObject ob = this.gameObjects[index];
+        Sprite sprite = ob.sprite;
+
 
         // find offset within array (4 vertices per sprite)
         int offset = index * 4 * VERTEX_SIZE;
@@ -166,10 +164,10 @@ public class RenderBatch {
                 yAdd = 1.0f;
             }
             // load position
-            vertices[offset] = sprite.transform.position.x
-                    + xAdd * sprite.transform.scale.x;
-            vertices[offset + 1] = sprite.transform.position.y
-                    + yAdd * sprite.transform.scale.y;
+            vertices[offset] = ob.transform.position.x
+                    + xAdd * ob.transform.scale.x;
+            vertices[offset + 1] = ob.transform.position.y
+                    + yAdd * ob.transform.scale.y;
 
             //load color
             vertices[offset + 2] = color.x;
@@ -210,16 +208,14 @@ public class RenderBatch {
         glBindVertexArray(vaoID);
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
-       /* glEnableVertexAttribArray(2);
-        glEnableVertexAttribArray(3);*/
+
 
         glDrawElements(GL_TRIANGLES, this.numSprites * 6, GL_UNSIGNED_INT, 0);
 
         // unbind everything
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
-       /* glDisableVertexAttribArray(2);
-        glDisableVertexAttribArray(3);*/
+
 
         glBindVertexArray(0);
 
@@ -235,5 +231,13 @@ public class RenderBatch {
 
     public boolean hasRoom() {
         return this.hasRoom;
+    }
+
+    public boolean hasTextureRoom() {
+        return  this.textures.size() < 7 ;
+    }
+
+    public boolean hasTexture(Texture texture) {
+        return this.textures.contains(texture);
     }
 }

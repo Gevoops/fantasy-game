@@ -1,6 +1,7 @@
 package util;
 
 import renderer.Shader;
+import renderer.SpriteSheet;
 import renderer.Texture;
 
 import java.io.File;
@@ -9,7 +10,8 @@ import java.util.Map;
 
 public class AssetPool {
     private static Map<String, Shader> shaders = new HashMap<>();
-    private static  Map<String, Texture> textures =  new HashMap<>();
+    private static Map<String, Texture> textures =  new HashMap<>();
+    private static Map<String, SpriteSheet> spriteSheets = new HashMap<>();
 
     public static  Shader getShader(String name) {
         File file  = new File(name);
@@ -32,5 +34,20 @@ public class AssetPool {
             AssetPool.textures.put(file.getAbsolutePath(),texture);
             return texture;
         }
+    }
+
+    public static void addSpriteSheet(String name, SpriteSheet spriteSheet) {
+        File file = new File(name);
+        if(!AssetPool.spriteSheets.containsKey(file.getAbsolutePath())) {
+            AssetPool.spriteSheets.put(name, spriteSheet);
+        }
+    }
+
+    public static SpriteSheet getSpriteSheet(String name) {
+        File file = new File(name);
+        if(!AssetPool.spriteSheets.containsKey(name)) {
+            assert false : "sprite sheet doesn't exist " + name;
+        }
+        return spriteSheets.get(name);
     }
 }
