@@ -187,9 +187,22 @@ public class RenderBatch {
     }
 
     public void render() {
-        //for now, we will rebuffer all data every frame
-        glBindBuffer(GL_ARRAY_BUFFER, vboID);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        boolean rebufferData = false;
+        for (int i = 0; i < numSprites; i++) {
+            GameObject go = gameObjects[i];
+            if(go != null && go.isDirty()) {
+                loadVertexProperties(i);
+                go.setClean();
+                rebufferData = true;
+            }
+
+        }
+        if(rebufferData) {
+            //rebuffer only if changed
+            glBindBuffer(GL_ARRAY_BUFFER, vboID);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        }
+
 
         //use shader
         shader.use();

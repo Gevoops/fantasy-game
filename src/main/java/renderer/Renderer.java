@@ -34,7 +34,9 @@ public class Renderer {
         }
     }
     public void render() {
+        int i =0;
         for(RenderBatch batch : batches) {
+            i++;
             batch.render();
         }
     }
