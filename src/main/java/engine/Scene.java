@@ -1,5 +1,6 @@
 package engine;
 
+import Game.RenderObject;
 import renderer.Renderer;
 
 import java.util.ArrayList;
@@ -9,7 +10,8 @@ public abstract class Scene {
     protected Renderer renderer = new Renderer();
     protected Camera camera;
     private boolean isRunning = false;
-    public ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
+    public ArrayList<RenderObject> RenderObjects = new ArrayList<>();
+
 
 
     public Scene() {
@@ -21,18 +23,16 @@ public abstract class Scene {
     }
 
     public void start(){
-
-            for(GameObject ob : gameObjects) {
-                this.renderer.addSprite(ob);
-
-            }
-            isRunning = true;
+        for(RenderObject ob : RenderObjects) {
+            this.renderer.addRenderOb(ob);
+        }
+        isRunning = true;
     }
 
-    public void addGameObjectToScene(GameObject ob) {
-        gameObjects.add(ob);
+    public void addGameObjectToScene(RenderObject ob) {
+        RenderObjects.add(ob);
         if(isRunning) {
-            this.renderer.addSprite(ob);
+            this.renderer.addRenderOb(ob);
         }
     }
 

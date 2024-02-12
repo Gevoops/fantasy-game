@@ -1,7 +1,6 @@
 package renderer;
 
-import engine.GameObject;
-import engine.Transform;
+import Game.RenderObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,13 +13,13 @@ public class Renderer {
         this.batches = new ArrayList<>();
     }
 
-    public void addSprite(GameObject ob) {
+    public void addRenderOb(RenderObject ob) {
         boolean added = false;
         for (RenderBatch batch : batches) {
             if (batch.hasRoom()) {
                 Texture tex = ob.sprite.getTexture();
-                if(tex != null && (batch.hasTexture(tex) || batch.hasTextureRoom())) {
-                    batch.addSprite(ob);
+                if(tex != null && batch.hasTextureRoom()){
+                    batch.addRenderOb(ob);
                     added = true;
                     break;
                 }
@@ -30,13 +29,11 @@ public class Renderer {
             RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE);
             newBatch.start();
             batches.add(newBatch);
-            newBatch.addSprite(ob);
+            newBatch.addRenderOb(ob);
         }
     }
     public void render() {
-        int i =0;
         for(RenderBatch batch : batches) {
-            i++;
             batch.render();
         }
     }

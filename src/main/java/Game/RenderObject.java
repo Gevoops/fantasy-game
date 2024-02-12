@@ -1,17 +1,24 @@
-package engine;
+package Game;
 
+import engine.Transform;
 import org.joml.Vector4f;
 import renderer.Sprite;
+import renderer.SpriteSheet;
 
-public class GameObject {
+
+import java.util.ArrayList;
+
+public class RenderObject {
     protected String name;
     public Sprite sprite;
+    public ArrayList<SpriteSheet> spriteSheets = new ArrayList<>();
     public Transform transform;
     public Transform lastTransform;
     private boolean isDirty;
 
 
-    public GameObject(String name, Sprite sprite, Transform transform)
+
+    public RenderObject(String name, Sprite sprite, Transform transform)
     {
         this.name = name;
         this.sprite = sprite;
@@ -34,6 +41,10 @@ public class GameObject {
     public void setSprite(Sprite sprite){
         this.sprite = sprite;
         this.isDirty = true;
+    }
+
+    public void addSpriteSheet(SpriteSheet s) {
+        this.spriteSheets.add(s);
     }
 
     public void setColor(Vector4f color) {

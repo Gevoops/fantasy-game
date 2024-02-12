@@ -1,7 +1,6 @@
 package renderer;
 
-import engine.GameObject;
-import engine.Transform;
+import Game.RenderObject;
 import engine.Window;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -19,7 +18,7 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 public class RenderBatch {
     //vertex
     // =====
-    //pos              color                       tex coords    tex id
+    //pos              color                       texture coords  tex id
     //float, float,    float, float, float, float  float, float   float
     private final int POS_SIZE = 2;
     private final int COLOR_SIZE = 4;
@@ -35,8 +34,8 @@ public class RenderBatch {
     private final int VERTEX_SIZE = 9;
     private final int VERTEX_SIZE_BYTES = VERTEX_SIZE * Float.BYTES;
 
-    private GameObject[] gameObjects;
-    private int numSprites;
+    private RenderObject[] RenderObjects;
+    private int renderObNum;
     private boolean hasRoom;
     private float[] vertices;
     private int[] texSlots = {0,1,2,3,4,5,6,7};
@@ -49,13 +48,13 @@ public class RenderBatch {
 
     public RenderBatch(int maxBatchSize) {
         shader = AssetPool.getShader("assets/shaders/default.glsl");
-        this.gameObjects = new GameObject[maxBatchSize];
+        this.RenderObjects = new RenderObject[maxBatchSize];
         this.maxBatchSize = maxBatchSize;
 
         //4 = vertices per quad
         vertices = new float[VERTEX_SIZE * 4 * maxBatchSize];
 
-        this.numSprites = 0;
+        this.renderObNum = 0;
         this.hasRoom = true;
         this.textures = new ArrayList<>();
     }
@@ -114,22 +113,29 @@ public class RenderBatch {
         return elements;
     }
 
-    public void addSprite (GameObject ob) {
+    public void addRenderOb(RenderObject ob) {
         // Get index and add RenderObject
-        int index = this.numSprites;
-        this.gameObjects[index] = ob;
-        this.numSprites++;
-        textures.add(ob.sprite.getTexture());
+        int index = this.renderObNum;
+        this.RenderObjects[index] = ob;
+        this.renderObNum++;
+        if(!textures.contains(ob.sprite.getTexture())) {
+            textures.add(ob.sprite.getTexture());
+        }
+        for(SpriteSheet s : ob.spriteSheets) {
+            if(!textures.contains(s.getTexture())) {
+                textures.add(s.getTexture());
+            }
+        }
         //Add properties to local vertices array
         loadVertexProperties(index);
 
-        if(numSprites >= this.maxBatchSize) {
+        if(renderObNum >= this.maxBatchSize) {
             hasRoom = false;
         }
     }
 
     private void loadVertexProperties(int index) {
-        GameObject ob = this.gameObjects[index];
+        RenderObject ob = this.RenderObjects[index];
         Sprite sprite = ob.sprite;
 
 
@@ -188,8 +194,8 @@ public class RenderBatch {
 
     public void render() {
         boolean rebufferData = false;
-        for (int i = 0; i < numSprites; i++) {
-            GameObject go = gameObjects[i];
+        for (int i = 0; i < renderObNum; i++) {
+            RenderObject go = RenderObjects[i];
             if(go != null && go.isDirty()) {
                 loadVertexProperties(i);
                 go.setClean();
@@ -223,7 +229,7 @@ public class RenderBatch {
         glEnableVertexAttribArray(1);
 
 
-        glDrawElements(GL_TRIANGLES, this.numSprites * 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, this.renderObNum * 6, GL_UNSIGNED_INT, 0);
 
         // unbind everything
         glDisableVertexAttribArray(0);
@@ -232,8 +238,8 @@ public class RenderBatch {
 
         glBindVertexArray(0);
 
-        for(int i =0; i < textures.size(); i ++) {
-            textures.get(i).unbind();
+        for (Texture texture : textures) {
+            texture.unbind();
         }
 
         shader.detach();

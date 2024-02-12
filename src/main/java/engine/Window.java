@@ -112,6 +112,7 @@ public class Window {
         GL.createCapabilities();
 
         Window.changeScene(0);
+
     }
 
     public void loop() {

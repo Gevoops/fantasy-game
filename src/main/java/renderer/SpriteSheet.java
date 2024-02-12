@@ -1,6 +1,6 @@
 package renderer;
 
-import engine.Transform;
+
 import org.joml.Vector2f;
 
 import java.util.ArrayList;
@@ -46,5 +46,9 @@ public class SpriteSheet {
 
     public int getSpritesNum(){
         return sprites.size();
+    }
+
+    public Texture getTexture() {
+        return texture;
     }
 }

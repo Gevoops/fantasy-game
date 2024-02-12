@@ -21,8 +21,7 @@ void main()
     fColor = aColor;
     fTexCoords = aTexCoords;
     fTexId = aTexId;
-    gl_Position =    uProjection * uView * vec4(aPos, 1.0);
-    // scale *iso *
+    gl_Position = scale * uProjection * uView * vec4(aPos, 1.0);
 }
 
 #type fragment
@@ -65,16 +64,6 @@ void main()
         color = fColor * texture(uTextures[7], fTexCoords);
         break;
     }
-    /*int id = int(fTexId);
-    if(id > 0) {
-        color = fColor * texture(uTextures[id] ,fTexCoords);
-    } else {
-        color = fcolor;
-    }*/
-
-
-
-    //(1,1,1,1) * (some color: x,w,y,z) = somecolor
 
 }
 
