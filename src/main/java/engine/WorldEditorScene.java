@@ -11,8 +11,15 @@ import util.AssetPool;
 
 
 public class WorldEditorScene extends Scene {
-    public static Matrix2f isoMatrix = new Matrix2f(0.5f, -0.25f * 0.995f,
-                                                     1f, 0.5f * 0.95f );
+    public static Matrix2f isoMatrix = new Matrix2f(0.5f, -0.25f,
+                                                     1f, 0.49f );
+
+    //m11 = space between rows
+
+    //for thick tiles
+    //0.4f, -0.15f,
+    //0.9f, 0.34f );
+    //
     int frameCount = 0;
     int spriteIndex = 0;
     int spriteIndex2 = 0;
@@ -39,24 +46,25 @@ public class WorldEditorScene extends Scene {
 
 
 
-        int xOffset = -1920;
+        int xOffset = -1950;
         int yOffset = -200;
 
         float sizeX = 128.0f;
-        float sizeY = 64.0f;
+        float sizeY = 64f;
         Texture tex = new Texture("assets/sprites/ground1.png");
+        Sprite sp = new Sprite(AssetPool.getSpriteSheet("assets/sprites/forest_sheet.png").getSprite(0));
 
 
 
 
         for (int y = 40; y > 0; y--) {
-            for (int x = 40; x > 0; x--) {
+            for (int x = 0; x < 40; x++) {
                 float xPos = xOffset + (x * sizeX);
                 float yPos = yOffset + (y * sizeY);
 
                 RenderObject ob = new RenderObject("obj" + xPos + "," + yPos,
                         new Sprite(tex),
-                        new Transform(new Vector2f(xPos, yPos).mul(isoMatrix), new Vector2f(sizeX, sizeY)));
+                        new Transform(new Vector2f(xPos, yPos).mul(isoMatrix), new Vector2f(sizeX, sizeY)),0);
 
                 this.addGameObjectToScene(ob);
 
@@ -65,7 +73,7 @@ public class WorldEditorScene extends Scene {
         }
 
         this.ob1 = new RenderObject("obj" + ",",AssetPool.getSpriteSheet("assets/sprites/Idle_KG_2.png").getSprite(0),
-                new Transform(new Vector2f(300, 300), new Vector2f(100, 64)));
+                new Transform(new Vector2f(300, 300), new Vector2f(100, 64)),1);
 
         ob1.addSpriteSheet(AssetPool.getSpriteSheet( "assets/sprites/Idle_KG_2.png"));
         ob1.addSpriteSheet(AssetPool.getSpriteSheet("assets/sprites/Walking_KG_2.png"));
@@ -81,7 +89,6 @@ public class WorldEditorScene extends Scene {
     @Override
     public void update(double dt) {
         //System.out.println(1.0f / dt);
-
         frameCount++;
         if(Window.get().leftClicked) {
             clickX = Window.get().clickX - 50;
@@ -100,10 +107,10 @@ public class WorldEditorScene extends Scene {
                 frameCount =0;
                 if(stepX >= 0) {
                     ob1.setSprite(ob1.spriteSheets.get(1).getSprite(spriteIndex));
-                    spriteIndex = spriteIndex >= 6 ? 0 : spriteIndex + 1;
+                    spriteIndex = spriteIndex == 6 ? 0 : spriteIndex + 1;
                 } else {
                     ob1.setSprite(ob1.spriteSheets.get(3).getSprite(spriteIndex));
-                    spriteIndex = spriteIndex <= 1 ? 6 : spriteIndex - 1;
+                    spriteIndex = spriteIndex == 0 ? 6 : spriteIndex - 1;
                 }
 
 
@@ -122,10 +129,10 @@ public class WorldEditorScene extends Scene {
                 frameCount = 0;
                 if(stepX >= 0) {
                     ob1.setSprite(ob1.spriteSheets.get(0).getSprite(spriteIndex2));
-                    spriteIndex2 = spriteIndex2 >= 3 ? 0 : spriteIndex2 + 1;
+                    spriteIndex2 = spriteIndex2 == 3 ? 0 : spriteIndex2 + 1;
                 } else {
                     ob1.setSprite(ob1.spriteSheets.get(2).getSprite(spriteIndex2));
-                    spriteIndex2 = spriteIndex2 <= 1 ? 3 : spriteIndex2 - 1;
+                    spriteIndex2 = spriteIndex2 == 0 ? 3 : spriteIndex2 - 1;
                 }
 
                 spriteIndex = 6;
@@ -144,7 +151,6 @@ public class WorldEditorScene extends Scene {
                         100, 64, 7, 0));
 
 
-
         AssetPool.addSpriteSheet("assets/sprites/Idle_KG_2.png",
                 new SpriteSheet(AssetPool.getTexture("assets/sprites/Idle_KG_2.png"),
                         100, 64, 4, 0));
@@ -156,6 +162,10 @@ public class WorldEditorScene extends Scene {
         AssetPool.addSpriteSheet("assets/sprites/Walking_KG_2.png",
                 new SpriteSheet(AssetPool.getTexture("assets/sprites/Walking_KG_2.png"),
                         100, 64, 7, 0));
+
+        AssetPool.addSpriteSheet("assets/sprites/forest_sheet.png",
+                new SpriteSheet(AssetPool.getTexture("assets/sprites/forest_sheet.png"),
+                        128, 64, 18, 0));
 
     }
 }

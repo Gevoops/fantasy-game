@@ -3,6 +3,8 @@ package renderer;
 import Game.RenderObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Renderer {
@@ -16,7 +18,7 @@ public class Renderer {
     public void addRenderOb(RenderObject ob) {
         boolean added = false;
         for (RenderBatch batch : batches) {
-            if (batch.hasRoom()) {
+            if (batch.hasRoom() && batch.getZIndex() == ob.getZIndex()) {
                 Texture tex = ob.sprite.getTexture();
                 if(tex != null && batch.hasTextureRoom()){
                     batch.addRenderOb(ob);
@@ -26,13 +28,14 @@ public class Renderer {
             }
         }
         if(!added && ob.sprite.getTexture() != null) {
-            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE);
+            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE,ob.getZIndex());
             newBatch.start();
             batches.add(newBatch);
             newBatch.addRenderOb(ob);
         }
     }
     public void render() {
+        batches.sort(Comparator.comparing(RenderBatch::getZIndex));
         for(RenderBatch batch : batches) {
             batch.render();
         }

@@ -45,8 +45,10 @@ public class RenderBatch {
     private int vaoID, vboID;
     private int maxBatchSize;
     private Shader shader;
+    private int zIndex;
 
-    public RenderBatch(int maxBatchSize) {
+    public RenderBatch(int maxBatchSize, int zIndex) {
+        this.zIndex = zIndex;
         shader = AssetPool.getShader("assets/shaders/default.glsl");
         this.RenderObjects = new RenderObject[maxBatchSize];
         this.maxBatchSize = maxBatchSize;
@@ -258,5 +260,9 @@ public class RenderBatch {
 
     public boolean hasTexture(Texture texture) {
         return this.textures.contains(texture);
+    }
+
+    public int getZIndex() {
+        return zIndex;
     }
 }

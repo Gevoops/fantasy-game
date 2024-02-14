@@ -15,15 +15,17 @@ public class RenderObject {
     public Transform transform;
     public Transform lastTransform;
     private boolean isDirty;
+    private int zIndex;
 
 
 
-    public RenderObject(String name, Sprite sprite, Transform transform)
+    public RenderObject(String name, Sprite sprite, Transform transform, int zIndex)
     {
         this.name = name;
         this.sprite = sprite;
         this.isDirty = true;
         this.transform = transform;
+        this.zIndex = zIndex;
         lastTransform = this.transform.copy();
     }
 
@@ -56,5 +58,9 @@ public class RenderObject {
 
     public void setClean() {
         this.isDirty = false;
+    }
+
+    public int getZIndex() {
+        return this.zIndex;
     }
 }

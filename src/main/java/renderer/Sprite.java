@@ -26,6 +26,12 @@ public class Sprite{
         this.color = new Vector4f(1,1,1,1);
     }
 
+    public Sprite(Sprite sprite) {
+        this.color = sprite.getColor();
+        this.texture = sprite.getTexture();
+        this.texCoords = sprite.getTexCoords();
+    }
+
     public Vector2f[] getTexCoords() {
         return this.texCoords;
     }
