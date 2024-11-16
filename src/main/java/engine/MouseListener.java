@@ -10,6 +10,8 @@ public class MouseListener {
     private double x, y, lastX, lastY;
     private boolean mouseButtonPressed[] = new boolean[3];
     private boolean isDragging;
+    private final static int windowWidth = Window.getWidth();
+    private final static int windowHeight = Window.getHeight();
 
 
     private MouseListener() {
@@ -67,8 +69,7 @@ public class MouseListener {
     }
 
     public static float getOrthoX() {
-        float currentX = getX();
-        currentX = currentX/(float)Window.getWidth() * 2f - 1f;
+        float currentX = getX()/(float)windowWidth * 2f - 1f;
 
         Vector4f tmp = new Vector4f(currentX,0,0,1);
         tmp.mul(Window.getScene().camera.invScaleMatrix).mul(Window.getScene().camera.getInvProjectionMatrix()).mul(Window.getScene().camera.getInvViewMatrix());
@@ -77,9 +78,9 @@ public class MouseListener {
     }
 
     public static float getOrthoY() {
-        float currentY = getY();
-        currentY = currentY/(float)Window.getHeight() * 2f - 1f;
-        currentY *= -1; //open gl flipps images, so flip back
+        float currentY = getY()/(float)windowHeight * 2f - 1f;
+        currentY += 2 -  2 *Window.getHeight() /(float)windowHeight;
+        currentY *= -1; //open gl flips images, so flip back
 
         Vector4f tmp = new Vector4f(0,currentY,0,1);
         tmp.mul(Window.getScene().camera.invScaleMatrix).mul(Window.getScene().camera.getInvProjectionMatrix()).mul(Window.getScene().camera.getInvViewMatrix());

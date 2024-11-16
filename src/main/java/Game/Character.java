@@ -1,10 +1,10 @@
 package Game;
 
-public class GameObject {
+public class Character implements Damageable{
     private RenderObject renderOb;
     private PlayObject playOb;
 
-    public GameObject(RenderObject renderOb, PlayObject playOb) {
+    public Character(RenderObject renderOb, PlayObject playOb) {
         this.renderOb = renderOb;
         this.playOb = playOb;
     }

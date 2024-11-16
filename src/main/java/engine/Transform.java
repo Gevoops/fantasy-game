@@ -34,6 +34,6 @@ public class Transform {
     }
 
     public boolean equals(Transform transform) {
-        return (this.scale == transform.scale && this.position == transform.position);
+        return (this.scale.equals(transform.scale) && this.position.equals(transform.position));
     }
 }

@@ -41,7 +41,7 @@ public class WorldEditorScene extends Scene {
         this.camera = new Camera(new Vector2f(0,0));
 
 
-       // this.spriteSheet3 = AssetPool.getSpriteSheet("assets/sprites/Walking_KG_2_left.png");
+       // this.spriteSheet3 = AssetPool.getSpriteSheet("src/main/resources/sprites/Walking_KG_2_left.png");
 
 
 
@@ -51,8 +51,9 @@ public class WorldEditorScene extends Scene {
 
         float sizeX = 128.0f;
         float sizeY = 64f;
-        Texture tex = new Texture("assets/sprites/ground1.png");
-        Sprite sp = new Sprite(AssetPool.getSpriteSheet("assets/sprites/forest_sheet.png").getSprite(0));
+        Texture tex = new Texture("src/main/resources/sprites/ground1.png");
+        Sprite sprt2 = AssetPool.getSpriteSheet( "src/main/resources/sprites/Overworld - Forest - Flat 128x64.png").getSprite(3);
+
 
 
 
@@ -72,13 +73,13 @@ public class WorldEditorScene extends Scene {
             }
         }
 
-        this.ob1 = new RenderObject("obj" + ",",AssetPool.getSpriteSheet("assets/sprites/Idle_KG_2.png").getSprite(0),
+        this.ob1 = new RenderObject("obj" + ",",AssetPool.getSpriteSheet("src/main/resources/sprites/Idle_KG_2.png").getSprite(0),
                 new Transform(new Vector2f(300, 300), new Vector2f(100, 64)),1);
 
-        ob1.addSpriteSheet(AssetPool.getSpriteSheet( "assets/sprites/Idle_KG_2.png"));
-        ob1.addSpriteSheet(AssetPool.getSpriteSheet("assets/sprites/Walking_KG_2.png"));
-        ob1.addSpriteSheet(AssetPool.getSpriteSheet("assets/sprites/Idle_KG_2_left.png"));
-        ob1.addSpriteSheet(AssetPool.getSpriteSheet("assets/sprites/Walking_KG_2_left.png"));
+        ob1.addSpriteSheet(AssetPool.getSpriteSheet( "src/main/resources/sprites/Idle_KG_2.png"));
+        ob1.addSpriteSheet(AssetPool.getSpriteSheet("src/main/resources/sprites/Walking_KG_2.png"));
+        ob1.addSpriteSheet(AssetPool.getSpriteSheet("src/main/resources/sprites/Idle_KG_2_left.png"));
+        ob1.addSpriteSheet(AssetPool.getSpriteSheet("src/main/resources/sprites/Walking_KG_2_left.png"));
         this.addGameObjectToScene(this.ob1);
 
 
@@ -88,7 +89,7 @@ public class WorldEditorScene extends Scene {
 
     @Override
     public void update(double dt) {
-        //System.out.println(1.0f / dt);
+        System.out.println(1.0f / dt);
         frameCount++;
         if(Window.get().leftClicked) {
             clickX = Window.get().clickX - 50;
@@ -105,7 +106,7 @@ public class WorldEditorScene extends Scene {
         if(((Math.abs(ob1.transform.position.x - clickX) >= 2) || (Math.abs(ob1.transform.position.y - clickY) >= 2)) && !start) {
             if(frameCount > 4) {
                 frameCount =0;
-                if(stepX >= 0) {
+                if(stepX > 0) {
                     ob1.setSprite(ob1.spriteSheets.get(1).getSprite(spriteIndex));
                     spriteIndex = spriteIndex == 6 ? 0 : spriteIndex + 1;
                 } else {
@@ -113,21 +114,20 @@ public class WorldEditorScene extends Scene {
                     spriteIndex = spriteIndex == 0 ? 6 : spriteIndex - 1;
                 }
 
-
                 spriteIndex2 = 0;
             }
             if(Math.abs(ob1.transform.position.x - clickX) >= 2) {
                 ob1.transform.position.x += stepX * 4;
-                System.out.println(stepX);
+
             }
             if(Math.abs(ob1.transform.position.y - clickY ) >= 2) {
                 ob1.transform.position.y += stepY * 4;
-                System.out.println(stepY);
+
             }
         } else {
-            if(frameCount > 9) {
+            if(frameCount > 12) {
                 frameCount = 0;
-                if(stepX >= 0) {
+                if(stepX > 0) {
                     ob1.setSprite(ob1.spriteSheets.get(0).getSprite(spriteIndex2));
                     spriteIndex2 = spriteIndex2 == 3 ? 0 : spriteIndex2 + 1;
                 } else {
@@ -144,27 +144,31 @@ public class WorldEditorScene extends Scene {
     }
 
     private void loadResources() {
-        AssetPool.getShader("assets/shaders/default.glsl");
+        AssetPool.getShader("src/main/resources/shaders/default.glsl");
 
-        AssetPool.addSpriteSheet("assets/sprites/Walking_KG_2_left.png",
-                new SpriteSheet(AssetPool.getTexture("assets/sprites/Walking_KG_2_left.png"),
+        AssetPool.addSpriteSheet("src/main/resources/sprites/Walking_KG_2_left.png",
+                new SpriteSheet(AssetPool.getTexture("src/main/resources/sprites/Walking_KG_2_left.png"),
                         100, 64, 7, 0));
 
 
-        AssetPool.addSpriteSheet("assets/sprites/Idle_KG_2.png",
-                new SpriteSheet(AssetPool.getTexture("assets/sprites/Idle_KG_2.png"),
+        AssetPool.addSpriteSheet("src/main/resources/sprites/Idle_KG_2.png",
+                new SpriteSheet(AssetPool.getTexture("src/main/resources/sprites/Idle_KG_2.png"),
                         100, 64, 4, 0));
 
-        AssetPool.addSpriteSheet("assets/sprites/Idle_KG_2_left.png",
-                new SpriteSheet(AssetPool.getTexture("assets/sprites/Idle_KG_2_left.png"),
+        AssetPool.addSpriteSheet("src/main/resources/sprites/Idle_KG_2_left.png",
+                new SpriteSheet(AssetPool.getTexture("src/main/resources/sprites/Idle_KG_2_left.png"),
                         100, 64, 4, 0));
 
-        AssetPool.addSpriteSheet("assets/sprites/Walking_KG_2.png",
-                new SpriteSheet(AssetPool.getTexture("assets/sprites/Walking_KG_2.png"),
+        AssetPool.addSpriteSheet("src/main/resources/sprites/Walking_KG_2.png",
+                new SpriteSheet(AssetPool.getTexture("src/main/resources/sprites/Walking_KG_2.png"),
                         100, 64, 7, 0));
 
-        AssetPool.addSpriteSheet("assets/sprites/forest_sheet.png",
-                new SpriteSheet(AssetPool.getTexture("assets/sprites/forest_sheet.png"),
+        AssetPool.addSpriteSheet("src/main/resources/sprites/forest_sheet.png",
+                new SpriteSheet(AssetPool.getTexture("src/main/resources/sprites/forest_sheet.png"),
+                        128, 64, 18, 0));
+
+        AssetPool.addSpriteSheet("src/main/resources/sprites/Overworld - Forest - Flat 128x64.png",
+                new SpriteSheet(AssetPool.getTexture("src/main/resources/sprites/Overworld - Forest - Flat 128x64.png"),
                         128, 64, 18, 0));
 
     }

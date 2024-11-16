@@ -49,7 +49,7 @@ public class RenderBatch {
 
     public RenderBatch(int maxBatchSize, int zIndex) {
         this.zIndex = zIndex;
-        shader = AssetPool.getShader("assets/shaders/default.glsl");
+        shader = AssetPool.getShader("src/main/resources/shaders/default.glsl");
         this.RenderObjects = new RenderObject[maxBatchSize];
         this.maxBatchSize = maxBatchSize;
 

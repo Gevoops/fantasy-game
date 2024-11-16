@@ -65,7 +65,7 @@ public class Window {
     public void run() {
         System.out.println("hello LWJGL " + Version.getVersion() + "!");
         init();
-        loop();
+        gameLoop();
 
         // free memory and error callback
         glfwFreeCallbacks(glfwWindow);
@@ -118,10 +118,11 @@ public class Window {
 
     }
 
-    public void loop() {
+    public void gameLoop() {
         double beginTime = Time.getTime();
         double endTime;
         double dt = 0;
+        double accumulate_time = 0;
 
         while (!glfwWindowShouldClose(glfwWindow)){
             //poll events
@@ -129,11 +130,15 @@ public class Window {
             glClearColor(r, g, b, a);
             glClear(GL_COLOR_BUFFER_BIT);
 
+
             if(MouseListener.mouseButtonDown(0)) {
                 this.clickX = MouseListener.getOrthoX();
                 this.clickY = MouseListener.getOrthoY();
                 this.leftClicked = true;
             }
+
+            System.out.println(dt);
+
 
             currentScene.update(dt);
             glfwSwapBuffers(glfwWindow);
