@@ -11,13 +11,34 @@ import static org.lwjgl.stb.STBImage.stbi_image_free;
 import static org.lwjgl.stb.STBImage.stbi_load;
 
 public class Texture {
-    private String filepath;
+    private String filepath = null;
     private int texId;
     private int width;
     private int height;
-    public Texture(String filepath) {
-        this.filepath = filepath;
+    public Texture() {
+    }
 
+    public void bind() {
+        glBindTexture(GL_TEXTURE_2D, texId);
+    }
+    public int getTexId() {
+        return this.texId;
+    }
+
+    public void unbind() {
+        glBindTexture(GL_TEXTURE_2D,0);
+    }
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+
+    public void init(String filepath){
+        this.filepath = filepath;
         //Generate texture on GPU
         texId = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, texId);
@@ -55,24 +76,5 @@ public class Texture {
         }
 
         stbi_image_free(image);
-    }
-
-    public void bind() {
-        glBindTexture(GL_TEXTURE_2D, texId);
-    }
-    public int getTexId() {
-        return this.texId;
-    }
-
-    public void unbind() {
-        glBindTexture(GL_TEXTURE_2D,0);
-    }
-
-    public int getWidth() {
-        return this.width;
-    }
-
-    public int getHeight() {
-        return this.height;
     }
 }

@@ -1,9 +1,8 @@
 package renderer;
 
-import Game.RenderObject;
+import Game.GameObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -15,23 +14,22 @@ public class Renderer {
         this.batches = new ArrayList<>();
     }
 
-    public void addRenderOb(RenderObject ob) {
+    public void addGameObject(GameObject ob) {
         boolean added = false;
         for (RenderBatch batch : batches) {
             if (batch.hasRoom() && batch.getZIndex() == ob.getZIndex()) {
-                Texture tex = ob.sprite.getTexture();
-                if(tex != null && batch.hasTextureRoom()){
-                    batch.addRenderOb(ob);
+                if(batch.hasTextureRoom()){
+                    batch.addGameObject(ob);
                     added = true;
                     break;
                 }
             }
         }
-        if(!added && ob.sprite.getTexture() != null) {
+        if(!added ) {
             RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE,ob.getZIndex());
             newBatch.start();
             batches.add(newBatch);
-            newBatch.addRenderOb(ob);
+            newBatch.addGameObject(ob);
         }
     }
     public void render() {

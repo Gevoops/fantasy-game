@@ -30,7 +30,8 @@ public class AssetPool {
         if(AssetPool.textures.containsKey(name)){
             return AssetPool.textures.get(file.getAbsolutePath());
         } else {
-            Texture texture = new Texture(name);
+            Texture texture = new Texture();
+            texture.init(name);
             AssetPool.textures.put(file.getAbsolutePath(),texture);
             return texture;
         }

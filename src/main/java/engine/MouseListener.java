@@ -2,6 +2,8 @@ package engine;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+
+import imgui.ImGui;
 import org.joml.Vector4f;
 
 public class MouseListener {
@@ -39,7 +41,7 @@ public class MouseListener {
     }
 
     public static void mouseButtonCallback(long window, int button, int action, int mod) {
-        if (button < get().mouseButtonPressed.length) {
+        if (button < get().mouseButtonPressed.length && !ImGui.getIO().getWantCaptureMouse()) {
             if (action == GLFW_PRESS) {
                 get().mouseButtonPressed[button] = true;
             } else if (action == GLFW_RELEASE) {

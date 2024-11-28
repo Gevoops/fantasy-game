@@ -26,6 +26,7 @@ public class Window {
 
     private static Scene currentScene ;
 
+
     public static void changeScene(int newScene){
         switch(newScene){
             case 0:
@@ -137,7 +138,7 @@ public class Window {
                 this.leftClicked = true;
             }
 
-            System.out.println(dt);
+
 
 
             currentScene.update(dt);
@@ -146,6 +147,7 @@ public class Window {
             dt = endTime - beginTime;
             beginTime = endTime;
             Time.timePassed += dt;
+            leftClicked = false;
         }
     }
 
@@ -161,6 +163,14 @@ public class Window {
         int[] height = new int[1];
         glfwGetWindowSize(get().glfwWindow, width,height);
         return height[0];
+    }
+
+    public long getWindowPtr(){
+        return glfwWindow;
+    }
+
+    public static Scene getCurrentScene() {
+        return currentScene;
     }
 }
 

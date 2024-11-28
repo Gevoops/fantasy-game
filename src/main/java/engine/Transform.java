@@ -7,6 +7,7 @@ public class Transform {
     public Vector2f position;
     public Vector2f scale;
 
+
     public Transform(){
         init(new Vector2f(), new Vector2f());
     }
@@ -35,5 +36,13 @@ public class Transform {
 
     public boolean equals(Transform transform) {
         return (this.scale.equals(transform.scale) && this.position.equals(transform.position));
+    }
+
+    public void setPosition(Vector2f position) {
+        this.position = position;
+    }
+
+    public void setScale(Vector2f scale) {
+        this.scale = scale;
     }
 }

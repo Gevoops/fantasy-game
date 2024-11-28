@@ -1,5 +1,5 @@
 package Game;
 
-public class Player extends PlayObject {
+public class Player {
 
 }

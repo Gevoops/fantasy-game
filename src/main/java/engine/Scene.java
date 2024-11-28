@@ -1,6 +1,7 @@
 package engine;
 
-import Game.RenderObject;
+import Game.GameObject;
+import imgui.ImGui;
 import renderer.Renderer;
 
 import java.util.ArrayList;
@@ -10,7 +11,8 @@ public abstract class Scene {
     protected Renderer renderer = new Renderer();
     protected Camera camera;
     private boolean isRunning = false;
-    public ArrayList<RenderObject> RenderObjects = new ArrayList<>();
+    protected GameObject activeGameObject = null;
+    public ArrayList<GameObject> gameObjects = new ArrayList<>();
 
 
 
@@ -23,18 +25,34 @@ public abstract class Scene {
     }
 
     public void start(){
-        for(RenderObject ob : RenderObjects) {
-            this.renderer.addRenderOb(ob);
+        for(GameObject ob : gameObjects) {
+            this.renderer.addGameObject(ob);
         }
         isRunning = true;
     }
 
-    public void addGameObjectToScene(RenderObject ob) {
-        RenderObjects.add(ob);
+    public void addGameObjectToScene(GameObject ob) {
+        gameObjects.add(ob);
         if(isRunning) {
-            this.renderer.addRenderOb(ob);
+            this.renderer.addGameObject(ob);
         }
     }
+
+    public void sceneImgui(){
+        if(activeGameObject != null) {
+            ImGui.begin("inspector");
+            activeGameObject.imGui();
+            ImGui.end();
+        }
+        imGui();
+    }
+
+    public void imGui(){
+
+
+    }
+
+
 
     public abstract void update(double dt);
 
