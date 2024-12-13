@@ -1,19 +1,26 @@
 package renderer;
 
 
+import engine.Component;
 import org.joml.Vector2f;
+import renderer.Sprite;
+import renderer.Texture;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class SpriteSheet {
-    private Texture texture;
-    private List<Sprite> sprites;
 
-    public SpriteSheet(Texture texture, int spriteWidth, int spriteHeight,
-                       int numSprites, int spacing) {
+public class SpriteSheet extends Component {
+    public String name = "";
+    public Texture texture = null;
+    public ArrayList<Sprite> sprites = null;
+
+    public SpriteSheet(){
+
+    }
+    public SpriteSheet(String name, Texture texture, int spriteWidth, int spriteHeight,
+                       int numSprites, int spacing){
         this.sprites = new ArrayList<>();
-
+        this.name = name;
         this.texture = texture;
         int currentX = 0;
         int currentY = texture.getHeight() - spriteHeight;
@@ -46,11 +53,8 @@ public class SpriteSheet {
         return this.sprites.get(index);
     }
 
-    public int getSpritesNum(){
-        return sprites.size();
-    }
-
     public Texture getTexture() {
         return texture;
     }
+
 }

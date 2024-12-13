@@ -1,6 +1,7 @@
 package renderer;
 
-import Game.GameObject;
+import game.GameObject;
+import components.SpriteSheetList;
 import engine.Window;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -123,11 +124,16 @@ public class RenderBatch {
         if(!textures.contains(ob.sprite.getTexture()) && ob.sprite.getTexture() != null) {
             textures.add(ob.sprite.getTexture());
         }
-        for(SpriteSheet s : ob.spriteSheets) {
-            if(!textures.contains(s.getTexture())) {
-                textures.add(s.getTexture());
+        SpriteSheetList list;
+        if((list =  ob.getComponent(SpriteSheetList.class)) != null) {
+            ArrayList<SpriteSheet> l = list.getSpriteSheets();
+            for(SpriteSheet s : l){
+                if(!textures.contains(s.getTexture())) {
+                    textures.add(s.getTexture());
+                }
             }
         }
+
         //Add properties to local vertices array
         loadVertexProperties(index);
 
@@ -255,12 +261,9 @@ public class RenderBatch {
     }
 
     public boolean hasTextureRoom() {
-        return  this.textures.size() < 7 ;
+        return  this.textures.size() < 8 ;
     }
 
-    public boolean hasTexture(Texture texture) {
-        return this.textures.contains(texture);
-    }
 
     public int getZIndex() {
         return zIndex;

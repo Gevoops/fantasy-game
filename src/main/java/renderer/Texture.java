@@ -18,26 +18,7 @@ public class Texture {
     public Texture() {
     }
 
-    public void bind() {
-        glBindTexture(GL_TEXTURE_2D, texId);
-    }
-    public int getTexId() {
-        return this.texId;
-    }
-
-    public void unbind() {
-        glBindTexture(GL_TEXTURE_2D,0);
-    }
-
-    public int getWidth() {
-        return this.width;
-    }
-
-    public int getHeight() {
-        return this.height;
-    }
-
-    public void init(String filepath){
+    public Texture(String filepath){
         this.filepath = filepath;
         //Generate texture on GPU
         texId = glGenTextures();
@@ -77,4 +58,25 @@ public class Texture {
 
         stbi_image_free(image);
     }
+
+    public void bind() {
+        glBindTexture(GL_TEXTURE_2D, texId);
+    }
+    public int getTexId() {
+        return this.texId;
+    }
+
+    public void unbind() {
+        glBindTexture(GL_TEXTURE_2D,0);
+    }
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+
+
 }

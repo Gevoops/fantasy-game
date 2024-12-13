@@ -5,12 +5,9 @@ import imgui.ImFontConfig;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.flag.ImGuiConfigFlags;
-import imgui.flag.ImGuiFreeTypeBuilderFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import org.lwjgl.glfw.GLFW;
-
-import javax.swing.*;
 
 public class ImGuiLayer {
     private boolean showText = false;
@@ -23,15 +20,7 @@ public class ImGuiLayer {
     }
     public void drawGui(Scene currentScene){
         beginDraw(); // must be called at the beging of this method
-        ImGui.begin("hello, world");
-        currentScene.sceneImgui();
-        if(ImGui.button("hello world")){
-            showText = !showText;
-        }
-        if(showText) {
-            ImGui.text("hello world");
-        }
-        ImGui.end();
+        currentScene.sceneImGui();
         endDraw(); // must be called at the end of this method
     }
 

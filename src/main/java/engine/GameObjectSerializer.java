@@ -1,0 +1,36 @@
+package engine;
+
+import game.GameObject;
+import com.google.gson.*;
+import components.SpriteSheetList;
+import renderer.Transform;
+import util.AssetPool;
+
+import java.lang.reflect.Type;
+
+public class GameObjectSerializer implements  JsonDeserializer<GameObject> {
+
+
+    @Override
+    public GameObject deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+
+        JsonObject jsonObject = json.getAsJsonObject();
+        String name = jsonObject.get("name").getAsString();
+        JsonArray components = jsonObject.getAsJsonArray("components");
+        Transform transform = context.deserialize(jsonObject.get("transform"),Transform.class);
+        int zIndex = context.deserialize(jsonObject.get("zIndex"),int.class);
+
+
+        GameObject ob1 = new GameObject(name, null,transform,zIndex);
+        for (JsonElement e : components){
+            Component c = context.deserialize(e, Component.class);
+            if(c.getClass().isAssignableFrom(SpriteSheetList.class)){
+                ((SpriteSheetList)c).spriteSheets.replaceAll(spriteSheet -> AssetPool.getSpriteSheet(spriteSheet.name));
+                ob1.setSprite(((SpriteSheetList)c).getSpriteSheets().get(0).getSprite(0));
+            }
+            ob1.addComponent(c);
+        }
+
+        return ob1;
+    }
+}

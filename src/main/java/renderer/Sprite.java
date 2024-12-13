@@ -4,14 +4,19 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 public class Sprite{
-    private Vector4f color = new Vector4f(1,1,1,1); // important for textures
-    private Texture texture = null;
-    private Vector2f[] texCoords = new Vector2f[] {
+    public Vector4f color = new Vector4f(1,1,1,1); // important for textures
+    public Texture texture = null;
+    public Vector2f[] texCoords = new Vector2f[] {
         new Vector2f(1,0),
                 new Vector2f(1,1),
                 new Vector2f(0,1),
                 new Vector2f(0,0)};
     public Sprite() {
+    }
+    public Sprite(Sprite sprite) {
+        this.color = sprite.color;
+        this.texture = sprite.texture;
+        this.texCoords = sprite.texCoords;
     }
     public Vector2f[] getTexCoords() {
         return this.texCoords;

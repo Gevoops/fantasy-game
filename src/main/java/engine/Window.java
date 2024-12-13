@@ -31,19 +31,17 @@ public class Window {
         switch(newScene){
             case 0:
                 currentScene = new WorldEditorScene();
-                currentScene.init();
-                currentScene.start();
                 break;
             case 1:
                 currentScene = new GameScene();
-                currentScene.init();
-                currentScene.start();
                 break;
             default:
                 assert false: "unknown scene" + newScene;
                 break;
         }
 
+        currentScene.init();
+        currentScene.start();
     }
 
     private Window() {
@@ -123,7 +121,9 @@ public class Window {
         double beginTime = Time.getTime();
         double endTime;
         double dt = 0;
-        double accumulate_time = 0;
+
+
+
 
         while (!glfwWindowShouldClose(glfwWindow)){
             //poll events
@@ -149,6 +149,7 @@ public class Window {
             Time.timePassed += dt;
             leftClicked = false;
         }
+        currentScene.saveExit();
     }
 
     public static int getWidth() {
