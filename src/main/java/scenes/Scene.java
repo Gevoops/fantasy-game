@@ -1,7 +1,11 @@
-package engine;
+package scenes;
 
+import components.Component;
+import components.ComponentSerializer;
+import engine.Camera;
+import engine.GameObjectSerializer;
 import exceptions.NullSpriteException;
-import game.GameObject;
+import engine.GameObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -22,6 +26,7 @@ public abstract class Scene {
     protected GameObject activeGameObject = null;
     public ArrayList<GameObject> gameObjects = new ArrayList<>();
     protected boolean levelLoaded = false;
+    protected String savedWorldPath;
 
 
 
@@ -79,7 +84,7 @@ public abstract class Scene {
                 .registerTypeAdapter(Component.class, new ComponentSerializer())
                 .create();
         try {
-            FileWriter writer  = new FileWriter("world.txt");
+            FileWriter writer  = new FileWriter(savedWorldPath);
             writer.write(gson.toJson(this.gameObjects,new TypeToken<ArrayList<GameObject>>(){}.getType()));
             writer.close();
         }catch (IOException e){
@@ -94,15 +99,30 @@ public abstract class Scene {
                 .create();
         String inFile = "";
         try {
-            inFile = new String(Files.readAllBytes(Paths.get("world.txt")));
+            inFile = new String(Files.readAllBytes(Paths.get(savedWorldPath)));
         }catch (Exception e){
-            e.printStackTrace();
+            System.err.println("cant load world file \"" + savedWorldPath  + "\" doesn't exist");
         }
         if(!inFile.equals("")){
+            int maxObjId = -1;
+            int maxCompId = -1;
+
             ArrayList<GameObject> objects = gson.fromJson(inFile, new TypeToken<ArrayList<GameObject>>(){}.getType());
             for (GameObject go : objects) {
                 addGameObjectToScene(go);
+                for (Component c : go.getComponents()){
+                    if(c.getUid() > maxCompId){
+                        maxCompId = c.getUid();
+                    }
+                }
+                if (go.getUid() > maxObjId){
+                    maxObjId = go.getUid();
+                }
             }
+            maxObjId++;
+            maxCompId++;
+            GameObject.init(maxObjId);
+            Component.init(maxCompId);
         }
         this.levelLoaded = true;
     }
@@ -111,7 +131,7 @@ public abstract class Scene {
 
     public abstract void update(double dt);
 
-    public Camera camera() {
+    public Camera getCamera() {
         return this.camera;
     }
 }

@@ -3,6 +3,9 @@ package engine;
 import com.sun.marlin.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
+import scenes.GameScene;
+import scenes.Scene;
+import scenes.WorldEditorScene;
 import util.Time;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -147,6 +150,7 @@ public class Window {
             dt = endTime - beginTime;
             beginTime = endTime;
             Time.timePassed += dt;
+            MouseListener.endFrame();
             leftClicked = false;
         }
         currentScene.saveExit();

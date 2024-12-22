@@ -10,7 +10,7 @@ public class MouseListener {
     private static MouseListener instance;
     private double scrollX, scrollY;
     private double x, y, lastX, lastY;
-    private boolean mouseButtonPressed[] = new boolean[3];
+    private boolean[] mouseButtonPressed = new boolean[3];
     private boolean isDragging;
     private final static int windowWidth = Window.getWidth();
     private final static int windowHeight = Window.getHeight();
@@ -74,7 +74,7 @@ public class MouseListener {
         float currentX = getX()/(float)windowWidth * 2f - 1f;
 
         Vector4f tmp = new Vector4f(currentX,0,0,1);
-        tmp.mul(Window.getScene().camera.invScaleMatrix).mul(Window.getScene().camera.getInvProjectionMatrix()).mul(Window.getScene().camera.getInvViewMatrix());
+        tmp.mul(Window.getScene().getCamera().invScaleMatrix).mul(Window.getScene().getCamera().getInvProjectionMatrix()).mul(Window.getScene().getCamera().getInvViewMatrix());
         currentX = tmp.x;
         return currentX;
     }
@@ -85,7 +85,7 @@ public class MouseListener {
         currentY *= -1; //open gl flips images, so flip back
 
         Vector4f tmp = new Vector4f(0,currentY,0,1);
-        tmp.mul(Window.getScene().camera.invScaleMatrix).mul(Window.getScene().camera.getInvProjectionMatrix()).mul(Window.getScene().camera.getInvViewMatrix());
+        tmp.mul(Window.getScene().getCamera().invScaleMatrix).mul(Window.getScene().getCamera().getInvProjectionMatrix()).mul(Window.getScene().getCamera().getInvViewMatrix());
         currentY = tmp.y;
         return currentY;
     }

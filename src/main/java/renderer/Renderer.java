@@ -1,7 +1,7 @@
 package renderer;
 
 import exceptions.NullSpriteException;
-import game.GameObject;
+import engine.GameObject;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -16,7 +16,7 @@ public class Renderer {
     }
 
     public void addGameObject(GameObject ob) throws NullSpriteException {
-        if(ob.sprite == null){
+        if(ob.getSprite() == null){
             throw new NullSpriteException("renderer.addGameObject, " + ob.getName() + "sprite is null");
         }
         boolean added = false;

@@ -50,9 +50,16 @@ public class Camera {
         return this.viewMatrix;
     }
 
-    public void scaleUpdate(float zoom, Matrix4f scaleMatrix){
+    public void scaleUpdate(float scrollDirection){
+        float zoom = 1;
+        if(scrollDirection > 0) {
+            zoom = 1.1f;
+        }else if (scrollDirection < 0 ){
+            zoom = 0.9f;
+        }
          scaleMatrix.m00(scaleMatrix.m00() * zoom);
         scaleMatrix.m11(scaleMatrix.m11() * zoom);
+        scaleMatrix.invert(invScaleMatrix);
     }
 
     public Matrix4f getProjectionMatrix(){

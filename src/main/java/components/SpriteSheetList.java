@@ -1,6 +1,5 @@
 package components;
 
-import engine.Component;
 import renderer.SpriteSheet;
 
 import java.util.ArrayList;

@@ -1,6 +1,8 @@
 package game;
 
-public class NPC extends GameObject{
+import engine.GameObject;
+
+public class NPC extends GameObject {
     public NPC(){
 
     }

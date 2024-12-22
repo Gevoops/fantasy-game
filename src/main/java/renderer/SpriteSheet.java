@@ -1,10 +1,8 @@
 package renderer;
 
 
-import engine.Component;
+import components.Component;
 import org.joml.Vector2f;
-import renderer.Sprite;
-import renderer.Texture;
 
 import java.util.ArrayList;
 
@@ -36,9 +34,9 @@ public class SpriteSheet extends Component {
                     new Vector2f(leftX, topY),
                     new Vector2f(leftX, bottomY)
             };
-            Sprite sprite = new Sprite();
-            sprite.setTexture(this.texture);
-            sprite.setTexCoords(texCoords);
+            Sprite sprite = new Sprite(texture, texCoords);
+            sprite.setWidth(spriteWidth);
+            sprite.setHeight(spriteHeight);
             this.sprites.add(sprite);
 
             currentX += spriteWidth + spacing;

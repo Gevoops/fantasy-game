@@ -1,6 +1,9 @@
-package engine;
+package scenes;
 
-public class GameScene extends Scene{
+import engine.Window;
+import scenes.Scene;
+
+public class GameScene extends Scene {
     public GameScene() {
         System.out.println("inside level Scene");
         Window.get().r = 1;

@@ -28,11 +28,11 @@ public class AssetPool {
     public static Texture getTexture(String name) {
         File file = new File(name);
         if(AssetPool.textures.containsKey(name)){
-            return AssetPool.textures.get(file.getAbsolutePath());
+            return AssetPool.textures.get(name);
         } else {
             Texture texture = new Texture(name);
 
-            AssetPool.textures.put(file.getAbsolutePath(),texture);
+            AssetPool.textures.put(name,texture);
             return texture;
         }
     }

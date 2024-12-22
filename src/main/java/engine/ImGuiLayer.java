@@ -8,6 +8,7 @@ import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import org.lwjgl.glfw.GLFW;
+import scenes.Scene;
 
 public class ImGuiLayer {
     private boolean showText = false;

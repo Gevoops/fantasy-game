@@ -1,6 +1,8 @@
 package game;
 
-public class Ground extends GameObject{
+import engine.GameObject;
+
+public class Ground extends GameObject {
     public Ground(){
 
     }

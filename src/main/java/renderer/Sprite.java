@@ -5,13 +5,20 @@ import org.joml.Vector4f;
 
 public class Sprite{
     public Vector4f color = new Vector4f(1,1,1,1); // important for textures
-    public Texture texture = null;
+    private Texture texture = null;
     public Vector2f[] texCoords = new Vector2f[] {
         new Vector2f(1,0),
                 new Vector2f(1,1),
                 new Vector2f(0,1),
                 new Vector2f(0,0)};
+
+    float width,height;
     public Sprite() {
+    }
+
+    public Sprite(Texture texture, Vector2f[] texCoords){
+        this.texture = texture;
+        this.texCoords = texCoords;
     }
     public Sprite(Sprite sprite) {
         this.color = sprite.color;
@@ -40,5 +47,26 @@ public class Sprite{
 
     public void setTexCoords(Vector2f[] texCoords) {
         this.texCoords = texCoords;
+    }
+
+
+    public float getWidth() {
+        return width;
+    }
+
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
+    public int getTexId(){
+        return texture == null ? -1 : texture.getTexId();
     }
 }

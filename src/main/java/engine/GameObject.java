@@ -1,6 +1,6 @@
-package game;
+package engine;
 
-import engine.Component;
+import components.Component;
 import renderer.Transform;
 import imgui.ImGui;
 import org.joml.Vector4f;
@@ -9,11 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameObject {
+    private static int ID_COUNTER = 0;
+    private int uid = - 1;
+
     protected String name = "default";
-    public Sprite sprite = null;
-    public Transform transform = null;
-    public Transform lastTransform = null;
-    public boolean isDirty = true;
+    private Sprite sprite = null;
+    private Transform transform = null;
+    private Transform lastTransform = null;
+    private boolean isDirty = true;
     private int zIndex = 0;
     private List<Component> components = new ArrayList<>();
 
@@ -28,6 +31,8 @@ public class GameObject {
             this.transform = transform;
             this.lastTransform = transform.copy();
             this.zIndex = zIndex;
+
+            this.uid = ID_COUNTER++;
     }
 
     public void update(double dt) {
@@ -41,8 +46,8 @@ public class GameObject {
     }
 
     public void start(){
-        for (int i = 0; i <  components.size(); i ++) {
-            components.get(i).start();
+        for (Component component : components) {
+            component.start();
         }
     }
 
@@ -53,15 +58,13 @@ public class GameObject {
 
 
     public void imGui(){
-        Vector4f color = sprite.getColor();
-        float[] colors = {color.x,color.y,color.w,color.z};
-        if(ImGui.colorPicker4("picker",colors)) {
-            this.sprite.setColor(new Vector4f(colors[0],colors[1],colors[2],colors[3]));
-            this.isDirty = true;
+        for (Component c : components){
+            c.imGui();
         }
     }
 
     public void addComponent(Component c){
+        c.generateId();
         this.components.add(c);
         c.gameObject = this;
     }
@@ -119,6 +122,10 @@ public class GameObject {
         this.isDirty = true;
     }
 
+    public Sprite getSprite() {
+        return sprite;
+    }
+
     public int getZIndex() {
         return this.zIndex;
     }
@@ -126,5 +133,46 @@ public class GameObject {
 
     public String getName() {
         return name;
+    }
+
+    public Transform getTransform() {
+        return transform;
+    }
+
+    public Transform getLastTransform() {
+        return lastTransform;
+    }
+
+    public void moveX(float offset){
+        transform.position.x += offset;
+    }
+    public void moveY(float offset){
+        transform.position.y += offset;
+    }
+
+    public float getX(){
+        return transform.position.x;
+    }
+    public float getY(){
+        return  transform.position.y;
+    }
+
+    public void setX(float x){
+        this.transform.position.x = x;
+    }
+    public void setY(float y){
+        this.transform.position.y = y;
+    }
+
+    public static void init(int maxId){
+        ID_COUNTER = maxId;
+    }
+
+    public int getUid(){
+        return uid;
+    }
+
+    public List<Component> getComponents() {
+        return components;
     }
 }
