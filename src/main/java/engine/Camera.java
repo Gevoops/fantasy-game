@@ -5,12 +5,12 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class Camera {
-    public Matrix4f projectionMatrix, invProjectionMatrix;
-    public Matrix4f viewMatrix, invViewMatrix, invScaleMatrix;
-    public Matrix4f scaleMatrix;
-    public Vector2f viewPoint;
-    private final float Y_AXIS_SQUISH = 0.69f;
-    private float scaleFactor = 1.15f;
+    private Matrix4f projectionMatrix, invProjectionMatrix;
+    private Matrix4f viewMatrix, invViewMatrix, invScaleMatrix;
+    private Matrix4f scaleMatrix;
+    private Vector2f viewPoint;
+    private Vector2f projectionSize = new Vector2f(64.0f * 30f,64.0f * 15.0f);
+    private float zoom = 1f;
 
 
     public Camera(Vector2f viewPoint ){
@@ -29,10 +29,10 @@ public class Camera {
 
     public void adjustProjection() {
         projectionMatrix.identity();
-        projectionMatrix.ortho(0.0f, 32.0f * 60f, 0.0f,32.0f * 21.0f, 0.0f,100.0f);
+        projectionMatrix.ortho(0.0f, projectionSize.x, 0.0f,projectionSize.y, 0.0f,100.0f);
 
-        scaleMatrix = new Matrix4f( scaleFactor, 0.0f, 0.0f, 0.0f,
-                                    0.0f,  scaleFactor * Y_AXIS_SQUISH,0.0f, 0.0f,
+        scaleMatrix = new Matrix4f( zoom, 0.0f, 0.0f, 0.0f,
+                                    0.0f,  zoom ,0.0f, 0.0f,
                                     0.0f, 0.0f,  1.0f, 0.0f,
                                     0.0f, 0.0f,0.0f, 1.0f);
         invProjectionMatrix = new Matrix4f(projectionMatrix).invert();
@@ -51,14 +51,15 @@ public class Camera {
     }
 
     public void scaleUpdate(float scrollDirection){
-        float zoom = 1;
+        float scale = 1;
         if(scrollDirection > 0) {
-            zoom = 1.1f;
+            scale = 1.05f;
         }else if (scrollDirection < 0 ){
-            zoom = 0.9f;
+            scale = 0.95f;
         }
-         scaleMatrix.m00(scaleMatrix.m00() * zoom);
-        scaleMatrix.m11(scaleMatrix.m11() * zoom);
+        zoom *= scale;
+        scaleMatrix.m00(zoom);
+        scaleMatrix.m11(zoom);
         scaleMatrix.invert(invScaleMatrix);
     }
 
@@ -75,5 +76,25 @@ public class Camera {
 
     public Matrix4f getInvViewMatrix() {
         return invViewMatrix;
+    }
+
+    public Vector2f getProjectionSize() {
+        return projectionSize;
+    }
+
+    public void setProjectionSize(Vector2f projectionSize) {
+        this.projectionSize = projectionSize;
+    }
+
+    public float getZoom() {
+        return zoom;
+    }
+
+    public void setZoom(float zoom) {
+        this.zoom = zoom;
+    }
+
+    public Matrix4f getInvScaleMatrix() {
+        return invScaleMatrix;
     }
 }

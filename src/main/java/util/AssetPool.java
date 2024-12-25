@@ -15,12 +15,12 @@ public class AssetPool {
 
     public static  Shader getShader(String name) {
         File file  = new File(name);
-        if(AssetPool.shaders.containsKey(file.getAbsolutePath())) {
-            return AssetPool.shaders.get(file.getAbsolutePath());
+        if(AssetPool.shaders.containsKey(name)) {
+            return AssetPool.shaders.get(name);
         } else {
             Shader shader = new Shader(name);
             shader.compile();
-            AssetPool.shaders.put(file.getAbsolutePath(),shader);
+            AssetPool.shaders.put(name,shader);
             return shader;
         }
     }
@@ -31,7 +31,6 @@ public class AssetPool {
             return AssetPool.textures.get(name);
         } else {
             Texture texture = new Texture(name);
-
             AssetPool.textures.put(name,texture);
             return texture;
         }
@@ -39,7 +38,7 @@ public class AssetPool {
 
     public static void addSpriteSheet(String name, SpriteSheet spriteSheet) {
         File file = new File(name);
-        if(!AssetPool.spriteSheets.containsKey(file.getAbsolutePath())) {
+        if(!AssetPool.spriteSheets.containsKey(name)) {
             AssetPool.spriteSheets.put(name, spriteSheet);
         }
     }

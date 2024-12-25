@@ -29,5 +29,6 @@ public class MouseControls extends Component{
                 place();
             }
         }
+        Window.getScene().getCamera().scaleUpdate(MouseListener.getScrollY());
     }
 }

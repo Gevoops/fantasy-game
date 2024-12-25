@@ -27,6 +27,12 @@ public abstract class Scene {
     public ArrayList<GameObject> gameObjects = new ArrayList<>();
     protected boolean levelLoaded = false;
     protected String savedWorldPath;
+    protected final float TILE_WIDTH = 128f;
+    protected final float TILE_HEIGHT = 64f;
+    protected final float X_OFFSET = 0;
+    protected final float Y_OFFSET = 0;
+
+
 
 
 

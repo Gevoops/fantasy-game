@@ -1,17 +1,16 @@
 package engine;
 
 import components.Component;
+import org.joml.Vector2i;
 import renderer.Transform;
-import imgui.ImGui;
-import org.joml.Vector4f;
 import renderer.Sprite;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class GameObject {
     private static int ID_COUNTER = 0;
     private int uid = - 1;
-
     protected String name = "default";
     private Sprite sprite = null;
     private Transform transform = null;

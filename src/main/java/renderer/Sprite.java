@@ -13,6 +13,9 @@ public class Sprite{
                 new Vector2f(0,0)};
 
     float width,height;
+    String spriteSheet = "";
+    int spriteSheetIndex = 0;
+
     public Sprite() {
     }
 
@@ -68,5 +71,21 @@ public class Sprite{
 
     public int getTexId(){
         return texture == null ? -1 : texture.getTexId();
+    }
+
+    public String getSpriteSheet() {
+        return spriteSheet;
+    }
+
+    public void setSpriteSheet(String spriteSheet) {
+        this.spriteSheet = spriteSheet;
+    }
+
+    public int getSpriteSheetIndex() {
+        return spriteSheetIndex;
+    }
+
+    public void setSpriteSheetIndex(int spriteSheetIndex) {
+        this.spriteSheetIndex = spriteSheetIndex;
     }
 }

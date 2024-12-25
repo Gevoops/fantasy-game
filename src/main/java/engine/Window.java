@@ -3,6 +3,7 @@ package engine;
 import com.sun.marlin.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
+import renderer.DebugDraw;
 import scenes.GameScene;
 import scenes.Scene;
 import scenes.WorldEditorScene;
@@ -53,7 +54,7 @@ public class Window {
         this.title = "desktop rpg";
     }
 
-    public static Window get() {
+    public static Window getWindow() {
         if(Window.window == null) {
             Window.window = new Window();
         }
@@ -131,8 +132,11 @@ public class Window {
         while (!glfwWindowShouldClose(glfwWindow)){
             //poll events
             glfwPollEvents();
+
             glClearColor(r, g, b, a);
+
             glClear(GL_COLOR_BUFFER_BIT);
+
 
 
             if(MouseListener.mouseButtonDown(0)) {
@@ -145,6 +149,8 @@ public class Window {
 
 
             currentScene.update(dt);
+
+
             glfwSwapBuffers(glfwWindow);
             endTime = Time.getTime();
             dt = endTime - beginTime;
@@ -159,14 +165,14 @@ public class Window {
     public static int getWidth() {
         int[] width = new int[1];
         int[] height = new int[1];
-        glfwGetWindowSize(get().glfwWindow, width,height);
+        glfwGetWindowSize(getWindow().glfwWindow, width,height);
         return width[0];
     }
 
     public static int getHeight() {
         int[] width = new int[1];
         int[] height = new int[1];
-        glfwGetWindowSize(get().glfwWindow, width,height);
+        glfwGetWindowSize(getWindow().glfwWindow, width,height);
         return height[0];
     }
 

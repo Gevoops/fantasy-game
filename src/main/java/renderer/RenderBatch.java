@@ -201,17 +201,17 @@ public class RenderBatch {
     }
 
     public void render() {
-        boolean rebufferData = false;
+        boolean reBufferData = false;
         for (int i = 0; i < gameObNum; i++) {
             GameObject go = gameObjects[i];
             if(go != null && go.isDirty()) {
                 loadVertexProperties(i);
                 go.setClean();
-                rebufferData = true;
+                reBufferData = true;
             }
 
         }
-        if(rebufferData) {
+        if(reBufferData) {
             //rebuffer only if changed
             glBindBuffer(GL_ARRAY_BUFFER, vboID);
             glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
@@ -245,6 +245,7 @@ public class RenderBatch {
 
 
         glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER,0);
 
         for (Texture texture : textures) {
             texture.unbind();

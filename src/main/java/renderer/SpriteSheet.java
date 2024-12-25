@@ -37,6 +37,8 @@ public class SpriteSheet extends Component {
             Sprite sprite = new Sprite(texture, texCoords);
             sprite.setWidth(spriteWidth);
             sprite.setHeight(spriteHeight);
+            sprite.setSpriteSheet(name);
+            sprite.setSpriteSheetIndex(i);
             this.sprites.add(sprite);
 
             currentX += spriteWidth + spacing;

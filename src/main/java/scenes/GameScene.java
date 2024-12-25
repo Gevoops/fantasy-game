@@ -1,14 +1,13 @@
 package scenes;
 
 import engine.Window;
-import scenes.Scene;
 
 public class GameScene extends Scene {
     public GameScene() {
         System.out.println("inside level Scene");
-        Window.get().r = 1;
-        Window.get().g = 1;
-        Window.get().b = 1;
+        Window.getWindow().r = 1;
+        Window.getWindow().g = 1;
+        Window.getWindow().b = 1;
     }
 
     @Override
