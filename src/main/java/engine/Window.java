@@ -29,7 +29,7 @@ public class Window {
     private static Window window = null;
 
     private static Scene currentScene ;
-    public static final double FPS = 80;
+    public static final double FPS = 60;
 
 
     public static void changeScene(int newScene){
@@ -105,10 +105,13 @@ public class Window {
         glfwSetScrollCallback(glfwWindow, MouseListener::mouseScrollCallback);
         glfwSetKeyCallback(glfwWindow, KeyListener::keyCallback);
 
+
+
+
         //make the openGL context current
         glfwMakeContextCurrent(glfwWindow);
         //enable v-sync
-        glfwSwapInterval(0); //sets screen update time to match screen actual refresh rate
+        glfwSwapInterval(1); //sets screen update time to match screen actual refresh rate
         //show window
         glfwShowWindow(glfwWindow);
 
@@ -123,10 +126,10 @@ public class Window {
     }
 
     public void gameLoop() {
-        float beginTime = (float) Time.getTime();
-        float endTime;
-        float dt = 0;
-        float accumulateTime = 0;
+        double beginTime = Time.getTime();
+        double endTime;
+        double dt = 0;
+        double accumulateTime = 1;
 
 
 
@@ -134,9 +137,8 @@ public class Window {
         while (!glfwWindowShouldClose(glfwWindow)){
 
             glfwPollEvents();
-            glClearColor(r, g, b, a);
             glClear(GL_COLOR_BUFFER_BIT);
-
+            glClearColor(r, g, b, a);
 
             if(MouseListener.mouseButtonDown(0)) {
                 this.clickX = MouseListener.getOrthoX();
@@ -145,13 +147,15 @@ public class Window {
             }
 
 
-            currentScene.update(dt * 60);
-
             if(accumulateTime > 1/FPS){
-                // System.out.println(1/accumulateTime);
                 accumulateTime -= 1/FPS;
-                glfwSwapBuffers(glfwWindow);
+                currentScene.update(1);
             }
+
+            currentScene.render();
+
+            glfwSwapBuffers(glfwWindow);
+
             endTime = (float) Time.getTime();
             dt = endTime - beginTime;
             beginTime = endTime;

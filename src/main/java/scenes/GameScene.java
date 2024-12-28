@@ -14,4 +14,9 @@ public class GameScene extends Scene {
     public void update(float dt) {
 
     }
+
+    @Override
+    public void render() {
+
+    }
 }

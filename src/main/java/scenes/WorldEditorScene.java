@@ -122,11 +122,6 @@ public class WorldEditorScene extends Scene {
 
         }
         ImGui.end();
-
-
-
-
-
     }
 
     public void drawGrid() {
@@ -161,9 +156,7 @@ public class WorldEditorScene extends Scene {
     @Override
     public void update(float dt) {
         camera.moveCamera(dt);
-        drawGrid();
-        DebugDraw.draw();
-
+        mouseController.update(dt);
         for (GameObject ob : gameObjects){
             ob.update(dt);
         }
@@ -220,16 +213,18 @@ public class WorldEditorScene extends Scene {
             }
             ob1.update(dt);
         }
+    }
 
-
-
-        this.renderer.render();
+    @Override
+    public void render(){
+        drawGrid();
+        DebugDraw.draw();
         DebugDraw.beginFrame();
+        renderer.render();
         drawMouseSnap();
         DebugDraw.draw();
         gui.drawGui(Window.getCurrentScene());
     }
-
 
     @Override
     public void init() {
