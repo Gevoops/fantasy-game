@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import imgui.ImGui;
+import org.joml.Vector2f;
 import renderer.Renderer;
 
 import java.io.FileWriter;
@@ -135,9 +136,46 @@ public abstract class Scene {
 
 
 
-    public abstract void update(double dt);
+    public abstract void update(float dt);
 
     public Camera getCamera() {
         return this.camera;
+    }
+
+    public Vector2f screenToWorldCell(Vector2f screenPos){
+        Vector2f worldPos = screenToWorld(screenPos);
+        return worldToScreen((float)Math.floor(worldPos.x) ,(float) Math.floor(worldPos.y));
+    }
+    public Vector2f screenToWorldCell(float screenX, float screenY){
+        return screenToWorldCell(new Vector2f(screenX,screenY));
+    }
+
+
+    public float screenToWorldX(float screenX, float screenY){
+        return (screenX-X_OFFSET) / TILE_WIDTH +  (screenY -Y_OFFSET) / TILE_HEIGHT;
+    }
+    public float screenToWorldY(float screenX, float screenY){
+        return (screenY-Y_OFFSET) / TILE_HEIGHT -  (screenX -X_OFFSET) / TILE_WIDTH ;
+    }
+    public Vector2f screenToWorld(float screenX,float screenY){
+        return new Vector2f(screenToWorldX(screenX,screenY),screenToWorldY(screenX,screenY));
+    }
+    public Vector2f screenToWorld(Vector2f screenPos){
+        return new Vector2f(screenToWorldX(screenPos.x,screenPos.y),screenToWorldY(screenPos.x,screenPos.y));
+    }
+    public float worldToScreenX(float cellX,float cellY){
+        return TILE_WIDTH * (cellX * 0.5f - cellY  * 0.5f);
+    }
+    public float worldToScreenY(float cellX,float cellY){
+        return  TILE_HEIGHT * (cellX * 0.5f  + cellY  * 0.5f);
+    }
+
+    public Vector2f worldToScreen(float cellX,float cellY){
+
+        return new Vector2f(worldToScreenX(cellX,cellY) + X_OFFSET, worldToScreenY(cellX,cellY) + Y_OFFSET);
+    }
+    public Vector2f worldToScreen(Vector2f worldPos){
+
+        return new Vector2f(worldToScreenX(worldPos.x,worldPos.y) + X_OFFSET, worldToScreenY(worldPos.x,worldPos.y) + Y_OFFSET);
     }
 }

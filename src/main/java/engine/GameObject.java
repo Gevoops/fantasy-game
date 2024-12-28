@@ -1,6 +1,7 @@
 package engine;
 
 import components.Component;
+import org.joml.Vector2f;
 import org.joml.Vector2i;
 import renderer.Transform;
 import renderer.Sprite;
@@ -161,6 +162,10 @@ public class GameObject {
     }
     public void setY(float y){
         this.transform.position.y = y;
+    }
+
+    public void setPosition(Vector2f position){
+        this.transform.setPosition(position);
     }
 
     public static void init(int maxId){

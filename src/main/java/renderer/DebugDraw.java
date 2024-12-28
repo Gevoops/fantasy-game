@@ -16,7 +16,7 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class DebugDraw {
-    private static int MAX_LINES = 1000;
+    private static int MAX_LINES = 1300;
 
     private static List<Line2D> lines = new ArrayList<>();
     // 6 floats per vertex (x,y,z,r,g,b) , 2 vertices per line.
@@ -52,9 +52,6 @@ public class DebugDraw {
 
     }
     public static void beginFrame(){
-        if(!started){
-            start();
-        }
         glLineWidth(2f * Window.getScene().getCamera().getZoom());
         //Remove expired lines
         for (int i = 0; i < lines.size(); i++){
@@ -66,8 +63,10 @@ public class DebugDraw {
     }
 
     public static void draw(){
+        if(!started){
+            start();
+        }
         if(lines.size() == 0) {return;}
-
         int index = 0;
         for (Line2D line : lines){
             for (int i = 0; i < 2; i++){
@@ -135,5 +134,65 @@ public class DebugDraw {
             return;
         }
         DebugDraw.lines.add(new Line2D(start,end,color,lifetime));
+    }
+
+    // =============================================================
+    // Box2D methods
+    // =============================================================
+    public static void addBox2D(Vector2f center, Vector2f dimensions, float angle, Vector3f color,  int lifetime){
+        if (lines.size() >= MAX_LINES){
+            return;
+        }
+        Vector2f min = new Vector2f(center).sub(new Vector2f(dimensions).mul(0.5f));
+        Vector2f max = new Vector2f(center).add(new Vector2f(dimensions).mul(0.5f));
+
+        Vector2f[] vertices = {
+                new Vector2f(min.x,min.y),new Vector2f(min.x,max.y),
+                new Vector2f(max.x,max.y),new Vector2f(max.x,min.y)
+        };
+
+        if (angle != 0){
+            for (Vector2f vert : vertices){
+                rotate(vert,angle,center);
+            }
+        }
+
+        addLine2D(vertices[0],vertices[1],color,lifetime);
+        addLine2D(vertices[1],vertices[2],color,lifetime);
+        addLine2D(vertices[2],vertices[3],color,lifetime);
+        addLine2D(vertices[3],vertices[0],color,lifetime);
+
+    }
+    // =============================================================
+    // Circle2D methods
+    // =============================================================
+
+
+    // =============================================================
+    // helper methods
+    // =============================================================
+
+    private static void rotate(Vector2f vec, float angleDeg, Vector2f origin) {
+        /*float x = vec.x - origin.x;
+        float y = vec.y - origin.y;
+
+        float cos = (float)Math.cos(Math.toRadians(angleDeg));
+        float sin = (float)Math.sin(Math.toRadians(angleDeg));
+
+        float xPrime = (x * cos) - (y * sin);
+        float yPrime = (x * sin) + (y * cos);
+
+        xPrime += origin.x;
+        yPrime += origin.y;
+
+        vec.x = xPrime;
+        vec.y = yPrime;*/
+        vec.sub(origin);
+        Vector3f vec1 = new Vector3f(vec.x,vec.y,0);
+        vec1.rotateAxis((float) Math.toRadians(angleDeg),0f,0f,1f);
+        vec.x = vec1.x;
+        vec.y = vec1.y;
+        vec.add(origin);
+
     }
 }

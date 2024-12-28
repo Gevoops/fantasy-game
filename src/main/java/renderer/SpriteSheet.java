@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 
 public class SpriteSheet extends Component {
-    public String name = "";
-    public Texture texture = null;
-    public ArrayList<Sprite> sprites = null;
+    private String name = "";
+    private Texture texture = null;
+    private ArrayList<Sprite> sprites = null;
 
     public SpriteSheet(){
 
@@ -37,7 +37,7 @@ public class SpriteSheet extends Component {
             Sprite sprite = new Sprite(texture, texCoords);
             sprite.setWidth(spriteWidth);
             sprite.setHeight(spriteHeight);
-            sprite.setSpriteSheet(name);
+            sprite.setSpriteSheetName(name);
             sprite.setSpriteSheetIndex(i);
             this.sprites.add(sprite);
 
@@ -57,4 +57,23 @@ public class SpriteSheet extends Component {
         return texture;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setTexture(Texture texture) {
+        this.texture = texture;
+    }
+
+    public ArrayList<Sprite> getSprites() {
+        return sprites;
+    }
+
+    public void setSprites(ArrayList<Sprite> sprites) {
+        this.sprites = sprites;
+    }
 }

@@ -27,12 +27,12 @@ public class GameObjectSerializer implements  JsonDeserializer<GameObject> {
         for (JsonElement e : components){
             Component c = context.deserialize(e, Component.class);
             if(c.getClass().isAssignableFrom(SpriteSheetList.class)){
-                ((SpriteSheetList)c).spriteSheets.replaceAll(spriteSheet -> AssetPool.getSpriteSheet(spriteSheet.name));
+                ((SpriteSheetList)c).spriteSheets.replaceAll(spriteSheet -> AssetPool.getSpriteSheet(spriteSheet.getName()));
             }
             ob1.addComponent(c);
         }
-        if (!sprite.getSpriteSheet().equals("")) {
-            ob1.setSprite(AssetPool.getSpriteSheet(sprite.getSpriteSheet()).getSprite(sprite.getSpriteSheetIndex()));
+        if (!sprite.getSpriteSheetName().equals("")) {
+            ob1.setSprite(AssetPool.getSpriteSheet(sprite.getSpriteSheetName()).getSprite(sprite.getSpriteSheetIndex()));
         }
         return ob1;
     }

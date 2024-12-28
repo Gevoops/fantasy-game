@@ -29,6 +29,7 @@ public class Window {
     private static Window window = null;
 
     private static Scene currentScene ;
+    public static final double FPS = 80;
 
 
     public static void changeScene(int newScene){
@@ -107,7 +108,7 @@ public class Window {
         //make the openGL context current
         glfwMakeContextCurrent(glfwWindow);
         //enable v-sync
-        glfwSwapInterval(1); //sets screen update time to match screen actual refresh rate
+        glfwSwapInterval(0); //sets screen update time to match screen actual refresh rate
         //show window
         glfwShowWindow(glfwWindow);
 
@@ -122,21 +123,19 @@ public class Window {
     }
 
     public void gameLoop() {
-        double beginTime = Time.getTime();
-        double endTime;
-        double dt = 0;
+        float beginTime = (float) Time.getTime();
+        float endTime;
+        float dt = 0;
+        float accumulateTime = 0;
 
 
 
 
         while (!glfwWindowShouldClose(glfwWindow)){
-            //poll events
+
             glfwPollEvents();
-
             glClearColor(r, g, b, a);
-
             glClear(GL_COLOR_BUFFER_BIT);
-
 
 
             if(MouseListener.mouseButtonDown(0)) {
@@ -146,16 +145,18 @@ public class Window {
             }
 
 
+            currentScene.update(dt * 60);
 
-
-            currentScene.update(dt);
-
-
-            glfwSwapBuffers(glfwWindow);
-            endTime = Time.getTime();
+            if(accumulateTime > 1/FPS){
+                // System.out.println(1/accumulateTime);
+                accumulateTime -= 1/FPS;
+                glfwSwapBuffers(glfwWindow);
+            }
+            endTime = (float) Time.getTime();
             dt = endTime - beginTime;
             beginTime = endTime;
             Time.timePassed += dt;
+            accumulateTime += dt;
             MouseListener.endFrame();
             leftClicked = false;
         }

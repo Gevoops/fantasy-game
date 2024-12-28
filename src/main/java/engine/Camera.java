@@ -4,6 +4,9 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
+
 public class Camera {
     private Matrix4f projectionMatrix, invProjectionMatrix;
     private Matrix4f viewMatrix, invViewMatrix, invScaleMatrix;
@@ -11,6 +14,8 @@ public class Camera {
     private Vector2f viewPoint;
     private Vector2f projectionSize = new Vector2f(64.0f * 30f,64.0f * 15.0f);
     private float zoom = 1f;
+    private float cameraSpeed  = 1;
+    private float cameraAcceleration = 0.2f;
 
 
     public Camera(Vector2f viewPoint ){
@@ -96,5 +101,43 @@ public class Camera {
 
     public Matrix4f getInvScaleMatrix() {
         return invScaleMatrix;
+    }
+
+    public Vector2f getViewPoint() {
+        return viewPoint;
+    }
+
+    public void setViewPoint(Vector2f viewPoint) {
+        this.viewPoint = viewPoint;
+    }
+
+    public void setViewPointX(float x) {
+        this.viewPoint.x = x;
+    }
+    public void setViewPointY(float y) {
+        this.viewPoint.y = y;
+    }
+
+    public void moveCamera(float dt){
+        Vector2f move = new Vector2f(0,0);
+        float acceleration = cameraAcceleration * dt;
+        float speed  = cameraSpeed * dt;
+        if(KeyListener.isKeyPressed(GLFW_KEY_A)){
+            move.x -= speed;
+        }
+        if(KeyListener.isKeyPressed(GLFW_KEY_D)){
+            move.x += speed;
+        }if(KeyListener.isKeyPressed(GLFW_KEY_W)){
+           move.y += speed;
+        }if(KeyListener.isKeyPressed(GLFW_KEY_S)){
+            move.y -= speed;
+        }
+        if (move.x != 0 || move.y != 0){
+            cameraSpeed = cameraSpeed >= 5 ? 5 : cameraSpeed + acceleration;
+            viewPoint.add(move.normalize(speed));
+        }else {
+            cameraSpeed = 1;
+        }
+
     }
 }

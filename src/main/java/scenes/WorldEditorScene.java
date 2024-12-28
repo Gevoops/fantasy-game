@@ -1,7 +1,7 @@
 package scenes;
 
 
-import components.MouseControls;
+import components.MouseController;
 import components.RigidBody;
 import engine.*;
 
@@ -21,19 +21,23 @@ import java.util.ArrayList;
 
 
 public class WorldEditorScene extends Scene {
-    int frameCount = 0;
+    double frameCount = 0;
     int spriteIndex = 0;
     int spriteIndex2 = 0;
     float clickX = 0;
     float clickY = 0;
-    float stepX =0;
+    float stepX = 0;
     float stepY = 0;
     boolean start = true;
     private long windowPtr = Window.getWindow().getWindowPtr();
 
     private ImGuiLayer gui;
     GameObject ob1;
-    MouseControls mouseControls = new MouseControls();
+    MouseController mouseController = new MouseController();
+
+    private ArrayList<Sprite> guiSprites;
+
+
 
 
 
@@ -56,18 +60,22 @@ public class WorldEditorScene extends Scene {
 
         float windowX2 = windowPos.x + windowSize.x;
         Sprite sprite;
-        ArrayList<Sprite> sprites = AssetPool.getSpriteSheet("src/main/resources/sprites/Idle_KG_2_left.png").sprites;
+        ArrayList<Sprite> sprites = guiSprites;
         for (int i = 0; i < sprites.size(); i ++){
             sprite = sprites.get(i);
             float spriteWidth = sprite.getWidth();
             float spriteHeight = sprite.getHeight();
+            if(sprite.getSpriteSheetName().equals("src/main/resources/sprites/ground1.png")){
+                spriteWidth = TILE_WIDTH;
+                spriteHeight = TILE_HEIGHT;
+            }
             int id = sprite.getTexId();
             Vector2f[] coords = sprite.getTexCoords();
 
             ImGui.pushID(i);
             if(ImGui.imageButton(id,spriteWidth,spriteHeight,coords[2].x,coords[0].y,coords[0].x,coords[2].y)) {
                 GameObject ob = Prefabs.generateSpriteObject(sprite,spriteWidth,spriteHeight);
-                mouseControls.liftObject(ob);
+                mouseController.liftObject(ob);
             }
             ImGui.popID();
 
@@ -101,7 +109,7 @@ public class WorldEditorScene extends Scene {
         for (int y = 39; y >= 0; y--) {
             for (int x = 0; x < 40; x++) {
                 GameObject ob = new GameObject("ground: " + x + "," + y,null,
-                        new Transform(worldToScreen(x,y).add(-TILE_WIDTH/2,0), new Vector2f(TILE_WIDTH, TILE_HEIGHT)),0);
+                        new Transform(cellSnapToGrid(x,y), new Vector2f(TILE_WIDTH, TILE_HEIGHT)),0);
                 ob.setName("ground: " + x + "," + y);
                 SpriteSheetList list = new SpriteSheetList();
                 list.addSpriteSheet(AssetPool.getSpriteSheet("src/main/resources/sprites/ground1.png"));
@@ -124,75 +132,47 @@ public class WorldEditorScene extends Scene {
     public void drawGrid() {
 
         float zoom = camera.getZoom();
-        int lineNumX = 2*(int) ((camera.getProjectionSize().x / TILE_WIDTH) / zoom);
-        int lineNumY = 2*(int) ((camera.getProjectionSize().y / TILE_HEIGHT) / zoom);
+        Vector3f color = new Vector3f(75f / 255, 75f / 255, 75f / 255);
+        int lineNumX = 2*(int) ((camera.getProjectionSize().x / TILE_WIDTH) / zoom) + 15;
+        int lineNumY = 2*(int) ((camera.getProjectionSize().y / TILE_HEIGHT) / zoom) + 15;
+        Vector2f snappedCamera = screenToWorldCell(camera.getViewPoint());
+        Vector2f offset = new Vector2f(0,0);
+        offset.add(snappedCamera);
         for (int i = -lineNumX; i < lineNumX; i++) {
-            DebugDraw.addLine2D(worldToScreen(-lineNumX, i), worldToScreen(lineNumX, i), new Vector3f(221f / 255, 221f / 255, 221f / 255), 1);
+            DebugDraw.addLine2D(worldToScreen(-lineNumX, i).add(offset), worldToScreen(lineNumX, i).add(offset),color, 1);
         }
         for (int i = -lineNumY; i < lineNumY; i++ ) {
-            DebugDraw.addLine2D(worldToScreen(i,-lineNumY),worldToScreen(i,lineNumY),new Vector3f(221f/255,221f/255,221f/255),1);
+            DebugDraw.addLine2D(worldToScreen(i,-lineNumY).add(offset),worldToScreen(i,lineNumY).add(offset),color,1);
         }
-        Vector2f v1 = screenToWorld(MouseListener.getOrthoX(),MouseListener.getOrthoY());
-        Vector2f snap = worldToScreen((float)Math.floor(v1.x) ,(float) Math.floor(v1.y));
-        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), snap,new Vector3f(0,1,0),1);
-    }
+        DebugDraw.addLine2D(worldToScreen(0,0),worldToScreen(-2,-2));
 
-    public float screenToWorldX(float x, float y){
-        return (x-X_OFFSET) / TILE_WIDTH +  (y -Y_OFFSET) / TILE_HEIGHT - 0.5f;
+        DebugDraw.addBox2D(worldToScreen(-2,-2),new Vector2f(100,100),45,color,1);
     }
-    public float screenToWorldY(float x, float y){
-        return (y-Y_OFFSET) / TILE_HEIGHT -  (x -X_OFFSET) / TILE_WIDTH + 0.5f;
-    }
-    public Vector2f screenToWorld(float x,float y){
-        return new Vector2f(screenToWorldX(x,y),screenToWorldY(x,y));
+    public void drawMouseSnap(){
+        Vector2f mousePos = new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY());
+        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), screenToWorldCell(mousePos));
     }
 
 
 
-    public float worldToScreenX(float x,float y){
-        return TILE_WIDTH * (x * 0.496f   - y  * 0.496f) + TILE_WIDTH/2;
-    }
-    public float worldToScreenY(float x,float y){
-        return  TILE_HEIGHT * (x * 0.5f  + y  * 0.5f);
-    }
-
-    public Vector2f worldToScreen(float x,float y){
-
-        return new Vector2f(worldToScreenX(x,y) + X_OFFSET, worldToScreenY(x,y) + Y_OFFSET);
-    }
-
-
-    @Override
-    public void init() {
-        loadResources();
-        this.load();
-        //imGui
-        gui = new ImGuiLayer(windowPtr);
-        gui.initImGui();
-
-        this.camera = new Camera(new Vector2f(0,0));
-        if(!gameObjects.isEmpty() && gameObjects.get(0).getName().equals("valerie") ){
-            this.ob1 = gameObjects.get(0);
-            activeGameObject = ob1;
-        }
-    }
 
 
 
     @Override
-    public void update(double dt) {
-        DebugDraw.beginFrame();
+    public void update(float dt) {
+        camera.moveCamera(dt);
         drawGrid();
-        mouseControls.update(dt);
+        DebugDraw.draw();
+
         for (GameObject ob : gameObjects){
             ob.update(dt);
         }
-        frameCount++;
+        frameCount += dt;
         if(!gameObjects.isEmpty()){
 
             SpriteSheetList spriteSheets = ob1.getComponent(SpriteSheetList.class);
             if(Window.getWindow().leftClicked ) {
-                clickX = Window.getWindow().clickX - 50;
+                clickX  = Window.getWindow().clickX - 50;
                 clickY = Window.getWindow().clickY;
                 float distance = (float) Math.sqrt(Math.pow(ob1.getX() - clickX,2)
                         + Math.pow(ob1.getY() - clickY,2));
@@ -217,11 +197,11 @@ public class WorldEditorScene extends Scene {
                     spriteIndex2 = 0;
                 }
                 if(Math.abs(ob1.getX() - clickX) >= 2) {
-                    ob1.moveX(stepX * 4);
+                    ob1.moveX(stepX * 4 * dt);
 
                 }
                 if(Math.abs(ob1.getY() - clickY ) >= 2) {
-                    ob1.moveY(stepY * 4);
+                    ob1.moveY(stepY * 4 * dt );
 
                 }
             } else {
@@ -241,12 +221,35 @@ public class WorldEditorScene extends Scene {
             ob1.update(dt);
         }
 
-        DebugDraw.draw();
+
+
         this.renderer.render();
+        DebugDraw.beginFrame();
+        drawMouseSnap();
+        DebugDraw.draw();
         gui.drawGui(Window.getCurrentScene());
     }
 
 
+    @Override
+    public void init() {
+        loadResources();
+        this.load();
+        guiSprites = AssetPool.getSpriteSheet("src/main/resources/sprites/Idle_KG_2.png").getSprites();
+        guiSprites.addAll(AssetPool.getSpriteSheet("src/main/resources/sprites/Walking_KG_2_left.png").getSprites());
+        guiSprites.addAll(AssetPool.getSpriteSheet("src/main/resources/sprites/ground1.png").getSprites());
+
+        //imGui
+        gui = new ImGuiLayer(windowPtr);
+        gui.initImGui();
+
+        this.camera = new Camera(new Vector2f(0,0));
+        if(!gameObjects.isEmpty() && gameObjects.get(0).getName().equals("valerie") ){
+            this.ob1 = gameObjects.get(0);
+            activeGameObject = ob1;
+        }
+
+    }
 
     private void loadResources() {
         savedWorldPath = "world.txt";
@@ -274,4 +277,16 @@ public class WorldEditorScene extends Scene {
                 new SpriteSheet(name ,AssetPool.getTexture(name),
                         960, 480, 1, 0));
     }
+
+    public Vector2f cellSnapToGrid(float cellX, float cellY){
+        return snapToGrid(worldToScreenX(cellX,cellY),worldToScreenY(cellX,cellY));
+    }
+    public Vector2f snapToGrid(float screenX, float screenY){
+        return screenToWorldCell(screenX,screenY).add(-TILE_WIDTH /2 ,0);
+    }
+
+    public Vector2f snapToGrid(Vector2f screenPos){
+        return snapToGrid(screenPos.x,screenPos.y) ;
+    }
+
 }
