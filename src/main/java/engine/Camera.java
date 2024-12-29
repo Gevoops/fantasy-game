@@ -120,8 +120,8 @@ public class Camera {
 
     public void moveCamera(float dt){
         Vector2f move = new Vector2f(0,0);
-        float acceleration = cameraAcceleration * dt;
-        float speed  = cameraSpeed * dt;
+        float acceleration = cameraAcceleration * dt ;
+        float speed  = cameraSpeed * dt ;
         if(KeyListener.isKeyPressed(GLFW_KEY_A)){
             move.x -= speed;
         }

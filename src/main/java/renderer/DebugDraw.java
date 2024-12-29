@@ -29,6 +29,8 @@ public class DebugDraw {
 
     private static boolean started = false;
 
+   // private static final Vector3f DEFAULT_COLOR = new Vector3f(0,1,0);
+
     public static void start(){
         started = true;
         //Generate the vao
@@ -52,7 +54,6 @@ public class DebugDraw {
 
     }
     public static void beginFrame(){
-        glLineWidth(2f * Window.getScene().getCamera().getZoom());
         //Remove expired lines
         for (int i = 0; i < lines.size(); i++){
             if(lines.get(i).beginFrame() <= 0){
@@ -66,6 +67,7 @@ public class DebugDraw {
         if(!started){
             start();
         }
+        glLineWidth(2f * Window.getScene().getCamera().getZoom());
         if(lines.size() == 0) {return;}
         int index = 0;
         for (Line2D line : lines){
@@ -140,9 +142,6 @@ public class DebugDraw {
     // Box2D methods
     // =============================================================
     public static void addBox2D(Vector2f center, Vector2f dimensions, float angle, Vector3f color,  int lifetime){
-        if (lines.size() >= MAX_LINES){
-            return;
-        }
         Vector2f min = new Vector2f(center).sub(new Vector2f(dimensions).mul(0.5f));
         Vector2f max = new Vector2f(center).add(new Vector2f(dimensions).mul(0.5f));
 
@@ -163,9 +162,44 @@ public class DebugDraw {
         addLine2D(vertices[3],vertices[0],color,lifetime);
 
     }
+
+    public static void addBox2D(Vector2f center, Vector2f dimensions, float angle, Vector3f color) {
+        addBox2D(center,dimensions,angle,color,1);
+    }
+    public static void addBox2D(Vector2f center, Vector2f dimensions, float angle) {
+        addBox2D(center,dimensions,angle,new Vector3f(0,1,0),1);
+    }
+    public static void addBox2D(Float centerX,Float centerY, Float width, Float height, float angle, Vector3f color,  int lifetime) {
+        addBox2D(new Vector2f(centerX,centerY),new Vector2f(width,height),angle,color,lifetime);
+    }
+    public static void addBox2D(Float centerX,Float centerY, Float width, Float height, float angle,  int lifetime) {
+        addBox2D(new Vector2f(centerX,centerY),new Vector2f(width,height),angle,new Vector3f(0,1,0),lifetime);
+    }public static void addBox2D(Float centerX,Float centerY, Float width, Float height, float angle) {
+        addBox2D(new Vector2f(centerX,centerY),new Vector2f(width,height),angle,new Vector3f(0,1,0),1);
+    }
+
+
     // =============================================================
     // Circle2D methods
     // =============================================================
+    public static void addCircle2D(Vector2f center,  float radius, Vector3f color,  int lifetime){
+        Vector2f[] points = new Vector2f[(int)(radius / 3)];
+        float increment = 360f / points.length;
+        float currentAngle = 0;
+
+        for (int i = 0; i < points.length; i ++) {
+            Vector2f tmp = new Vector2f(radius,0);
+            rotate(tmp,currentAngle,new Vector2f());
+            points[i] = new Vector2f(tmp.add(center));
+
+            if (i > 0) {
+                addLine2D(points[i - 1],points[i],color,lifetime);
+            }
+            currentAngle += increment;
+        }
+        addLine2D(points[0],points[points.length -1],color,lifetime);
+
+    }
 
 
     // =============================================================
@@ -173,26 +207,11 @@ public class DebugDraw {
     // =============================================================
 
     private static void rotate(Vector2f vec, float angleDeg, Vector2f origin) {
-        /*float x = vec.x - origin.x;
-        float y = vec.y - origin.y;
-
-        float cos = (float)Math.cos(Math.toRadians(angleDeg));
-        float sin = (float)Math.sin(Math.toRadians(angleDeg));
-
-        float xPrime = (x * cos) - (y * sin);
-        float yPrime = (x * sin) + (y * cos);
-
-        xPrime += origin.x;
-        yPrime += origin.y;
-
-        vec.x = xPrime;
-        vec.y = yPrime;*/
         vec.sub(origin);
         Vector3f vec1 = new Vector3f(vec.x,vec.y,0);
         vec1.rotateAxis((float) Math.toRadians(angleDeg),0f,0f,1f);
         vec.x = vec1.x;
         vec.y = vec1.y;
         vec.add(origin);
-
     }
 }

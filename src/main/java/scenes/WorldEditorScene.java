@@ -30,10 +30,11 @@ public class WorldEditorScene extends Scene {
     float stepY = 0;
     boolean start = true;
     private long windowPtr = Window.getWindow().getWindowPtr();
+    private float deg = 0;
 
     private ImGuiLayer gui;
     GameObject ob1;
-    MouseController mouseController = new MouseController();
+
 
     private ArrayList<Sprite> guiSprites;
 
@@ -75,7 +76,7 @@ public class WorldEditorScene extends Scene {
             ImGui.pushID(i);
             if(ImGui.imageButton(id,spriteWidth,spriteHeight,coords[2].x,coords[0].y,coords[0].x,coords[2].y)) {
                 GameObject ob = Prefabs.generateSpriteObject(sprite,spriteWidth,spriteHeight);
-                mouseController.liftObject(ob);
+                Window.mouseController.liftObject(ob);
             }
             ImGui.popID();
 
@@ -141,11 +142,12 @@ public class WorldEditorScene extends Scene {
         }
         DebugDraw.addLine2D(worldToScreen(0,0),worldToScreen(-2,-2));
 
-        DebugDraw.addBox2D(worldToScreen(-2,-2),new Vector2f(100,100),45,color,1);
     }
     public void drawMouseSnap(){
         Vector2f mousePos = new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY());
         DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), screenToWorldCell(mousePos));
+
+
     }
 
 
@@ -155,8 +157,10 @@ public class WorldEditorScene extends Scene {
 
     @Override
     public void update(float dt) {
+        DebugDraw.addCircle2D(worldToScreen(0,0), 100, new Vector3f(0,1,0),1);
+        deg += (dt ) % 360;
+        Window.mouseController.update(dt);
         camera.moveCamera(dt);
-        mouseController.update(dt);
         for (GameObject ob : gameObjects){
             ob.update(dt);
         }
@@ -212,6 +216,7 @@ public class WorldEditorScene extends Scene {
                 }
             }
             ob1.update(dt);
+
         }
     }
 
@@ -237,12 +242,16 @@ public class WorldEditorScene extends Scene {
         //imGui
         gui = new ImGuiLayer(windowPtr);
         gui.initImGui();
-
         this.camera = new Camera(new Vector2f(0,0));
+
         if(!gameObjects.isEmpty() && gameObjects.get(0).getName().equals("valerie") ){
             this.ob1 = gameObjects.get(0);
             activeGameObject = ob1;
+            camera.setViewPoint(new Vector2f(ob1.getTransform().position).sub(camera.getProjectionSize().x /2f, camera.getProjectionSize().y /2f ));
         }
+
+
+
 
     }
 

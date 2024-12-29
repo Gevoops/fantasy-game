@@ -1,6 +1,7 @@
 package engine;
 
 import com.sun.marlin.Version;
+import components.MouseController;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import renderer.DebugDraw;
@@ -30,6 +31,7 @@ public class Window {
 
     private static Scene currentScene ;
     public static final double FPS = 60;
+    public static MouseController mouseController = new MouseController();
 
 
     public static void changeScene(int newScene){
@@ -126,19 +128,14 @@ public class Window {
     }
 
     public void gameLoop() {
-        double beginTime = Time.getTime();
-        double endTime;
-        double dt = 0;
-        double accumulateTime = 1;
-
-
-
-
+        float beginTime = Time.getTime();
+        float endTime;
+        float dt = 0;
         while (!glfwWindowShouldClose(glfwWindow)){
 
             glfwPollEvents();
-            glClear(GL_COLOR_BUFFER_BIT);
             glClearColor(r, g, b, a);
+            glClear(GL_COLOR_BUFFER_BIT);
 
             if(MouseListener.mouseButtonDown(0)) {
                 this.clickX = MouseListener.getOrthoX();
@@ -146,21 +143,17 @@ public class Window {
                 this.leftClicked = true;
             }
 
+            currentScene.update(dt * 60);
 
-            if(accumulateTime > 1/FPS){
-                accumulateTime -= 1/FPS;
-                currentScene.update(1);
-            }
-
+            mouseController.update(dt);
             currentScene.render();
 
-            glfwSwapBuffers(glfwWindow);
 
-            endTime = (float) Time.getTime();
+            glfwSwapBuffers(glfwWindow);
+            endTime = Time.getTime();
             dt = endTime - beginTime;
             beginTime = endTime;
             Time.timePassed += dt;
-            accumulateTime += dt;
             MouseListener.endFrame();
             leftClicked = false;
         }
