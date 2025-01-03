@@ -2,7 +2,6 @@ package renderer;
 
 import org.lwjgl.BufferUtils;
 
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
@@ -12,17 +11,17 @@ import static org.lwjgl.stb.STBImage.stbi_load;
 
 public class Texture {
     private String filepath = null;
-    private int texId;
-    private int width;
-    private int height;
+    private transient int texID;
+    private int width, height;
+
     public Texture() {
     }
 
     public Texture(String filepath){
         this.filepath = filepath;
         //Generate texture on GPU
-        texId = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, texId);
+        texID = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, texID);
 
         // set texture paramaters
         // Repeat image in both directions
@@ -59,11 +58,24 @@ public class Texture {
         stbi_image_free(image);
     }
 
-    public void bind() {
-        glBindTexture(GL_TEXTURE_2D, texId);
+    public Texture(int width, int height){
+        this.filepath = "Generated";
+        //Generate texture on GPU
+        texID = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, texID);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height,
+                        0, GL_RGB, GL_UNSIGNED_BYTE, 0);
     }
-    public int getTexId() {
-        return this.texId;
+
+    public void bind() {
+        glBindTexture(GL_TEXTURE_2D, texID);
+    }
+    public int getID() {
+        return this.texID;
     }
 
     public void unbind() {
@@ -81,4 +93,16 @@ public class Texture {
     public String getFilepath() {
         return filepath;
     }
+
+    public boolean equals(Object ob){
+        if(ob == null) return false;
+        if (! (ob instanceof Texture)) return  false;
+        Texture obTex = (Texture) ob;
+        return  obTex.getWidth() == this.getWidth() &&
+                obTex.getHeight() == this.getHeight() &&
+                obTex.texID == this.texID &&
+                obTex.filepath.equals(this.filepath);
+    }
+
+
 }

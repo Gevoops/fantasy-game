@@ -99,6 +99,7 @@ public abstract class Scene {
         }
     }
     public void load(){
+        loadResources();
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .registerTypeAdapter(GameObject.class, new GameObjectSerializer())
@@ -139,6 +140,8 @@ public abstract class Scene {
     public abstract void update(float dt);
 
     public abstract void render();
+
+    protected abstract void loadResources();
 
     public Camera getCamera() {
         return this.camera;

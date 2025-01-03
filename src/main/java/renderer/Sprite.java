@@ -70,7 +70,7 @@ public class Sprite{
     }
 
     public int getTexId(){
-        return texture == null ? -1 : texture.getTexId();
+        return texture == null ? -1 : texture.getID();
     }
 
     public String getSpriteSheetName() {

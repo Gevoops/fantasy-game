@@ -5,6 +5,7 @@ import components.MouseController;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import renderer.DebugDraw;
+import renderer.Framebuffer;
 import scenes.GameScene;
 import scenes.Scene;
 import scenes.WorldEditorScene;
@@ -24,6 +25,7 @@ public class Window {
     public boolean leftClicked = false;
     public float clickX;
     public float clickY;
+    private Framebuffer framebuffer;
 
     public float r = 0.4f,g = 0.5f,b = 0.7f,a = 1.0f;
 
@@ -32,6 +34,7 @@ public class Window {
     private static Scene currentScene ;
     public static final double FPS = 60;
     public static MouseController mouseController = new MouseController();
+    private static ImGuiLayer gui;
 
 
     public static void changeScene(int newScene){
@@ -123,6 +126,12 @@ public class Window {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        this.framebuffer = new Framebuffer(2560,1440);
+        glViewport(0,0,2560,1440);
+
+        gui = new ImGuiLayer(glfwWindow);
+        gui.initImGui();
+
         Window.changeScene(0);
 
     }
@@ -134,20 +143,29 @@ public class Window {
         while (!glfwWindowShouldClose(glfwWindow)){
 
             glfwPollEvents();
-            glClearColor(r, g, b, a);
-            glClear(GL_COLOR_BUFFER_BIT);
-
             if(MouseListener.mouseButtonDown(0)) {
                 this.clickX = MouseListener.getOrthoX();
                 this.clickY = MouseListener.getOrthoY();
                 this.leftClicked = true;
             }
 
+            mouseController.update(dt);
+
+
+            this.framebuffer.bind();
+            glClearColor(r, g, b, a);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+
             currentScene.update(dt * 60);
 
-            mouseController.update(dt);
-            currentScene.render();
 
+
+
+            currentScene.render();
+            this.framebuffer.unbind();
+
+            gui.drawGui(currentScene);
 
             glfwSwapBuffers(glfwWindow);
             endTime = Time.getTime();
@@ -180,6 +198,14 @@ public class Window {
 
     public static Scene getCurrentScene() {
         return currentScene;
+    }
+
+    public static Framebuffer getFramebuffer(){
+        return Window.getWindow().framebuffer;
+    }
+
+    public static float getTargetAspectRatio(){
+        return 16/9f;
     }
 }
 

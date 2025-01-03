@@ -31,8 +31,8 @@ public class GameObjectSerializer implements  JsonDeserializer<GameObject> {
             }
             ob1.addComponent(c);
         }
-        if (!sprite.getSpriteSheetName().equals("")) {
-            ob1.setSprite(AssetPool.getSpriteSheet(sprite.getSpriteSheetName()).getSprite(sprite.getSpriteSheetIndex()));
+        if (sprite != null && sprite.getTexture() != null){
+            sprite.setTexture(AssetPool.getTexture(sprite.getTexture().getFilepath()));
         }
         return ob1;
     }

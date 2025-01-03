@@ -19,4 +19,9 @@ public class GameScene extends Scene {
     public void render() {
 
     }
+
+    @Override
+    protected void loadResources() {
+
+    }
 }

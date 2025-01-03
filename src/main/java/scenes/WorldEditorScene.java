@@ -228,34 +228,28 @@ public class WorldEditorScene extends Scene {
         renderer.render();
         drawMouseSnap();
         DebugDraw.draw();
-        gui.drawGui(Window.getCurrentScene());
+
     }
 
     @Override
     public void init() {
-        loadResources();
         this.load();
+        this.camera = new Camera(new Vector2f(0,0));
         guiSprites = AssetPool.getSpriteSheet("src/main/resources/sprites/Idle_KG_2.png").getSprites();
         guiSprites.addAll(AssetPool.getSpriteSheet("src/main/resources/sprites/Walking_KG_2_left.png").getSprites());
         guiSprites.addAll(AssetPool.getSpriteSheet("src/main/resources/sprites/ground1.png").getSprites());
 
-        //imGui
-        gui = new ImGuiLayer(windowPtr);
-        gui.initImGui();
-        this.camera = new Camera(new Vector2f(0,0));
 
-        if(!gameObjects.isEmpty() && gameObjects.get(0).getName().equals("valerie") ){
-            this.ob1 = gameObjects.get(0);
-            activeGameObject = ob1;
+        if(!gameObjects.isEmpty()){
+            activeGameObject = gameObjects.get(0);
+            ob1 = activeGameObject;
             camera.setViewPoint(new Vector2f(ob1.getTransform().position).sub(camera.getProjectionSize().x /2f, camera.getProjectionSize().y /2f ));
         }
 
 
-
-
     }
 
-    private void loadResources() {
+    protected void loadResources() {
         savedWorldPath = "world.txt";
 
         AssetPool.getShader("src/main/resources/shaders/default.glsl");

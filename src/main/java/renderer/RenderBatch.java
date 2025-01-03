@@ -157,7 +157,7 @@ public class RenderBatch {
         //textures slot 0 is reserved for color.
         if(sprite.getTexture() != null) {
             for (int i = 0; i < textures.size(); i++) {
-                if(textures.get(i) == sprite.getTexture()) {
+                if(textures.get(i).equals(sprite.getTexture())) {
                     texId = i + 1;
                     break;
                 }
@@ -222,7 +222,7 @@ public class RenderBatch {
         shader.use();
         shader.uploadMat4f("uProjection", Window.getScene().getCamera().getProjectionMatrix());
         shader.uploadMat4f("uView", Window.getScene().getCamera().getViewMatrix());
-        shader.uploadFloat("uTime", (float) Time.getTime());
+        shader.uploadFloat("uTime", Time.getTime());
         shader.uploadMat4f("scale", Window.getScene().getCamera().getScaleMatrix());
         for(int i =0; i < textures.size(); i ++) {
             glActiveTexture(GL_TEXTURE0 + i + 1);

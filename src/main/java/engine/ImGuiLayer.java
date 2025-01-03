@@ -1,12 +1,17 @@
 package engine;
 
+import editor.GameViewWindow;
 import imgui.ImFontAtlas;
 import imgui.ImFontConfig;
 import imgui.ImGui;
 import imgui.ImGuiIO;
+import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiConfigFlags;
+import imgui.flag.ImGuiStyleVar;
+import imgui.flag.ImGuiWindowFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
+import imgui.type.ImBoolean;
 import org.lwjgl.glfw.GLFW;
 import scenes.Scene;
 
@@ -20,16 +25,21 @@ public class ImGuiLayer {
         this.windowPtr = windowPtr;
     }
     public void drawGui(Scene currentScene){
-        beginDraw(); // must be called at the beging of this method
+        beginDraw();
+        setupDockSpace();
         currentScene.sceneImGui();
-        endDraw(); // must be called at the end of this method
+        GameViewWindow.imGui();
+        ImGui.end();
+        render();
     }
 
     public void initImGui(){
 
         ImGui.createContext();
         ImGuiIO io = ImGui.getIO();
-        io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
+        io.setConfigFlags(ImGuiConfigFlags.DockingEnable);
+        //io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
+
         imGuiGlfw.init(windowPtr,true);
 
 
@@ -64,7 +74,7 @@ public class ImGuiLayer {
         ImGui.newFrame();
     }
 
-    public void endDraw(){
+    public void render(){
         ImGui.render();
         this.getImGuiGl3().renderDrawData(ImGui.getDrawData());
 
@@ -73,5 +83,23 @@ public class ImGuiLayer {
             ImGui.renderPlatformWindowsDefault();
             GLFW.glfwMakeContextCurrent(windowPtr);
         }
+    }
+
+    private void setupDockSpace(){
+        int windowFlags = ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking;
+        ImGui.setNextWindowPos(0,0, ImGuiCond.Always);
+        ImGui.setNextWindowSize(Window.getWidth(),Window.getHeight());
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowRounding,0);
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize,0);
+        windowFlags |= ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoCollapse |
+                       ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
+                       ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus;
+
+        ImGui.begin("Dockspace Demo", new ImBoolean(true),windowFlags );
+        ImGui.popStyleVar(2);
+        // DockSpace
+
+        ImGui.dockSpace(ImGui.getID("Dockspace"));
+
     }
 }
