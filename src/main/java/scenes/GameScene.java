@@ -1,13 +1,19 @@
 package scenes;
 
+import editor.GameViewWindow;
 import engine.Window;
 
 public class GameScene extends Scene {
     public GameScene() {
         System.out.println("inside level Scene");
-        Window.getWindow().r = 1;
-        Window.getWindow().g = 1;
-        Window.getWindow().b = 1;
+    }
+
+
+
+
+    @Override
+    public GameViewWindow getGameViewport() {
+        return null;
     }
 
     @Override

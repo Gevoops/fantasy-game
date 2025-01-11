@@ -2,8 +2,10 @@ package engine;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import static util.Settings.SCREEN_WIDTH;
 
 import imgui.ImGui;
+import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 public class MouseListener {
@@ -15,6 +17,8 @@ public class MouseListener {
     private final static int windowWidth = Window.getWidth();
     private final static int windowHeight = Window.getHeight();
 
+    private Vector2f gameViewportPos = new Vector2f();
+    private Vector2f gameViewportSize = new Vector2f();
 
     private MouseListener() {
         this.scrollX = 0.0;
@@ -41,7 +45,7 @@ public class MouseListener {
     }
 
     public static void mouseButtonCallback(long window, int button, int action, int mod) {
-        if (button < get().mouseButtonPressed.length && !ImGui.getIO().getWantCaptureMouse()) {
+        if (button < get().mouseButtonPressed.length && (!ImGui.getIO().getWantCaptureMouse() || Window.getScene().getGameViewport().wantCaptureMouse())) {
             if (action == GLFW_PRESS) {
                 get().mouseButtonPressed[button] = true;
             } else if (action == GLFW_RELEASE) {
@@ -70,22 +74,36 @@ public class MouseListener {
         return (float)get().y;
     }
 
-    public static float getOrthoX() {
-        float currentX = getX()/(float)windowWidth * 2f - 1f;
 
+    public static float getViewPortX(){
+        float currentX = getX() - get().gameViewportPos.x ;
+        currentX = (currentX/get().gameViewportSize.x) * SCREEN_WIDTH;
+        return currentX;
+    }
+    public static float getViewPortY(){
+        float currentY = getY() - get().gameViewportPos.y;
+        currentY = 1440f - (currentY/get().gameViewportSize.y) * 1440f;
+        return  currentY;
+    }
+
+    public static float getOrthoX() {
+        float currentX = getX() - get().gameViewportPos.x ;
+        currentX = (currentX/get().gameViewportSize.x) * 2f - 1f;
         Vector4f tmp = new Vector4f(currentX,0,0,1);
-        tmp.mul(Window.getScene().getCamera().getInvScaleMatrix()).mul(Window.getScene().getCamera().getInvProjectionMatrix()).mul(Window.getScene().getCamera().getInvViewMatrix());
+        Camera camera = Window.getScene().getCamera();
+        tmp.mul(camera.getInvScaleMatrix()).mul(camera.getInvProjectionMatrix()).mul(camera.getInvViewMatrix());
         currentX = tmp.x;
         return currentX;
     }
 
     public static float getOrthoY() {
-        float currentY = getY()/(float)windowHeight * 2f - 1f;
-        currentY += 2 -  2 *Window.getHeight() /(float)windowHeight;
+        float currentY = getY() - get().gameViewportPos.y;
+        currentY = (currentY/get().gameViewportSize.y) * 2f - 1f;
         currentY *= -1; //open gl flips images, so flip back
 
         Vector4f tmp = new Vector4f(0,currentY,0,1);
-        tmp.mul(Window.getScene().getCamera().getInvScaleMatrix()).mul(Window.getScene().getCamera().getInvProjectionMatrix()).mul(Window.getScene().getCamera().getInvViewMatrix());
+        Camera camera = Window.getScene().getCamera();
+        tmp.mul(camera.getInvScaleMatrix()).mul(camera.getInvProjectionMatrix()).mul(camera.getInvViewMatrix());
         currentY = tmp.y;
         return currentY;
     }
@@ -115,6 +133,14 @@ public class MouseListener {
             return get().mouseButtonPressed[button];
         }
         else { return false;}
+    }
+
+    public void setGameViewportPos(Vector2f gameViewportPos) {
+        this.gameViewportPos.set( gameViewportPos);
+    }
+
+    public void setGameViewportSize(Vector2f gameViewportSize) {
+        this.gameViewportSize.set(gameViewportSize);
     }
 }
 

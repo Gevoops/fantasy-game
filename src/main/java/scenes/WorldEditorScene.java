@@ -1,8 +1,9 @@
 package scenes;
 
 
-import components.MouseController;
+import com.google.gson.internal.NumberLimits;
 import components.RigidBody;
+import editor.GameViewWindow;
 import engine.*;
 
 
@@ -19,6 +20,9 @@ import util.AssetPool;
 
 import java.util.ArrayList;
 
+import static util.Settings.TILE_HEIGHT;
+import static util.Settings.TILE_WIDTH;
+
 
 public class WorldEditorScene extends Scene {
     double frameCount = 0;
@@ -30,28 +34,18 @@ public class WorldEditorScene extends Scene {
     float stepY = 0;
     boolean start = true;
     private long windowPtr = Window.getWindow().getWindowPtr();
-    private float deg = 0;
-
+    private GameViewWindow gameViewWindow;
     private ImGuiLayer gui;
     GameObject ob1;
-
-
     private ArrayList<Sprite> guiSprites;
-
-
-
-
-
-
-
 
     public WorldEditorScene() {
 
     }
     @Override
     public void imGui() {
+        gameViewWindow.imGui();
         ImGui.begin("editor gui");
-
         ImVec2 windowPos = new ImVec2();
         ImGui.getWindowPos(windowPos);
         ImVec2 windowSize = new ImVec2();
@@ -90,7 +84,7 @@ public class WorldEditorScene extends Scene {
         }
 
         if (ImGui.button("create")) {
-            this.ob1 = new GameObject();
+            this.ob1 = new GameObject("valerie", null,null,0);
             ob1.setName("valerie");
             ob1.setSprite(AssetPool.getSpriteSheet("src/main/resources/sprites/Idle_KG_2.png").getSprite(0));
             ob1.setTransform(new Transform(new Vector2f(300, 300), new Vector2f(100, 64)));
@@ -158,7 +152,6 @@ public class WorldEditorScene extends Scene {
     @Override
     public void update(float dt) {
         DebugDraw.addCircle2D(worldToScreen(0,0), 100, new Vector3f(0,1,0),1);
-        deg += (dt ) % 360;
         Window.mouseController.update(dt);
         camera.moveCamera(dt);
         for (GameObject ob : gameObjects){
@@ -234,6 +227,7 @@ public class WorldEditorScene extends Scene {
     @Override
     public void init() {
         this.load();
+        this.gameViewWindow = new GameViewWindow();
         this.camera = new Camera(new Vector2f(0,0));
         guiSprites = AssetPool.getSpriteSheet("src/main/resources/sprites/Idle_KG_2.png").getSprites();
         guiSprites.addAll(AssetPool.getSpriteSheet("src/main/resources/sprites/Walking_KG_2_left.png").getSprites());
@@ -246,6 +240,7 @@ public class WorldEditorScene extends Scene {
             camera.setViewPoint(new Vector2f(ob1.getTransform().position).sub(camera.getProjectionSize().x /2f, camera.getProjectionSize().y /2f ));
         }
 
+        Window.getWindow().setFramebuffer(gameViewWindow.getFramebuffer());
 
     }
 
@@ -287,4 +282,7 @@ public class WorldEditorScene extends Scene {
         return snapToGrid(screenPos.x,screenPos.y) ;
     }
 
+    public GameViewWindow getGameViewport() {
+        return gameViewWindow;
+    }
 }

@@ -4,6 +4,7 @@ layout (location=0) in vec3 aPos;
 layout (location=1) in vec4 aColor;
 layout (location=2) in vec2 aTexCoords;
 layout (location=3) in float aTexId;
+layout (location=4) in float aEntityId;
 
 uniform mat4 uProjection;
 uniform mat4 uView;
@@ -14,13 +15,15 @@ uniform mat4 scale;
 out vec4 fColor;
 out vec2 fTexCoords;
 out float fTexId;
-
+out float fEntityId;
 
 void main()
 {
     fColor = aColor;
     fTexCoords = aTexCoords;
     fTexId = aTexId;
+    fEntityId = aEntityId;
+
     gl_Position = scale * uProjection * uView * vec4(aPos, 1.0);
 }
 
@@ -30,20 +33,26 @@ void main()
 in vec4 fColor;
 in vec2 fTexCoords;
 in float fTexId;
+in float fEntityId;
 
 uniform sampler2D uTextures[8];
 
 
-out vec4 color;
+out vec3 color;
 
 void main()
 {
+    vec4 texColor = vec4(1,1,1,1);
     if(fTexId > 0){
         int id = int(fTexId);
-        color = fColor * texture(uTextures[id],fTexCoords);
-    } else {
-        color = fColor;
+        texColor = fColor * texture(uTextures[id],fTexCoords);
     }
+
+    if(texColor.a < 0.5){
+        discard;
+    }
+
+    color = vec3(fEntityId, fEntityId, fEntityId);
 }
 
 

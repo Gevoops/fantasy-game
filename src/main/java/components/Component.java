@@ -10,7 +10,7 @@ import java.lang.reflect.Modifier;
 
 public abstract class Component {
     private static int ID_COUNTER = 0;
-    private int uid = -1;
+    protected int compID = -1;
 
     public transient GameObject gameObject = null;
 
@@ -78,13 +78,13 @@ public abstract class Component {
     }
 
     public void generateId(){
-        if(this.uid == -1){
-            this.uid = ID_COUNTER++;
+        if(this.compID == -1){
+            this.compID = ID_COUNTER++;
         }
     }
 
-    public int getUid(){
-        return uid;
+    public int getCompID(){
+        return compID;
     }
 
     public static void init(int maxId){

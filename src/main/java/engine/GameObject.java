@@ -2,16 +2,14 @@ package engine;
 
 import components.Component;
 import org.joml.Vector2f;
-import org.joml.Vector2i;
 import renderer.Transform;
 import renderer.Sprite;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public class GameObject {
     private static int ID_COUNTER = 0;
-    private int uid = - 1;
+    private int objID = -1;
     protected String name = "default";
     private Sprite sprite = null;
     private Transform transform = null;
@@ -31,8 +29,7 @@ public class GameObject {
             this.transform = transform;
             this.lastTransform = transform.copy();
             this.zIndex = zIndex;
-
-            this.uid = ID_COUNTER++;
+            this.objID = ID_COUNTER++;
     }
 
     public void update(double dt) {
@@ -54,8 +51,6 @@ public class GameObject {
     public boolean isDirty() {
         return isDirty;
     }
-
-
 
     public void imGui(){
         for (Component c : components){
@@ -93,11 +88,9 @@ public class GameObject {
         this.isDirty = false;
     }
 
-
     public void setName(String name) {
         this.name = name;
     }
-
 
     public void setTransform(Transform transform) {
         this.transform = transform;
@@ -129,53 +122,42 @@ public class GameObject {
     public int getZIndex() {
         return this.zIndex;
     }
-
-
     public String getName() {
         return name;
     }
-
     public Transform getTransform() {
         return transform;
     }
-
     public Transform getLastTransform() {
         return lastTransform;
     }
-
     public void moveX(float offset){
         transform.position.x += offset;
     }
     public void moveY(float offset){
         transform.position.y += offset;
     }
-
     public float getX(){
         return transform.position.x;
     }
     public float getY(){
         return  transform.position.y;
     }
-
     public void setX(float x){
         this.transform.position.x = x;
     }
     public void setY(float y){
         this.transform.position.y = y;
     }
-
     public void setPosition(Vector2f position){
         this.transform.setPosition(position);
     }
-
     public static void init(int maxId){
         ID_COUNTER = maxId;
     }
-
-    public int getUid(){
-        return uid;
+    public int getObjID(){
+        return objID;
     }
-
     public List<Component> getComponents() {
         return components;
     }

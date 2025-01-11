@@ -3,11 +3,13 @@ package renderer;
 
 import components.Component;
 import org.joml.Vector2f;
+import renderer.Sprite;
+import renderer.Texture;
 
 import java.util.ArrayList;
 
 
-public class SpriteSheet extends Component {
+public class SpriteSheet {
     private String name = "";
     private Texture texture = null;
     private ArrayList<Sprite> sprites = null;

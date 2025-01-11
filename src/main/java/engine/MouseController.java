@@ -1,13 +1,10 @@
-package components;
+package engine;
 
-import engine.GameObject;
-import engine.MouseListener;
-import engine.Window;
 import scenes.WorldEditorScene;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 
-public class MouseController extends Component{
+public class MouseController{
     GameObject liftedObject = null;
     private int mouseCaptureMode = 0;
     private final int MAX_MODE = 2;
@@ -38,7 +35,6 @@ public class MouseController extends Component{
         this.liftedObject = null;
     }
 
-    @Override
     public void update(double dt){
         if(liftedObject != null){
             liftedObject.setX(MouseListener.getOrthoX() - liftedObject.getTransform().scale.x /2);
@@ -49,6 +45,6 @@ public class MouseController extends Component{
                 place();
             }
         }
-        Window.getScene().getCamera().scaleUpdate(MouseListener.getScrollY());
+        Window.getScene().getCamera().zoom(MouseListener.getScrollY());
     }
 }

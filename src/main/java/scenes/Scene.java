@@ -2,6 +2,7 @@ package scenes;
 
 import components.Component;
 import components.ComponentSerializer;
+import editor.GameViewWindow;
 import engine.Camera;
 import engine.GameObjectSerializer;
 import exceptions.NullSpriteException;
@@ -19,6 +20,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import static util.Settings.TILE_HEIGHT;
+import static util.Settings.TILE_WIDTH;
+
 public abstract class Scene {
 
     protected Renderer renderer = new Renderer();
@@ -28,8 +32,6 @@ public abstract class Scene {
     public ArrayList<GameObject> gameObjects = new ArrayList<>();
     protected boolean levelLoaded = false;
     protected String savedWorldPath;
-    protected final float TILE_WIDTH = 128f;
-    protected final float TILE_HEIGHT = 64f;
     protected final float X_OFFSET = 0;
     protected final float Y_OFFSET = 0;
 
@@ -84,6 +86,8 @@ public abstract class Scene {
 
     }
 
+    public abstract GameViewWindow getGameViewport();
+
     public void saveExit(){
         Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
@@ -119,12 +123,12 @@ public abstract class Scene {
             for (GameObject go : objects) {
                 addGameObjectToScene(go);
                 for (Component c : go.getComponents()){
-                    if(c.getUid() > maxCompId){
-                        maxCompId = c.getUid();
+                    if(c.getCompID() > maxCompId){
+                        maxCompId = c.getCompID();
                     }
                 }
-                if (go.getUid() > maxObjId){
-                    maxObjId = go.getUid();
+                if (go.getObjID() > maxObjId){
+                    maxObjId = go.getObjID();
                 }
             }
             maxObjId++;
@@ -182,5 +186,9 @@ public abstract class Scene {
     public Vector2f worldToScreen(Vector2f worldPos){
 
         return new Vector2f(worldToScreenX(worldPos.x,worldPos.y) + X_OFFSET, worldToScreenY(worldPos.x,worldPos.y) + Y_OFFSET);
+    }
+
+    public Renderer getRenderer() {
+        return renderer;
     }
 }

@@ -12,7 +12,7 @@ public class Camera {
     private Matrix4f viewMatrix, invViewMatrix, invScaleMatrix;
     private Matrix4f scaleMatrix;
     private Vector2f viewPoint;
-    private Vector2f projectionSize = new Vector2f(64.0f * 30f,64.0f * 15.0f);
+    private Vector2f projectionSize = new Vector2f(64.0f * 16f * 2 ,64.0f * 9.0f * 2);
     private float zoom = 1f;
     private float cameraSpeed  = 1;
     private float cameraAcceleration = 0.2f;
@@ -24,12 +24,7 @@ public class Camera {
         this.viewMatrix = new Matrix4f();
         this.invViewMatrix = viewMatrix.invert();
 
-
-
         adjustProjection();
-
-
-
     }
 
     public void adjustProjection() {
@@ -55,14 +50,9 @@ public class Camera {
         return this.viewMatrix;
     }
 
-    public void scaleUpdate(float scrollDirection){
-        float scale = 1;
-        if(scrollDirection > 0) {
-            scale = 1.05f;
-        }else if (scrollDirection < 0 ){
-            scale = 0.95f;
-        }
-        zoom *= scale;
+    public void zoom(float scrollDirection){
+        if(scrollDirection == 0) return;
+        zoom *= scrollDirection > 0 ? 1.05 : 0.95;
         scaleMatrix.m00(zoom);
         scaleMatrix.m11(zoom);
         scaleMatrix.invert(invScaleMatrix);
@@ -120,21 +110,19 @@ public class Camera {
 
     public void moveCamera(float dt){
         Vector2f move = new Vector2f(0,0);
-        float acceleration = cameraAcceleration * dt ;
-        float speed  = cameraSpeed * dt ;
         if(KeyListener.isKeyPressed(GLFW_KEY_A)){
-            move.x -= speed;
+            move.x -= cameraSpeed;
         }
         if(KeyListener.isKeyPressed(GLFW_KEY_D)){
-            move.x += speed;
+            move.x += cameraSpeed;
         }if(KeyListener.isKeyPressed(GLFW_KEY_W)){
-           move.y += speed;
+           move.y += cameraSpeed;
         }if(KeyListener.isKeyPressed(GLFW_KEY_S)){
-            move.y -= speed;
+            move.y -= cameraSpeed;
         }
         if (move.x != 0 || move.y != 0){
-            cameraSpeed = cameraSpeed >= 5 ? 5 : cameraSpeed + acceleration;
-            viewPoint.add(move.normalize(speed));
+            cameraSpeed = cameraSpeed >= 5 ? 5 : cameraSpeed + cameraAcceleration * dt;
+            viewPoint.add(move.normalize(cameraSpeed * dt));
         }else {
             cameraSpeed = 1;
         }

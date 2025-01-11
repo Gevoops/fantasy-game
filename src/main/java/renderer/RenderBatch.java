@@ -1,5 +1,6 @@
 package renderer;
 
+import engine.Camera;
 import engine.GameObject;
 import components.SpriteSheetList;
 import engine.Window;
@@ -25,14 +26,16 @@ public class RenderBatch {
     private final int COLOR_SIZE = 4;
     private final int TEX_COORDS_SIZE = 2;
     private final int TEX_ID_SIZE = 1;
+    private final int ENTITY_ID_SIZE = 1;
 
     //offsets
     private final int POS_OFFSET = 0;
     private final int COLOR_OFFSET = POS_OFFSET + POS_SIZE * Float.BYTES;
     private final int TEX_COORDS_OFFSET = COLOR_OFFSET + COLOR_SIZE * Float.BYTES;
     private final int TEX_ID_OFFSET = TEX_COORDS_OFFSET + TEX_COORDS_SIZE * Float.BYTES;
+    private final int ENTITY_ID_OFFSET = TEX_ID_OFFSET + TEX_ID_SIZE * Float.BYTES;
 
-    private final int VERTEX_SIZE = 9;
+    private final int VERTEX_SIZE = 10;
     private final int VERTEX_SIZE_BYTES = VERTEX_SIZE * Float.BYTES;
 
     private GameObject[] gameObjects;
@@ -45,12 +48,10 @@ public class RenderBatch {
     private List<Texture> textures;
     private int vaoID, vboID;
     private int maxBatchSize;
-    private Shader shader;
     private int zIndex;
 
     public RenderBatch(int maxBatchSize, int zIndex) {
         this.zIndex = zIndex;
-        shader = AssetPool.getShader("src/main/resources/shaders/default.glsl");
         this.gameObjects = new GameObject[maxBatchSize];
         this.maxBatchSize = maxBatchSize;
 
@@ -90,6 +91,9 @@ public class RenderBatch {
 
         glVertexAttribPointer(3, TEX_ID_SIZE, GL_FLOAT, false, VERTEX_SIZE_BYTES, TEX_ID_OFFSET);
         glEnableVertexAttribArray(3);
+
+        glVertexAttribPointer(4, ENTITY_ID_SIZE, GL_FLOAT, false, VERTEX_SIZE_BYTES, ENTITY_ID_OFFSET);
+        glEnableVertexAttribArray(4);
 
     }
 
@@ -196,6 +200,9 @@ public class RenderBatch {
             //load texture id
             vertices[offset + 8] = texId;
 
+            // load Entity id
+            vertices[offset + 9] = ob.getObjID();
+
             offset += VERTEX_SIZE;
         }
     }
@@ -218,12 +225,13 @@ public class RenderBatch {
         }
 
 
-        //use shader
-        shader.use();
-        shader.uploadMat4f("uProjection", Window.getScene().getCamera().getProjectionMatrix());
-        shader.uploadMat4f("uView", Window.getScene().getCamera().getViewMatrix());
+        // shader
+        Shader shader = Renderer.getCurrentShader();
+        Camera camera = Window.getCurrentScene().getCamera();
+        shader.uploadMat4f("uProjection", camera.getProjectionMatrix());
+        shader.uploadMat4f("uView", camera.getViewMatrix());
+        shader.uploadMat4f("scale", camera.getScaleMatrix());
         shader.uploadFloat("uTime", Time.getTime());
-        shader.uploadMat4f("scale", Window.getScene().getCamera().getScaleMatrix());
         for(int i =0; i < textures.size(); i ++) {
             glActiveTexture(GL_TEXTURE0 + i + 1);
             textures.get(i).bind();
@@ -233,8 +241,13 @@ public class RenderBatch {
 
 
         glBindVertexArray(vaoID);
+
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
+        glEnableVertexAttribArray(3);
+        glEnableVertexAttribArray(4);
+
 
 
         glDrawElements(GL_TRIANGLES, this.gameObNum * 6, GL_UNSIGNED_INT, 0);
@@ -243,7 +256,6 @@ public class RenderBatch {
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
 
-
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER,0);
 
@@ -251,7 +263,7 @@ public class RenderBatch {
             texture.unbind();
         }
 
-        shader.detach();
+        Renderer.getCurrentShader().detach();
 
     }
 

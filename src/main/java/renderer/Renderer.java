@@ -10,9 +10,17 @@ import java.util.List;
 public class Renderer {
     private final int MAX_BATCH_SIZE = 1000;
     private List<RenderBatch> batches;
+    public static Shader currentShader;
 
     public Renderer() {
         this.batches = new ArrayList<>();
+    }
+    public void render() {
+        currentShader.use();
+        batches.sort(Comparator.comparing(RenderBatch::getZIndex));
+        for(RenderBatch batch : batches) {
+            batch.render();
+        }
     }
 
     public void addGameObject(GameObject ob) throws NullSpriteException {
@@ -36,10 +44,12 @@ public class Renderer {
             newBatch.addGameObject(ob);
         }
     }
-    public void render() {
-        batches.sort(Comparator.comparing(RenderBatch::getZIndex));
-        for(RenderBatch batch : batches) {
-            batch.render();
-        }
+
+
+    public static Shader getCurrentShader(){
+        return currentShader;
+    }
+    public static void setCurrentShader(Shader shader){
+        currentShader = shader;
     }
 }

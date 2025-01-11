@@ -1,20 +1,25 @@
 package engine;
 
 import com.sun.marlin.Version;
-import components.MouseController;
+import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
-import renderer.DebugDraw;
 import renderer.Framebuffer;
+import renderer.PickingTexture;
+import renderer.Renderer;
+import renderer.Shader;
 import scenes.GameScene;
 import scenes.Scene;
 import scenes.WorldEditorScene;
+import util.AssetPool;
 import util.Time;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
+import static util.Settings.SCREEN_HEIGHT;
+import static util.Settings.SCREEN_WIDTH;
 
 public class Window {
 
@@ -25,16 +30,16 @@ public class Window {
     public boolean leftClicked = false;
     public float clickX;
     public float clickY;
+    public Vector4f bgColor = new Vector4f(0.4f,0.5f, 0.7f,1.0f) ;
+
     private Framebuffer framebuffer;
-
-    public float r = 0.4f,g = 0.5f,b = 0.7f,a = 1.0f;
-
+    private PickingTexture pickingTexture;
     private static Window window = null;
-
     private static Scene currentScene ;
-    public static final double FPS = 60;
     public static MouseController mouseController = new MouseController();
     private static ImGuiLayer gui;
+
+
 
 
     public static void changeScene(int newScene){
@@ -126,13 +131,14 @@ public class Window {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        this.framebuffer = new Framebuffer(2560,1440);
-        glViewport(0,0,2560,1440);
-
         gui = new ImGuiLayer(glfwWindow);
         gui.initImGui();
 
+        this.pickingTexture = new PickingTexture(SCREEN_WIDTH,SCREEN_HEIGHT);
+        this.framebuffer = new Framebuffer(SCREEN_WIDTH,SCREEN_HEIGHT);
+
         Window.changeScene(0);
+
 
     }
 
@@ -140,7 +146,12 @@ public class Window {
         float beginTime = Time.getTime();
         float endTime;
         float dt = 0;
+
+        Shader defaultShader = AssetPool.getShader("src/main/resources/shaders/default.glsl");
+        Shader pickingShader = AssetPool.getShader("src/main/resources/shaders/pickingShader.glsl");
         while (!glfwWindowShouldClose(glfwWindow)){
+
+
 
             glfwPollEvents();
             if(MouseListener.mouseButtonDown(0)) {
@@ -148,22 +159,39 @@ public class Window {
                 this.clickY = MouseListener.getOrthoY();
                 this.leftClicked = true;
             }
+            mouseController.update(dt);
 
+            currentScene.update(dt * 60);
             mouseController.update(dt);
 
 
-            this.framebuffer.bind();
-            glClearColor(r, g, b, a);
+            // render to picking texture
+            glDisable(GL_BLEND);
+            pickingTexture.enableWriting();
+            glViewport(0,0,SCREEN_WIDTH,SCREEN_HEIGHT);
+            glClearColor(0.0f,0f,0f,0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            Renderer.setCurrentShader(pickingShader);
+            currentScene.getRenderer().render();
+            if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)){
+                int x = (int) MouseListener.getViewPortX();
+                int y = (int) MouseListener.getViewPortY();
+                System.out.println(pickingTexture.readPixel(x,y));
+
+            }
+
+            pickingTexture.disableWriting();
+            glEnable(GL_BLEND);
+
+            // render actual game
+
+            framebuffer.bind();
+            glClearColor(bgColor.x, bgColor.y, bgColor.z, bgColor.w);
             glClear(GL_COLOR_BUFFER_BIT);
-
-
-            currentScene.update(dt * 60);
-
-
-
-
+            Renderer.setCurrentShader(defaultShader);
             currentScene.render();
-            this.framebuffer.unbind();
+
+            framebuffer.unbind();
 
             gui.drawGui(currentScene);
 
@@ -200,12 +228,13 @@ public class Window {
         return currentScene;
     }
 
-    public static Framebuffer getFramebuffer(){
-        return Window.getWindow().framebuffer;
-    }
 
     public static float getTargetAspectRatio(){
-        return 16/9f;
+        return 16f/9f;
+    }
+
+    public void setFramebuffer(Framebuffer framebuffer) {
+        this.framebuffer = framebuffer;
     }
 }
 

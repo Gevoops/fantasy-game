@@ -29,7 +29,7 @@ public class DebugDraw {
 
     private static boolean started = false;
 
-   // private static final Vector3f DEFAULT_COLOR = new Vector3f(0,1,0);
+    private static final Vector3f DEFAULT_COLOR = new Vector3f(0,1,0);
 
     public static void start(){
         started = true;
@@ -124,7 +124,7 @@ public class DebugDraw {
     // =============================================================
 
     public static void addLine2D(Vector2f start, Vector2f end){
-        addLine2D(start,end,new Vector3f(0,1,0),1);
+        addLine2D(start,end,DEFAULT_COLOR,1);
     }
 
     public static void addLine2D(Vector2f start, Vector2f end,Vector3f color){
@@ -173,9 +173,9 @@ public class DebugDraw {
         addBox2D(new Vector2f(centerX,centerY),new Vector2f(width,height),angle,color,lifetime);
     }
     public static void addBox2D(Float centerX,Float centerY, Float width, Float height, float angle,  int lifetime) {
-        addBox2D(new Vector2f(centerX,centerY),new Vector2f(width,height),angle,new Vector3f(0,1,0),lifetime);
+        addBox2D(new Vector2f(centerX,centerY),new Vector2f(width,height),angle,DEFAULT_COLOR,lifetime);
     }public static void addBox2D(Float centerX,Float centerY, Float width, Float height, float angle) {
-        addBox2D(new Vector2f(centerX,centerY),new Vector2f(width,height),angle,new Vector3f(0,1,0),1);
+        addBox2D(new Vector2f(centerX,centerY),new Vector2f(width,height),angle,DEFAULT_COLOR,1);
     }
 
 
