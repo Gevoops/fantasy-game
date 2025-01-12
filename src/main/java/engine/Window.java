@@ -1,6 +1,7 @@
 package engine;
 
 import com.sun.marlin.Version;
+import editor.MouseControllerEditor;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -36,7 +37,7 @@ public class Window {
     private PickingTexture pickingTexture;
     private static Window window = null;
     private static Scene currentScene ;
-    public static MouseController mouseController = new MouseController();
+    public static MouseControllerEditor mouseControllerEditor = new MouseControllerEditor();
     private static ImGuiLayer gui;
 
 
@@ -45,7 +46,7 @@ public class Window {
     public static void changeScene(int newScene){
         switch(newScene){
             case 0:
-                currentScene = new WorldEditorScene();
+                currentScene = WorldEditorScene.getInstance();
                 break;
             case 1:
                 currentScene = new GameScene();
@@ -159,10 +160,8 @@ public class Window {
                 this.clickY = MouseListener.getOrthoY();
                 this.leftClicked = true;
             }
-            mouseController.update(dt);
 
             currentScene.update(dt * 60);
-            mouseController.update(dt);
 
 
             // render to picking texture
@@ -191,8 +190,7 @@ public class Window {
             Renderer.setCurrentShader(defaultShader);
             currentScene.render();
 
-            framebuffer.unbind();
-
+           framebuffer.unbind();
             gui.drawGui(currentScene);
 
             glfwSwapBuffers(glfwWindow);

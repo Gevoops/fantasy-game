@@ -17,9 +17,9 @@ public class GameViewWindow {
     private Framebuffer framebuffer;
 
     public GameViewWindow(){
-        int width = SCREEN_WIDTH;
-        int height = SCREEN_HEIGHT;
-        this.framebuffer = new Framebuffer(width,height);
+        int width = SCREEN_WIDTH ;
+        int height = SCREEN_HEIGHT ;
+        this.framebuffer = new Framebuffer(width   ,height );
         glViewport(0,0,width, height);
 
     }
@@ -27,11 +27,10 @@ public class GameViewWindow {
     public void imGui(){
         ImGui.begin("Game Viewport", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse );
         ImVec2 frameSize1 = getLargestSizeForViewport();
+        frameSize1.x = 2560;
+        frameSize1.y = 1440;
         contentWidth = frameSize1.x;
         contentHeight = frameSize1.y;
-        ImVec2 contentPos = getCenteredPositionForViewport(frameSize1);
-
-        ImGui.setCursorPos(contentPos.x,contentPos.y);
 
         ImVec2 screenPos = new ImVec2();
         ImGui.getCursorScreenPos(screenPos);
@@ -58,15 +57,6 @@ public class GameViewWindow {
             aspectWidth = aspectHeight * Window.getTargetAspectRatio();
         }
         return new ImVec2(aspectWidth,aspectHeight);
-    }
-
-    private static ImVec2 getCenteredPositionForViewport(ImVec2 aspectSize){
-        ImVec2 windowSize = getViewportWindowSize();
-
-        float viewPortX = windowSize.x / 2f - aspectSize.x / 2f + ImGui.getCursorPosX();
-        float viewPortY = windowSize.y / 2f - aspectSize.y / 2f + ImGui.getCursorPosY();
-
-        return new ImVec2(viewPortX , viewPortY);
     }
 
     private static ImVec2 getViewportWindowSize(){

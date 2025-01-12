@@ -108,7 +108,7 @@ public class Camera {
         this.viewPoint.y = y;
     }
 
-    public void moveCamera(float dt){
+    public void update(float dt){
         Vector2f move = new Vector2f(0,0);
         if(KeyListener.isKeyPressed(GLFW_KEY_A)){
             move.x -= cameraSpeed;
