@@ -1,9 +1,11 @@
 package editor;
 
+import components.Player;
 import components.RigidBody;
 import components.SpriteSheetList;
 import engine.GameObject;
 import engine.Prefabs;
+import game.MouseControllerGame;
 import imgui.ImGui;
 import imgui.ImVec2;
 import org.joml.Vector2f;
@@ -21,6 +23,7 @@ public class EditorWindow {
     private ArrayList<Sprite> editorSprites;
     private WorldEditorScene editorScene;
 
+
     public EditorWindow(WorldEditorScene editorScene){
         this.editorScene = editorScene;
         editorSprites = AssetPool.getSpriteSheet("src/main/resources/sprites/Idle_KG_2.png").getSprites();
@@ -33,6 +36,7 @@ public class EditorWindow {
         // buttons
 
         if (ImGui.button("play")) {
+            editorScene.setMouseController(new MouseControllerGame());
         }
         if (ImGui.button("edit")) {
             editorScene.setMouseController(new MouseControllerEditor());
@@ -60,7 +64,7 @@ public class EditorWindow {
             Vector2f[] coords = sprite.getTexCoords();
 
             ImGui.pushID(i);
-            if(ImGui.imageButton(id,spriteWidth,spriteHeight,coords[2].x,coords[0].y,coords[0].x,coords[2].y)) {
+            if(ImGui.imageButton(id,spriteWidth,spriteHeight,coords[2].x,coords[0].y,coords[0].x,coords[2].y) && editorScene.getLiftedObject() == null) {
                 GameObject liftedObject = Prefabs.generateSpriteObject(sprite,spriteWidth,spriteHeight);
                 editorScene.addGameObjectToScene(liftedObject);
                 editorScene.setLiftedObject(liftedObject);
@@ -77,7 +81,7 @@ public class EditorWindow {
         }
 
         if (ImGui.button("create")) {
-            GameObject ob1 = new GameObject(
+            GameObject player = new GameObject(
                     "valerie",
                     AssetPool.getSpriteSheet("src/main/resources/sprites/Idle_KG_2.png").getSprite(0),
                     new Transform(new Vector2f(300, 300), new Vector2f(100, 64)),
@@ -87,11 +91,12 @@ public class EditorWindow {
             s.addSpriteSheet(AssetPool.getSpriteSheet("src/main/resources/sprites/Walking_KG_2.png"));
             s.addSpriteSheet(AssetPool.getSpriteSheet("src/main/resources/sprites/Idle_KG_2_left.png"));
             s.addSpriteSheet(AssetPool.getSpriteSheet("src/main/resources/sprites/Walking_KG_2_left.png"));
-            ob1.addComponent(s);
+            player.addComponent(s);
 
-            ob1.addComponent(new RigidBody());
-            editorScene.setOb1(ob1);
-            editorScene.addGameObjectToScene(ob1);
+            player.addComponent(new RigidBody());
+            player.addComponent(new Player());
+            editorScene.setPlayer(player);
+            editorScene.addGameObjectToScene(player);
 
 
 

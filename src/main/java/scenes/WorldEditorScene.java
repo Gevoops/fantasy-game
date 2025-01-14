@@ -4,7 +4,6 @@ import editor.EditorWindow;
 import editor.GameViewWindow;
 import editor.MouseControllerEditor;
 import engine.*;
-import components.SpriteSheetList;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import renderer.DebugDraw;
@@ -21,19 +20,12 @@ import static util.Settings.TILE_WIDTH;
 
 public class WorldEditorScene extends Scene {
     private static WorldEditorScene instance;
-    double frameCount = 0;
-    int spriteIndex = 0;
-    int spriteIndex2 = 0;
-    float clickX = 0;
-    float clickY = 0;
-    float stepX = 0;
-    float stepY = 0;
-    boolean start = true;
     private GameViewWindow gameViewWindow;
     private EditorWindow editorWindow;
     GameObject ob1;
-    private MouseControllerEditor mouseController;
+    private MouseControllerStrategy mouseController;
     private GameObject liftedObject;
+    private GameObject player;
 
     private WorldEditorScene() {}
 
@@ -85,60 +77,6 @@ public class WorldEditorScene extends Scene {
         camera.update(dt);
         for (GameObject ob : gameObjects){
             ob.update(dt);
-        }
-        frameCount += dt;
-        if(!gameObjects.isEmpty()){
-
-            SpriteSheetList spriteSheets = ob1.getComponent(SpriteSheetList.class);
-            if(Window.getWindow().leftClicked ) {
-                clickX  = Window.getWindow().clickX - 50;
-                clickY = Window.getWindow().clickY;
-                float distance = (float) Math.sqrt(Math.pow(ob1.getX() - clickX,2)
-                        + Math.pow(ob1.getY() - clickY,2));
-
-                stepX = (clickX - ob1.getX()) / distance;
-                stepY = (clickY - ob1.getY()) / distance;
-
-                start = false;
-            }
-
-            if(((Math.abs(ob1.getX() - clickX) >= 2 ) || (Math.abs(ob1.getY() - clickY) >= 2)) && !start) {
-                if(frameCount > 4) {
-                    frameCount = 0;
-                    if(stepX > 0) {
-                       ob1.setSprite(spriteSheets.get(1).getSprite(spriteIndex));
-                        spriteIndex = spriteIndex == 6 ? 0 : spriteIndex + 1;
-                    } else {
-                        ob1.setSprite(spriteSheets.get(3).getSprite(spriteIndex));
-                        spriteIndex = spriteIndex == 0 ? 6 : spriteIndex - 1;
-                    }
-
-                    spriteIndex2 = 0;
-                }
-                if(Math.abs(ob1.getX() - clickX) >= 2) {
-                    ob1.moveX(stepX * 4 * dt);
-
-                }
-                if(Math.abs(ob1.getY() - clickY ) >= 2) {
-                    ob1.moveY(stepY * 4 * dt );
-
-                }
-            } else {
-                if(frameCount > 12) {
-                    frameCount = 0;
-                    if(stepX >= 0) {
-                        ob1.setSprite(spriteSheets.get(0).getSprite(spriteIndex2));
-                        spriteIndex2 = spriteIndex2 == 3 ? 0 : spriteIndex2 + 1;
-                    } else {
-                        ob1.setSprite(spriteSheets.get(2).getSprite(spriteIndex2));
-                        spriteIndex2 = spriteIndex2 == 0 ? 3 : spriteIndex2 - 1;
-                    }
-
-                    spriteIndex = 6;
-                }
-            }
-            ob1.update(dt);
-
         }
     }
 
@@ -213,7 +151,7 @@ public class WorldEditorScene extends Scene {
         return gameViewWindow;
     }
 
-    public MouseControllerEditor getMouseController() {
+    public MouseControllerStrategy getMouseControllerStrategy() {
         return mouseController;
     }
 
@@ -221,14 +159,19 @@ public class WorldEditorScene extends Scene {
         return liftedObject;
     }
 
-    public void setOb1(GameObject ob1) {
-        this.ob1 = ob1;
+    public GameObject getPlayer() {
+        return player;
     }
-    public void setMouseController(MouseControllerEditor mouseController) {
+
+    public void setMouseController(MouseControllerStrategy mouseController) {
         this.mouseController = mouseController;
     }
 
     public void setLiftedObject(GameObject liftedObject) {
         this.liftedObject = liftedObject;
+    }
+
+    public void setPlayer(GameObject player) {
+        this.player = player;
     }
 }
