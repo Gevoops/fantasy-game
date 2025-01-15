@@ -3,6 +3,7 @@ package scenes;
 import editor.EditorWindow;
 import editor.GameViewWindow;
 import editor.MouseControllerEditor;
+import editor.PropertiesWindow;
 import engine.*;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -22,10 +23,10 @@ public class WorldEditorScene extends Scene {
     private static WorldEditorScene instance;
     private GameViewWindow gameViewWindow;
     private EditorWindow editorWindow;
-    GameObject ob1;
+    private PropertiesWindow propertiesWindow;
     private MouseControllerStrategy mouseController;
     private GameObject liftedObject;
-    private GameObject player;
+    private GameObject activeGameObject;
 
     private WorldEditorScene() {}
 
@@ -40,30 +41,35 @@ public class WorldEditorScene extends Scene {
     public void imGui() {
         gameViewWindow.imGui();
         editorWindow.imGui();
+        propertiesWindow.imGui();
 
     }
 
-    public void drawGrid() {
+    public void addGrid() {
 
         float zoom = camera.getZoom();
         Vector3f color = new Vector3f(75f / 255, 75f / 255, 75f / 255);
         int lineNumX = 2*(int) ((camera.getProjectionSize().x / TILE_WIDTH) / zoom) + 15;
         int lineNumY = 2*(int) ((camera.getProjectionSize().y / TILE_HEIGHT) / zoom) + 15;
-        Vector2f snappedCamera = screenToWorldCell(camera.getViewPoint());
+        Vector2f snappedCamera = snapScreenToGrid(camera.getViewPoint());
         Vector2f offset = new Vector2f(0,0);
         offset.add(snappedCamera);
         for (int i = -lineNumX; i < lineNumX; i++) {
-            DebugDraw.addLine2D(worldToScreen(-lineNumX, i).add(offset), worldToScreen(lineNumX, i).add(offset),color, 1);
+            DebugDraw.addLine2D(gridToScreen(-lineNumX, i).add(offset), gridToScreen(lineNumX, i).add(offset),color, 1,false);
         }
         for (int i = -lineNumY; i < lineNumY; i++ ) {
-            DebugDraw.addLine2D(worldToScreen(i,-lineNumY).add(offset),worldToScreen(i,lineNumY).add(offset),color,1);
+            DebugDraw.addLine2D(gridToScreen(i,-lineNumY).add(offset), gridToScreen(i,lineNumY).add(offset),color,1,false);
         }
-        DebugDraw.addLine2D(worldToScreen(0,0),worldToScreen(-2,-2));
+        DebugDraw.addLine2D(gridToScreen(0,0), gridToScreen(-2,-2));
 
     }
-    public void drawMouseSnap(){
+    public void addMouseSnapLines(){
         Vector2f mousePos = new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY());
-        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), screenToWorldCell(mousePos));
+        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), snapScreenToGrid(mousePos));
+        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), snapScreenToGrid(mousePos).sub(gridToScreen(1,0)), new Vector3f(1,0,1), 1,false);
+        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), snapScreenToGrid(mousePos).sub(gridToScreen(1,1)), new Vector3f(1,0,1), 1,false);
+        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), snapScreenToGrid(mousePos).sub(gridToScreen(0,1)), new Vector3f(1,0,1), 1,false);
+        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), snapScreenToGrid(mousePos).sub(gridToScreen(1,1)), new Vector3f(1,0,1), 1,false);
     }
 
 
@@ -82,13 +88,12 @@ public class WorldEditorScene extends Scene {
 
     @Override
     public void render(){
-        drawGrid();
-        DebugDraw.draw();
         DebugDraw.beginFrame();
+        addGrid();
+        addMouseSnapLines();
+        DebugDraw.drawUnder();
         renderer.render();
-        drawMouseSnap();
-        DebugDraw.draw();
-
+        DebugDraw.drawOver();
     }
 
     @Override
@@ -97,16 +102,9 @@ public class WorldEditorScene extends Scene {
         mouseController = new MouseControllerEditor();
         gameViewWindow = new GameViewWindow();
         editorWindow = new EditorWindow(instance);
+        propertiesWindow = new PropertiesWindow();
         camera = new Camera(new Vector2f(0,0));
-
-        if(!gameObjects.isEmpty()){
-            activeGameObject = gameObjects.get(0);
-            ob1 = activeGameObject;
-            camera.setViewPoint(new Vector2f(ob1.getTransform().position).sub(camera.getProjectionSize().x /2f, camera.getProjectionSize().y /2f ));
-        }
-
         Window.getWindow().setFramebuffer(gameViewWindow.getFramebuffer());
-
     }
 
     protected void loadResources() {
@@ -137,10 +135,10 @@ public class WorldEditorScene extends Scene {
     }
 
     public Vector2f cellSnapToGrid(float cellX, float cellY){
-        return snapToGrid(worldToScreenX(cellX,cellY),worldToScreenY(cellX,cellY));
+        return snapToGrid(gridToScreenX(cellX,cellY), gridToScreenY(cellX,cellY));
     }
     public Vector2f snapToGrid(float screenX, float screenY){
-        return screenToWorldCell(screenX,screenY).add(-TILE_WIDTH /2 ,0);
+        return snapScreenToGrid(screenX,screenY).add(-TILE_WIDTH /2 ,0);
     }
 
     public Vector2f snapToGrid(Vector2f screenPos){
@@ -163,6 +161,10 @@ public class WorldEditorScene extends Scene {
         return player;
     }
 
+    public GameObject getActiveGameObject() {
+        return activeGameObject;
+    }
+
     public void setMouseController(MouseControllerStrategy mouseController) {
         this.mouseController = mouseController;
     }
@@ -171,7 +173,5 @@ public class WorldEditorScene extends Scene {
         this.liftedObject = liftedObject;
     }
 
-    public void setPlayer(GameObject player) {
-        this.player = player;
-    }
+
 }

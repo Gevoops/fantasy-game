@@ -49,7 +49,7 @@ public class Window {
                 currentScene = WorldEditorScene.getInstance();
                 break;
             case 1:
-                currentScene = new GameScene();
+                currentScene = GameScene.getInstance();
                 break;
             default:
                 assert false: "unknown scene" + newScene;

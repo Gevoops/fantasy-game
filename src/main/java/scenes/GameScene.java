@@ -1,11 +1,14 @@
 package scenes;
 
 import editor.GameViewWindow;
+import engine.GameObject;
 import engine.Window;
 
 public class GameScene extends Scene {
-    public GameScene() {
-        System.out.println("inside level Scene");
+    private static GameScene instance;
+    private GameObject player;
+    private GameScene() {
+
     }
 
 
@@ -29,5 +32,16 @@ public class GameScene extends Scene {
     @Override
     protected void loadResources() {
 
+    }
+
+    public static GameScene getInstance() {
+        if (instance == null){
+            instance = new GameScene();
+        }
+        return instance;
+    }
+
+    public void setPlayer(GameObject player){
+        this.player = player;
     }
 }

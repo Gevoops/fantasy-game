@@ -10,7 +10,6 @@ import engine.GameObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import imgui.ImGui;
 import org.joml.Vector2f;
 import renderer.Renderer;
 
@@ -28,12 +27,12 @@ public abstract class Scene {
     protected Renderer renderer = new Renderer();
     protected Camera camera;
     private boolean isRunning = false;
-    protected GameObject activeGameObject = null;
     public ArrayList<GameObject> gameObjects = new ArrayList<>();
     protected boolean levelLoaded = false;
     protected String savedWorldPath;
     protected final float X_OFFSET = 0;
     protected final float Y_OFFSET = 0;
+    protected GameObject player;
 
 
 
@@ -72,11 +71,6 @@ public abstract class Scene {
     }
 
     public void sceneImGui(){
-        if(activeGameObject != null) {
-            ImGui.begin("inspector");
-            activeGameObject.imGui();
-            ImGui.end();
-        }
         imGui();
     }
 
@@ -150,44 +144,48 @@ public abstract class Scene {
         return this.camera;
     }
 
-    public Vector2f screenToWorldCell(Vector2f screenPos){
-        Vector2f worldPos = screenToWorld(screenPos);
-        return worldToScreen((float)Math.floor(worldPos.x) ,(float) Math.floor(worldPos.y));
+    public Vector2f snapScreenToGrid(Vector2f screenPos){
+        Vector2f worldPos = screenToGrid(screenPos);
+        return gridToScreen((float)Math.floor(worldPos.x) ,(float) Math.floor(worldPos.y));
     }
-    public Vector2f screenToWorldCell(float screenX, float screenY){
-        return screenToWorldCell(new Vector2f(screenX,screenY));
+    public Vector2f snapScreenToGrid(float screenX, float screenY){
+        return snapScreenToGrid(new Vector2f(screenX,screenY));
     }
 
 
-    public float screenToWorldX(float screenX, float screenY){
+    public float screenToGridX(float screenX, float screenY){
         return (screenX-X_OFFSET) / TILE_WIDTH +  (screenY -Y_OFFSET) / TILE_HEIGHT;
     }
-    public float screenToWorldY(float screenX, float screenY){
+    public float screenToGridY(float screenX, float screenY){
         return (screenY-Y_OFFSET) / TILE_HEIGHT -  (screenX -X_OFFSET) / TILE_WIDTH ;
     }
-    public Vector2f screenToWorld(float screenX,float screenY){
-        return new Vector2f(screenToWorldX(screenX,screenY),screenToWorldY(screenX,screenY));
+    public Vector2f screenToGrid(float screenX, float screenY){
+        return new Vector2f(screenToGridX(screenX,screenY), screenToGridY(screenX,screenY));
     }
-    public Vector2f screenToWorld(Vector2f screenPos){
-        return new Vector2f(screenToWorldX(screenPos.x,screenPos.y),screenToWorldY(screenPos.x,screenPos.y));
+    public Vector2f screenToGrid(Vector2f screenPos){
+        return new Vector2f(screenToGridX(screenPos.x,screenPos.y), screenToGridY(screenPos.x,screenPos.y));
     }
-    public float worldToScreenX(float cellX,float cellY){
+    public float gridToScreenX(float cellX, float cellY){
         return TILE_WIDTH * (cellX * 0.5f - cellY  * 0.5f);
     }
-    public float worldToScreenY(float cellX,float cellY){
+    public float gridToScreenY(float cellX, float cellY){
         return  TILE_HEIGHT * (cellX * 0.5f  + cellY  * 0.5f);
     }
 
-    public Vector2f worldToScreen(float cellX,float cellY){
+    public Vector2f gridToScreen(float cellX, float cellY){
 
-        return new Vector2f(worldToScreenX(cellX,cellY) + X_OFFSET, worldToScreenY(cellX,cellY) + Y_OFFSET);
+        return new Vector2f(gridToScreenX(cellX,cellY) + X_OFFSET, gridToScreenY(cellX,cellY) + Y_OFFSET);
     }
-    public Vector2f worldToScreen(Vector2f worldPos){
+    public Vector2f gridToScreen(Vector2f worldPos){
 
-        return new Vector2f(worldToScreenX(worldPos.x,worldPos.y) + X_OFFSET, worldToScreenY(worldPos.x,worldPos.y) + Y_OFFSET);
+        return new Vector2f(gridToScreenX(worldPos.x,worldPos.y) + X_OFFSET, gridToScreenY(worldPos.x,worldPos.y) + Y_OFFSET);
     }
 
     public Renderer getRenderer() {
         return renderer;
     }
+    public void setPlayer(GameObject player) {
+        this.player = player;
+    }
+
 }

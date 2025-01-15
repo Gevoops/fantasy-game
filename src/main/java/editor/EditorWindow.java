@@ -8,6 +8,7 @@ import engine.Prefabs;
 import game.MouseControllerGame;
 import imgui.ImGui;
 import imgui.ImVec2;
+import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector2f;
 import renderer.Sprite;
 import renderer.Transform;
@@ -22,6 +23,7 @@ import static util.Settings.TILE_WIDTH;
 public class EditorWindow {
     private ArrayList<Sprite> editorSprites;
     private WorldEditorScene editorScene;
+    private boolean editMode = false;
 
 
     public EditorWindow(WorldEditorScene editorScene){
@@ -35,11 +37,14 @@ public class EditorWindow {
         ImGui.begin("editor gui");
         // buttons
 
+
         if (ImGui.button("play")) {
             editorScene.setMouseController(new MouseControllerGame());
+            editMode = false;
         }
         if (ImGui.button("edit")) {
             editorScene.setMouseController(new MouseControllerEditor());
+            editMode = true;
         }
 
         ImVec2 windowPos = new ImVec2();
@@ -64,7 +69,7 @@ public class EditorWindow {
             Vector2f[] coords = sprite.getTexCoords();
 
             ImGui.pushID(i);
-            if(ImGui.imageButton(id,spriteWidth,spriteHeight,coords[2].x,coords[0].y,coords[0].x,coords[2].y) && editorScene.getLiftedObject() == null) {
+            if(ImGui.imageButton(id,spriteWidth,spriteHeight,coords[2].x,coords[0].y,coords[0].x,coords[2].y) && editorScene.getLiftedObject() == null && editMode ){
                 GameObject liftedObject = Prefabs.generateSpriteObject(sprite,spriteWidth,spriteHeight);
                 editorScene.addGameObjectToScene(liftedObject);
                 editorScene.setLiftedObject(liftedObject);
