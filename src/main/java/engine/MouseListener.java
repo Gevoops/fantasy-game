@@ -45,7 +45,7 @@ public class MouseListener {
     }
 
     public static void mouseButtonCallback(long window, int button, int action, int mod) {
-        if (button < get().mouseButtonPressed.length && (!ImGui.getIO().getWantCaptureMouse() || Window.getScene().getGameViewport().wantCaptureMouse())) {
+        if (button < get().mouseButtonPressed.length && (!ImGui.getIO().getWantCaptureMouse() || Window.getInstance().getScene().getGameViewport().wantCaptureMouse())) {
             if (action == GLFW_PRESS) {
                 get().mouseButtonPressed[button] = true;
             } else if (action == GLFW_RELEASE) {
@@ -56,8 +56,11 @@ public class MouseListener {
     }
 
     public static void mouseScrollCallback(long window, double xOffset, double yOffset){
-        get().scrollX = xOffset;
-        get().scrollY = yOffset;
+        if(!ImGui.getIO().getWantCaptureMouse() || Window.getInstance().getScene().getGameViewport().wantCaptureMouse()){
+            get().scrollX = xOffset;
+            get().scrollY = yOffset;
+        }
+
     }
     public static void endFrame(){
         get().scrollX = 0;
@@ -90,7 +93,7 @@ public class MouseListener {
         float currentX = getX() - get().gameViewportPos.x ;
         currentX = (currentX/get().gameViewportSize.x) * 2f - 1f;
         Vector4f tmp = new Vector4f(currentX,0,0,1);
-        Camera camera = Window.getScene().getCamera();
+        Camera camera = Window.getInstance().getScene().getCamera();
         tmp.mul(camera.getInvScaleMatrix()).mul(camera.getInvProjectionMatrix()).mul(camera.getInvViewMatrix());
         currentX = tmp.x;
         return currentX;
@@ -102,7 +105,7 @@ public class MouseListener {
         currentY *= -1; //open gl flips images, so flip back
 
         Vector4f tmp = new Vector4f(0,currentY,0,1);
-        Camera camera = Window.getScene().getCamera();
+        Camera camera = Window.getInstance().getScene().getCamera();
         tmp.mul(camera.getInvScaleMatrix()).mul(camera.getInvProjectionMatrix()).mul(camera.getInvViewMatrix());
         currentY = tmp.y;
         return currentY;

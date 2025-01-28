@@ -3,7 +3,7 @@ package scenes;
 import editor.EditorWindow;
 import editor.GameViewWindow;
 import editor.MouseControllerEditor;
-import editor.PropertiesWindow;
+import editor.InspectorWindow;
 import engine.*;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -12,9 +12,11 @@ import renderer.DebugDraw;
 import renderer.SpriteSheet;
 
 import util.AssetPool;
+import util.Grid;
 
 
-
+import static util.Grid.gridToScreen;
+import static util.Grid.snapScreenToGrid;
 import static util.Settings.TILE_HEIGHT;
 import static util.Settings.TILE_WIDTH;
 
@@ -23,10 +25,11 @@ public class WorldEditorScene extends Scene {
     private static WorldEditorScene instance;
     private GameViewWindow gameViewWindow;
     private EditorWindow editorWindow;
-    private PropertiesWindow propertiesWindow;
+    private InspectorWindow inspectorWindow;
     private MouseControllerStrategy mouseController;
     private GameObject liftedObject;
     private GameObject activeGameObject;
+
 
     private WorldEditorScene() {}
 
@@ -41,12 +44,11 @@ public class WorldEditorScene extends Scene {
     public void imGui() {
         gameViewWindow.imGui();
         editorWindow.imGui();
-        propertiesWindow.imGui();
+        inspectorWindow.imGui();
 
     }
 
     public void addGrid() {
-
         float zoom = camera.getZoom();
         Vector3f color = new Vector3f(75f / 255, 75f / 255, 75f / 255);
         int lineNumX = 2*(int) ((camera.getProjectionSize().x / TILE_WIDTH) / zoom) + 15;
@@ -61,21 +63,12 @@ public class WorldEditorScene extends Scene {
             DebugDraw.addLine2D(gridToScreen(i,-lineNumY).add(offset), gridToScreen(i,lineNumY).add(offset),color,1,false);
         }
         DebugDraw.addLine2D(gridToScreen(0,0), gridToScreen(-2,-2));
-
     }
+
     public void addMouseSnapLines(){
         Vector2f mousePos = new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY());
         DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), snapScreenToGrid(mousePos));
-        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), snapScreenToGrid(mousePos).sub(gridToScreen(1,0)), new Vector3f(1,0,1), 1,false);
-        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), snapScreenToGrid(mousePos).sub(gridToScreen(1,1)), new Vector3f(1,0,1), 1,false);
-        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), snapScreenToGrid(mousePos).sub(gridToScreen(0,1)), new Vector3f(1,0,1), 1,false);
-        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), snapScreenToGrid(mousePos).sub(gridToScreen(1,1)), new Vector3f(1,0,1), 1,false);
     }
-
-
-
-
-
 
     @Override
     public void update(float dt) {
@@ -102,9 +95,9 @@ public class WorldEditorScene extends Scene {
         mouseController = new MouseControllerEditor();
         gameViewWindow = new GameViewWindow();
         editorWindow = new EditorWindow(instance);
-        propertiesWindow = new PropertiesWindow();
+        inspectorWindow = new InspectorWindow();
         camera = new Camera(new Vector2f(0,0));
-        Window.getWindow().setFramebuffer(gameViewWindow.getFramebuffer());
+        Window.getInstance().setFramebuffer(gameViewWindow.getFramebuffer());
     }
 
     protected void loadResources() {
@@ -112,38 +105,46 @@ public class WorldEditorScene extends Scene {
 
         AssetPool.getShader("src/main/resources/shaders/default.glsl");
         String name;
+        String path;
 
-        AssetPool.addSpriteSheet(name = "src/main/resources/sprites/Walking_KG_2_left.png",
-                new SpriteSheet(name, AssetPool.getTexture(name),
+        /////// player sprites
+        String playerPath = "src/main/resources/sprites/player sprites/";
+        String png = ".png";
+
+        AssetPool.addSpriteSheet(name = "Walking_KG_2_left",
+                new SpriteSheet(path = playerPath + name + png, name, AssetPool.getTexture(path),
                         100, 64, 7, 0));
 
-        AssetPool.addSpriteSheet(name = "src/main/resources/sprites/Idle_KG_2.png",
-                new SpriteSheet(name, AssetPool.getTexture(name),
+        AssetPool.addSpriteSheet(name ="Idle_KG_2",
+                new SpriteSheet(path = playerPath + name + png ,name, AssetPool.getTexture(path),
                         100, 64, 4, 0));
 
-        AssetPool.addSpriteSheet(name = "src/main/resources/sprites/Idle_KG_2_left.png",
-                new SpriteSheet(name ,AssetPool.getTexture(name),
+        AssetPool.addSpriteSheet(name = "Idle_KG_2_left",
+                new SpriteSheet(path = playerPath + name + png ,name ,AssetPool.getTexture(path),
                         100, 64, 4, 0));
 
-        AssetPool.addSpriteSheet(name = "src/main/resources/sprites/Walking_KG_2.png",
-                new SpriteSheet(name ,AssetPool.getTexture(name),
+        AssetPool.addSpriteSheet(name = "Walking_KG_2",
+                new SpriteSheet(path = playerPath + name + png ,name ,AssetPool.getTexture(path),
                         100, 64, 7, 0));
 
-        AssetPool.addSpriteSheet(name = "src/main/resources/sprites/ground1.png",
-                new SpriteSheet(name ,AssetPool.getTexture(name),
-                        960, 480, 1, 0));
+
+        // tile sprites
+
+        AssetPool.addSpriteSheet(name = "ground1",
+                new SpriteSheet(path = "src/main/resources/sprites/ground1.png",name,AssetPool.getTexture(path),
+                        960, 480, 1, 0,true));
+
+        AssetPool.addSpriteSheet(name = "isoTiles",
+                new SpriteSheet(path = "src/main/resources/sprites/isoTiles.png",name,AssetPool.getTexture(path),
+                        32, 32, 16*9, 0,true));
+
+
+
+
     }
 
-    public Vector2f cellSnapToGrid(float cellX, float cellY){
-        return snapToGrid(gridToScreenX(cellX,cellY), gridToScreenY(cellX,cellY));
-    }
-    public Vector2f snapToGrid(float screenX, float screenY){
-        return snapScreenToGrid(screenX,screenY).add(-TILE_WIDTH /2 ,0);
-    }
 
-    public Vector2f snapToGrid(Vector2f screenPos){
-        return snapToGrid(screenPos.x,screenPos.y) ;
-    }
+
 
     public GameViewWindow getGameViewport() {
         return gameViewWindow;
@@ -173,5 +174,7 @@ public class WorldEditorScene extends Scene {
         this.liftedObject = liftedObject;
     }
 
-
+    public void setActiveGameObject(GameObject activeGameObject) {
+        this.activeGameObject = activeGameObject;
+    }
 }

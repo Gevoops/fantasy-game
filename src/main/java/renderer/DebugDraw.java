@@ -1,5 +1,6 @@
 package renderer;
 
+import engine.Camera;
 import engine.Window;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -85,7 +86,7 @@ public class DebugDraw {
         if(!started){
             start();
         }
-        glLineWidth(2f * Window.getScene().getCamera().getZoom());
+        glLineWidth(2f * Window.getInstance().getScene().getCamera().getZoom());
         if(lines.size() == 0) {return;}
         int index = 0;
         for (Line2D line : lines){
@@ -111,10 +112,12 @@ public class DebugDraw {
 
 
         //use shader
+        Camera camera = Window.getInstance().getScene().getCamera();
+
         shader.use();
-        shader.uploadMat4f("uProjection", Window.getScene().getCamera().getProjectionMatrix());
-        shader.uploadMat4f("uView",Window.getScene().getCamera().getViewMatrix());
-        shader.uploadMat4f("scale",Window.getScene().getCamera().getScaleMatrix());
+        shader.uploadMat4f("uProjection", camera.getProjectionMatrix());
+        shader.uploadMat4f("uView",camera.getViewMatrix());
+        shader.uploadMat4f("scale",camera.getScaleMatrix());
 
         // bind the vao
         glBindVertexArray(vaoID);

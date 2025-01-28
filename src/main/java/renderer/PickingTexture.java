@@ -1,7 +1,6 @@
 package renderer;
 
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL14.GL_DEPTH_COMPONENT32;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER_COMPLETE;
 
@@ -61,7 +60,7 @@ public class PickingTexture {
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER,0);
     }
 
-    public int readPixel(int x, int  y){
+    public int readIDFromPixel(int x, int  y){
         glBindFramebuffer(GL_READ_FRAMEBUFFER, fboID);
         glReadBuffer(GL_COLOR_ATTACHMENT0);
 

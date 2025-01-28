@@ -26,8 +26,8 @@ public class ImGuiLayer {
     }
 
     public void destroy(){
-        imGuiGl3.dispose();
-        imGuiGlfw.dispose();
+        imGuiGl3.shutdown();
+        imGuiGlfw.shutdown();
         ImGui.destroyContext();
     }
 
@@ -36,6 +36,7 @@ public class ImGuiLayer {
         ImGuiIO io = ImGui.getIO();
         io.setConfigFlags(ImGuiConfigFlags.DockingEnable);
         imGuiGlfw.init(windowPtr,true);
+
 
         // fonts
         final ImFontAtlas fontAtlas = io.getFonts();
@@ -46,6 +47,7 @@ public class ImGuiLayer {
         fontAtlas.addFontFromFileTTF("src/main/resources/fonts/segoeui.ttf",24,fontConfig);
         fontConfig.destroy();
         imGuiGl3.init( "#version 330"); //glsl version, must be last
+        imGuiGl3.newFrame();
     }
 
     public ImGuiImplGlfw getImGuiGlfw() {

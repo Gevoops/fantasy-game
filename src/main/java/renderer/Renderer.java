@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Renderer {
     private final int MAX_BATCH_SIZE = 1000;
-    private List<RenderBatch> batches;
+    public List<RenderBatch> batches;
     public static Shader currentShader;
 
     public Renderer() {
@@ -43,6 +43,10 @@ public class Renderer {
             batches.add(newBatch);
             newBatch.addGameObject(ob);
         }
+    }
+
+    public void clear(){
+
     }
 
 

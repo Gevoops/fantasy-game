@@ -6,7 +6,6 @@ import components.SpriteSheetList;
 import engine.Window;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
-import util.AssetPool;
 import util.Time;
 
 import java.util.ArrayList;
@@ -14,8 +13,7 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL30.*;
 
 public class RenderBatch {
     //vertex
@@ -55,8 +53,8 @@ public class RenderBatch {
         this.gameObjects = new GameObject[maxBatchSize];
         this.maxBatchSize = maxBatchSize;
 
-        //4 = vertices per quad
-        vertices = new float[VERTEX_SIZE * 4 * maxBatchSize];
+        vertices = new float[VERTEX_SIZE * 4 * maxBatchSize]; //4 = vertices per quad
+
 
         this.gameObNum = 0;
         this.hasRoom = true;
@@ -128,8 +126,8 @@ public class RenderBatch {
         if(!textures.contains(ob.getSprite().getTexture()) && ob.getSprite().getTexture() != null) {
             textures.add(ob.getSprite().getTexture());
         }
-        SpriteSheetList list;
-        if((list =  ob.getComponent(SpriteSheetList.class)) != null) {
+        SpriteSheetList list  =  ob.getComponent(SpriteSheetList.class);
+        if(list != null) {
             ArrayList<SpriteSheet> l = list.getSpriteSheets();
             for(SpriteSheet s : l){
                 if(!textures.contains(s.getTexture())) {
@@ -149,7 +147,6 @@ public class RenderBatch {
     private void loadVertexProperties(int index) {
         GameObject ob = this.gameObjects[index];
         Sprite sprite = ob.getSprite();
-
 
         // find offset within array (4 vertices per sprite)
         int offset = index * 4 * VERTEX_SIZE;
@@ -201,7 +198,7 @@ public class RenderBatch {
             vertices[offset + 8] = texId;
 
             // load Entity id
-            vertices[offset + 9] = ob.getObjID();
+            vertices[offset + 9] = ob.getID();
 
             offset += VERTEX_SIZE;
         }
@@ -213,7 +210,7 @@ public class RenderBatch {
             GameObject go = gameObjects[i];
             if(go != null && go.isDirty()) {
                 loadVertexProperties(i);
-                go.setClean();
+                go.setDirty(false);
                 reBufferData = true;
             }
 
@@ -227,7 +224,7 @@ public class RenderBatch {
 
         // shader
         Shader shader = Renderer.getCurrentShader();
-        Camera camera = Window.getCurrentScene().getCamera();
+        Camera camera = Window.getInstance().getCurrentScene().getCamera();
         shader.uploadMat4f("uProjection", camera.getProjectionMatrix());
         shader.uploadMat4f("uView", camera.getViewMatrix());
         shader.uploadMat4f("scale", camera.getScaleMatrix());
@@ -281,4 +278,5 @@ public class RenderBatch {
     public int getZIndex() {
         return zIndex;
     }
+
 }

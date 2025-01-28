@@ -26,7 +26,7 @@ public class MouseControllerGame implements MouseControllerStrategy {
             clickY = player.getY();
         }
         public void update(float dt) {
-            Window.getScene().getCamera().zoom(MouseListener.getScrollY());
+            Window.getInstance().getScene().getCamera().zoom(MouseListener.getScrollY());
             movePlayer(dt);
             if (player!= null){
                 player.update(dt);
@@ -38,9 +38,9 @@ public class MouseControllerGame implements MouseControllerStrategy {
             if (WorldEditorScene.getInstance().getPlayer() != null) {
 
                 SpriteSheetList spriteSheets = player.getComponent(SpriteSheetList.class);
-                if (Window.getWindow().leftClicked) {
-                    clickX = Window.getWindow().clickX - 50;
-                    clickY = Window.getWindow().clickY;
+                if (Window.getInstance().leftClicked) {
+                    clickX = Window.getInstance().clickX - 50;
+                    clickY = Window.getInstance().clickY;
                     float distance = (float) Math.sqrt(Math.pow(player.getX() - clickX, 2)
                             + Math.pow(player.getY() - clickY, 2));
 

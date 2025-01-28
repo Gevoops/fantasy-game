@@ -10,16 +10,24 @@ import java.util.ArrayList;
 
 
 public class SpriteSheet {
-    private String name = "";
+    private String name;
+    private String path;
     private Texture texture = null;
     private ArrayList<Sprite> sprites = null;
+    private boolean isTileSet = false;
 
     public SpriteSheet(){
 
     }
-    public SpriteSheet(String name, Texture texture, int spriteWidth, int spriteHeight,
+    public SpriteSheet(String path,String name,Texture texture, int spriteWidth, int spriteHeight,
                        int numSprites, int spacing){
+        this(path ,name,texture,spriteWidth,spriteHeight,numSprites,spacing,false);
+    }
+    public SpriteSheet(String path, String name, Texture texture, int spriteWidth, int spriteHeight,
+                       int numSprites, int spacing, boolean isTileSet){
+        this.isTileSet = isTileSet;
         this.sprites = new ArrayList<>();
+        this.path = path;
         this.name = name;
         this.texture = texture;
         int currentX = 0;
@@ -77,5 +85,9 @@ public class SpriteSheet {
 
     public void setSprites(ArrayList<Sprite> sprites) {
         this.sprites = sprites;
+    }
+
+    public boolean isTileSet(){
+        return isTileSet;
     }
 }

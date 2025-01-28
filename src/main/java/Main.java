@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
 
         System.out.println("hello LWJGL " + Version.getVersion() + "!");
-        Window window = Window.getWindow();
+        Window window = Window.getInstance();
         window.run();
 
 

@@ -35,15 +35,15 @@ public class Window {
 
     private Framebuffer framebuffer;
     private PickingTexture pickingTexture;
-    private static Window window = null;
-    private static Scene currentScene ;
+    private static Window instance = null;
+    private Scene currentScene ;
     public static MouseControllerEditor mouseControllerEditor = new MouseControllerEditor();
     private static ImGuiLayer gui;
 
 
 
 
-    public static void changeScene(int newScene){
+    public void changeScene(int newScene){
         switch(newScene){
             case 0:
                 currentScene = WorldEditorScene.getInstance();
@@ -66,14 +66,14 @@ public class Window {
         this.title = "desktop rpg";
     }
 
-    public static Window getWindow() {
-        if(Window.window == null) {
-            Window.window = new Window();
+    public static Window getInstance() {
+        if(Window.instance == null) {
+            Window.instance = new Window();
         }
-        return Window.window;
+        return Window.instance;
     }
 
-    public static Scene getScene() {
+    public Scene getScene() {
         return currentScene;
     }
 
@@ -138,7 +138,7 @@ public class Window {
         this.pickingTexture = new PickingTexture(SCREEN_WIDTH,SCREEN_HEIGHT);
         this.framebuffer = new Framebuffer(SCREEN_WIDTH,SCREEN_HEIGHT);
 
-        Window.changeScene(0);
+        changeScene(0);
 
 
     }
@@ -172,15 +172,9 @@ public class Window {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             Renderer.setCurrentShader(pickingShader);
             currentScene.getRenderer().render();
-            if (MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT)){
-                int x = (int) MouseListener.getViewPortX();
-                int y = (int) MouseListener.getViewPortY();
-                System.out.println(pickingTexture.readPixel(x,y));
-
-            }
-
             pickingTexture.disableWriting();
             glEnable(GL_BLEND);
+
 
             // render actual game
 
@@ -207,14 +201,14 @@ public class Window {
     public static int getWidth() {
         int[] width = new int[1];
         int[] height = new int[1];
-        glfwGetWindowSize(getWindow().glfwWindow, width,height);
+        glfwGetWindowSize(getInstance().glfwWindow, width,height);
         return width[0];
     }
 
     public static int getHeight() {
         int[] width = new int[1];
         int[] height = new int[1];
-        glfwGetWindowSize(getWindow().glfwWindow, width,height);
+        glfwGetWindowSize(getInstance().glfwWindow, width,height);
         return height[0];
     }
 
@@ -222,10 +216,13 @@ public class Window {
         return glfwWindow;
     }
 
-    public static Scene getCurrentScene() {
+    public Scene getCurrentScene() {
         return currentScene;
     }
 
+    public PickingTexture getPickingTexture() {
+        return pickingTexture;
+    }
 
     public static float getTargetAspectRatio(){
         return 16f/9f;

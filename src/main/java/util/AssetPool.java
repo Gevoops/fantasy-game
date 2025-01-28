@@ -14,7 +14,6 @@ public class AssetPool {
     private static Map<String, SpriteSheet> spriteSheets = new HashMap<>();
 
     public static  Shader getShader(String name) {
-        File file  = new File(name);
         if(AssetPool.shaders.containsKey(name)) {
             return AssetPool.shaders.get(name);
         } else {
@@ -26,7 +25,6 @@ public class AssetPool {
     }
 
     public static Texture getTexture(String name) {
-        File file = new File(name);
         if(AssetPool.textures.containsKey(name)){
             return AssetPool.textures.get(name);
         } else {
@@ -37,14 +35,12 @@ public class AssetPool {
     }
 
     public static void addSpriteSheet(String name, SpriteSheet spriteSheet) {
-        File file = new File(name);
         if(!AssetPool.spriteSheets.containsKey(name)) {
             AssetPool.spriteSheets.put(name, spriteSheet);
         }
     }
 
     public static SpriteSheet getSpriteSheet(String name) {
-        File file = new File(name);
         if(!AssetPool.spriteSheets.containsKey(name)) {
             assert false : "sprite sheet doesn't exist " + name;
         }

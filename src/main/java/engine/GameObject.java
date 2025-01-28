@@ -9,7 +9,7 @@ import java.util.List;
 
 public class GameObject {
     private static int ID_COUNTER = 0;
-    private int objID = -1;
+    private int ID = -1;
     protected String name = "default";
     private Sprite sprite = null;
     private Transform transform = null;
@@ -29,7 +29,7 @@ public class GameObject {
             this.transform = transform;
             this.lastTransform = transform.copy();
             this.zIndex = zIndex;
-            this.objID = ID_COUNTER++;
+            this.ID = ++ID_COUNTER;
     }
 
     public void update(double dt) {
@@ -81,11 +81,6 @@ public class GameObject {
                 return;
             }
         }
-    }
-
-
-    public void setClean() {
-        this.isDirty = false;
     }
 
     public void setName(String name) {
@@ -155,8 +150,8 @@ public class GameObject {
     public static void init(int maxId){
         ID_COUNTER = maxId;
     }
-    public int getObjID(){
-        return objID;
+    public int getID(){
+        return ID;
     }
     public List<Component> getComponents() {
         return components;

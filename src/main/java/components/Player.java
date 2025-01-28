@@ -9,7 +9,7 @@ public class Player extends Component{
 
     @Override
     public void start(){
-        Scene scene = Window.getScene();
+        Scene scene = Window.getInstance().getScene();
         Camera camera = scene.getCamera();
         scene.setPlayer(this.gameObject);
         camera.setViewPoint(new Vector2f(this.gameObject.getTransform().position.x - camera.getProjectionSize().x  / 2,
