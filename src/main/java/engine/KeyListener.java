@@ -1,5 +1,7 @@
 package engine;
 
+import imgui.ImGui;
+
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
@@ -19,9 +21,12 @@ public class KeyListener {
         return KeyListener.instance;
     }
     public static void keyCallback(long window, int key, int scanCode, int action, int mods) {
-        if(action == GLFW_PRESS) {
-            get().keyPressed[key] = true;
-        } else if (action == GLFW_RELEASE) {
+        if (!ImGui.getIO().getWantCaptureKeyboard()){
+            if(action == GLFW_PRESS) {
+                get().keyPressed[key] = true;
+            }
+        }
+        if (action == GLFW_RELEASE) {
             get().keyPressed[key] = false;
         }
     }

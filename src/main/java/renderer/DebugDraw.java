@@ -86,7 +86,7 @@ public class DebugDraw {
         if(!started){
             start();
         }
-        glLineWidth(2f * Window.getInstance().getScene().getCamera().getZoom());
+        glLineWidth( Window.getInstance().getScene().getCamera().getZoom());
         if(lines.size() == 0) {return;}
         int index = 0;
         for (Line2D line : lines){

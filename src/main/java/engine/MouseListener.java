@@ -2,6 +2,7 @@ package engine;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import static util.Settings.SCREEN_HEIGHT;
 import static util.Settings.SCREEN_WIDTH;
 
 import imgui.ImGui;
@@ -48,10 +49,11 @@ public class MouseListener {
         if (button < get().mouseButtonPressed.length && (!ImGui.getIO().getWantCaptureMouse() || Window.getInstance().getScene().getGameViewport().wantCaptureMouse())) {
             if (action == GLFW_PRESS) {
                 get().mouseButtonPressed[button] = true;
-            } else if (action == GLFW_RELEASE) {
-                get().mouseButtonPressed[button] = false;
-                get().isDragging = false;
             }
+        }
+        if (action == GLFW_RELEASE) {
+            get().mouseButtonPressed[button] = false;
+            get().isDragging = false;
         }
     }
 
@@ -84,8 +86,8 @@ public class MouseListener {
         return currentX;
     }
     public static float getViewPortY(){
-        float currentY = getY() - get().gameViewportPos.y;
-        currentY = 1440f - (currentY/get().gameViewportSize.y) * 1440f;
+        float currentY = getY() - get().gameViewportPos.y ;
+        currentY = SCREEN_HEIGHT - (currentY/get().gameViewportSize.y) * SCREEN_HEIGHT;
         return  currentY;
     }
 

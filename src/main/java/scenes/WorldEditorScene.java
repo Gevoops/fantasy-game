@@ -5,6 +5,7 @@ import editor.GameViewWindow;
 import editor.MouseControllerEditor;
 import editor.InspectorWindow;
 import engine.*;
+import imgui.ImGui;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import renderer.DebugDraw;
@@ -45,6 +46,7 @@ public class WorldEditorScene extends Scene {
         gameViewWindow.imGui();
         editorWindow.imGui();
         inspectorWindow.imGui();
+
 
     }
 
@@ -132,14 +134,11 @@ public class WorldEditorScene extends Scene {
 
         AssetPool.addSpriteSheet(name = "ground1",
                 new SpriteSheet(path = "src/main/resources/sprites/ground1.png",name,AssetPool.getTexture(path),
-                        960, 480, 1, 0,true));
+                        960, 480, 1, 0,2));
 
         AssetPool.addSpriteSheet(name = "isoTiles",
                 new SpriteSheet(path = "src/main/resources/sprites/isoTiles.png",name,AssetPool.getTexture(path),
-                        32, 32, 16*9, 0,true));
-
-
-
+                        32, 32, 16*10, 0,1));
 
     }
 

@@ -4,10 +4,16 @@ import components.Player;
 import components.RigidBody;
 import components.SpriteSheetList;
 import engine.GameObject;
+import engine.KeyListener;
 import engine.Prefabs;
 import game.MouseControllerGame;
 import imgui.ImGui;
+import imgui.ImGuiInputTextCallbackData;
 import imgui.ImVec2;
+import imgui.callback.ImGuiInputTextCallback;
+import imgui.flag.ImGuiInputTextFlags;
+import imgui.flag.ImGuiWindowFlags;
+import imgui.type.ImString;
 import org.joml.Vector2f;
 import renderer.Sprite;
 import renderer.Transform;
@@ -17,13 +23,17 @@ import util.Grid;
 
 import java.util.ArrayList;
 
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static util.Settings.TILE_HEIGHT;
 import static util.Settings.TILE_WIDTH;
 
 public class EditorWindow {
     private ArrayList<Sprite> editorSprites;
     private WorldEditorScene editorScene;
-    private boolean editMode = false;
+    private boolean editMode = true;
+    int[] cameraPos = new int[2];
+
 
 
     public EditorWindow(WorldEditorScene editorScene){
@@ -37,7 +47,6 @@ public class EditorWindow {
 
         // buttons
 
-
         if (ImGui.button("play")) {
             editorScene.setMouseController(new MouseControllerGame());
             editMode = false;
@@ -46,6 +55,29 @@ public class EditorWindow {
         if (ImGui.button("edit")) {
             editorScene.setMouseController(new MouseControllerEditor());
             editMode = true;
+        }
+        ImGui.setNextItemWidth(200);
+
+        ImGuiInputTextCallback callback = new ImGuiInputTextCallback() {
+            @Override
+            public void accept(ImGuiInputTextCallbackData imGuiInputTextCallbackData) {
+
+            }
+        };
+
+        ImString cameraInput = new ImString(256);
+        if (ImGui.inputText("goto position",cameraInput,ImGuiInputTextFlags.EnterReturnsTrue)){
+            String[] res = cameraInput.get().split(" ");
+            if (res.length == 2) {
+                try {
+                    int x = Integer.parseInt(res[0]);
+                    int y = Integer.parseInt(res[1]);
+                    editorScene.getCamera().viewPoint.set(Grid.gridToScreen(x, y));
+
+                } catch (Exception e) {
+                    System.out.println("invalid x and y");
+                }
+            }
         }
         ImGui.sameLine();
 
@@ -63,10 +95,11 @@ public class EditorWindow {
             sprite = sprites.get(i);
             float spriteWidth = sprite.getWidth();
             float spriteHeight = sprite.getHeight();
-            if(AssetPool.getSpriteSheet(sprite.getSpriteSheetName()).isTileSet()){
-                float factor = TILE_WIDTH / spriteWidth;
-                spriteWidth *= factor;
-                spriteHeight *= factor;
+            float ratio;
+            if((ratio  = AssetPool.getSpriteSheet(sprite.getSpriteSheetName()).getTileSizeRatio()) != 0){
+                float normalize = TILE_WIDTH / spriteWidth;
+                spriteWidth *= ratio  * normalize;
+                spriteHeight *= ratio * normalize;
             }
 
             int id = sprite.getTexId();
@@ -95,12 +128,12 @@ public class EditorWindow {
                     AssetPool.getSpriteSheet("Idle_KG_2").getSprite(0),
                     new Transform(new Vector2f(300, 300), new Vector2f(100, 64)),
                     2);
-            SpriteSheetList s = new SpriteSheetList();
-            s.addSpriteSheet(AssetPool.getSpriteSheet("Idle_KG_2"));
-            s.addSpriteSheet(AssetPool.getSpriteSheet("Walking_KG_2"));
-            s.addSpriteSheet(AssetPool.getSpriteSheet("Idle_KG_2_left"));
-            s.addSpriteSheet(AssetPool.getSpriteSheet("Walking_KG_2_left"));
-            player.addComponent(s);
+            SpriteSheetList spriteSheetList = new SpriteSheetList();
+            spriteSheetList.addSpriteSheet(AssetPool.getSpriteSheet("Idle_KG_2"));
+            spriteSheetList.addSpriteSheet(AssetPool.getSpriteSheet("Walking_KG_2"));
+            spriteSheetList.addSpriteSheet(AssetPool.getSpriteSheet("Idle_KG_2_left"));
+            spriteSheetList.addSpriteSheet(AssetPool.getSpriteSheet("Walking_KG_2_left"));
+            player.addComponent(spriteSheetList);
 
             player.addComponent(new RigidBody());
             player.addComponent(new Player());

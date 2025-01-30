@@ -1,7 +1,6 @@
 package engine;
 
 import com.sun.marlin.Version;
-import editor.MouseControllerEditor;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -28,16 +27,13 @@ public class Window {
     private final int height;
     private final String title;
     private long glfwWindow;
-    public boolean leftClicked = false;
-    public float clickX;
-    public float clickY;
+
     public Vector4f bgColor = new Vector4f(0.4f,0.5f, 0.7f,1.0f) ;
 
     private Framebuffer framebuffer;
     private PickingTexture pickingTexture;
     private static Window instance = null;
     private Scene currentScene ;
-    public static MouseControllerEditor mouseControllerEditor = new MouseControllerEditor();
     private static ImGuiLayer gui;
 
 
@@ -116,9 +112,6 @@ public class Window {
         glfwSetScrollCallback(glfwWindow, MouseListener::mouseScrollCallback);
         glfwSetKeyCallback(glfwWindow, KeyListener::keyCallback);
 
-
-
-
         //make the openGL context current
         glfwMakeContextCurrent(glfwWindow);
         //enable v-sync
@@ -133,7 +126,7 @@ public class Window {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         gui = new ImGuiLayer(glfwWindow);
-        gui.initImGui();
+        gui.init();
 
         this.pickingTexture = new PickingTexture(SCREEN_WIDTH,SCREEN_HEIGHT);
         this.framebuffer = new Framebuffer(SCREEN_WIDTH,SCREEN_HEIGHT);
@@ -155,11 +148,7 @@ public class Window {
 
 
             glfwPollEvents();
-            if(MouseListener.mouseButtonDown(0)) {
-                this.clickX = MouseListener.getOrthoX();
-                this.clickY = MouseListener.getOrthoY();
-                this.leftClicked = true;
-            }
+
 
             currentScene.update(dt * 60);
 
@@ -184,8 +173,13 @@ public class Window {
             Renderer.setCurrentShader(defaultShader);
             currentScene.render();
 
-           framebuffer.unbind();
+            framebuffer.unbind();
+            glClearColor(0,0,0,0);
+            glClear(GL_COLOR_BUFFER_BIT);
             gui.drawGui(currentScene);
+
+
+
 
             glfwSwapBuffers(glfwWindow);
             endTime = Time.getTime();
@@ -193,7 +187,6 @@ public class Window {
             beginTime = endTime;
             Time.timePassed += dt;
             MouseListener.endFrame();
-            leftClicked = false;
         }
         currentScene.saveExit();
     }
@@ -230,6 +223,10 @@ public class Window {
 
     public void setFramebuffer(Framebuffer framebuffer) {
         this.framebuffer = framebuffer;
+    }
+
+    public ImGuiLayer getGui() {
+        return gui;
     }
 }
 

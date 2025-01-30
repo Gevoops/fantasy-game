@@ -13,6 +13,7 @@ public class ImGuiLayer {
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private long windowPtr;
+    public ImVec2 windowPos = new ImVec2();
 
     public ImGuiLayer(long windowPtr){
         this.windowPtr = windowPtr;
@@ -21,6 +22,7 @@ public class ImGuiLayer {
         beginDraw();
         setupDockSpace();
         currentScene.sceneImGui();
+        ImGui.showDemoWindow();
         ImGui.end();
         render();
     }
@@ -31,10 +33,11 @@ public class ImGuiLayer {
         ImGui.destroyContext();
     }
 
-    public void initImGui(){
+    public void init(){
         ImGui.createContext();
         ImGuiIO io = ImGui.getIO();
         io.setConfigFlags(ImGuiConfigFlags.DockingEnable);
+        io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
         imGuiGlfw.init(windowPtr,true);
 
 
@@ -46,8 +49,11 @@ public class ImGuiLayer {
         fontConfig.setPixelSnapH(true);
         fontAtlas.addFontFromFileTTF("src/main/resources/fonts/segoeui.ttf",24,fontConfig);
         fontConfig.destroy();
-        imGuiGl3.init( "#version 330"); //glsl version, must be last
+
+
+        imGuiGl3.init( "#version 330");
         imGuiGl3.newFrame();
+
     }
 
     public ImGuiImplGlfw getImGuiGlfw() {
@@ -59,7 +65,7 @@ public class ImGuiLayer {
     }
 
     public void beginDraw(){
-        this.getImGuiGlfw().newFrame();
+        imGuiGlfw.newFrame();
         ImGui.newFrame();
     }
 
@@ -75,8 +81,9 @@ public class ImGuiLayer {
 
     private void setupDockSpace(){
         int windowFlags =  ImGuiWindowFlags.NoDocking;
-        ImGui.setNextWindowPos(0,0, ImGuiCond.Always);
-        ImGui.setNextWindowSize(Window.getWidth(),Window.getHeight());
+        ImGui.setNextWindowPos(0,24, ImGuiCond.Always); //TODO fix this 24 crap
+        ImGui.setNextWindowSize(Window.getWidth(),Window.getHeight() - 24);
+        ImGui.setNextWindowViewport(ImGui.getMainViewport().getID());
         ImGui.pushStyleVar(ImGuiStyleVar.WindowRounding,0);
         ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize,0);
         windowFlags |= ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoCollapse |
@@ -85,7 +92,7 @@ public class ImGuiLayer {
 
         ImGui.begin("Dockspace Demo", new ImBoolean(true),windowFlags );
         ImGui.popStyleVar(2);
-
+        ImGui.getWindowPos(windowPos);
         ImGui.dockSpace(ImGui.getID("Dockspace"));
     }
 }

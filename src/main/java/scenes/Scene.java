@@ -73,7 +73,6 @@ public abstract class Scene {
 
     public void imGui(){
 
-
     }
 
     public abstract GameViewWindow getGameViewport();

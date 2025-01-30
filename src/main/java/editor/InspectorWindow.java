@@ -2,6 +2,7 @@ package editor;
 
 import engine.GameObject;
 import imgui.ImGui;
+import imgui.flag.ImGuiWindowFlags;
 import scenes.WorldEditorScene;
 
 public class InspectorWindow {

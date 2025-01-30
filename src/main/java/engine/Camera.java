@@ -11,7 +11,7 @@ public class Camera {
     private Matrix4f projectionMatrix, invProjectionMatrix;
     private Matrix4f viewMatrix, invViewMatrix, invScaleMatrix;
     private Matrix4f scaleMatrix;
-    private Vector2f viewPoint;
+    public Vector2f viewPoint;
     private Vector2f projectionSize = new Vector2f(64.0f * 16f * 2 ,64.0f * 9.0f * 2);
     private float zoom = 1f;
     private float cameraSpeed  = 1;

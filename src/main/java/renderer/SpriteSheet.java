@@ -1,10 +1,7 @@
 package renderer;
 
 
-import components.Component;
 import org.joml.Vector2f;
-import renderer.Sprite;
-import renderer.Texture;
 
 import java.util.ArrayList;
 
@@ -14,18 +11,18 @@ public class SpriteSheet {
     private String path;
     private Texture texture = null;
     private ArrayList<Sprite> sprites = null;
-    private boolean isTileSet = false;
+    private float tileSizeRatio = 0;
 
     public SpriteSheet(){
 
     }
     public SpriteSheet(String path,String name,Texture texture, int spriteWidth, int spriteHeight,
                        int numSprites, int spacing){
-        this(path ,name,texture,spriteWidth,spriteHeight,numSprites,spacing,false);
+        this(path ,name,texture,spriteWidth,spriteHeight,numSprites,spacing,0);
     }
     public SpriteSheet(String path, String name, Texture texture, int spriteWidth, int spriteHeight,
-                       int numSprites, int spacing, boolean isTileSet){
-        this.isTileSet = isTileSet;
+                       int numSprites, int spacing, float tileSizeRatio){
+        this.tileSizeRatio = tileSizeRatio;
         this.sprites = new ArrayList<>();
         this.path = path;
         this.name = name;
@@ -87,7 +84,7 @@ public class SpriteSheet {
         this.sprites = sprites;
     }
 
-    public boolean isTileSet(){
-        return isTileSet;
+    public float getTileSizeRatio() {
+        return tileSizeRatio;
     }
 }

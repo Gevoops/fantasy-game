@@ -17,6 +17,7 @@ public class MouseControllerGame implements MouseControllerStrategy {
         private float stepY;
         private int spriteIndex = 0, spriteIndex2 = 0;
         private boolean start;
+        private boolean leftClicked = false;
 
 
         public MouseControllerGame(){
@@ -26,11 +27,17 @@ public class MouseControllerGame implements MouseControllerStrategy {
             clickY = player.getY();
         }
         public void update(float dt) {
+            if(MouseListener.mouseButtonDown(0)) {
+                this.clickX = MouseListener.getOrthoX();
+                this.clickY = MouseListener.getOrthoY();
+                this.leftClicked = true;
+            }
             Window.getInstance().getScene().getCamera().zoom(MouseListener.getScrollY());
             movePlayer(dt);
             if (player!= null){
                 player.update(dt);
             }
+            leftClicked = false;
         }
 
         public void movePlayer(float dt) {
@@ -38,9 +45,8 @@ public class MouseControllerGame implements MouseControllerStrategy {
             if (WorldEditorScene.getInstance().getPlayer() != null) {
 
                 SpriteSheetList spriteSheets = player.getComponent(SpriteSheetList.class);
-                if (Window.getInstance().leftClicked) {
-                    clickX = Window.getInstance().clickX - 50;
-                    clickY = Window.getInstance().clickY;
+                if (leftClicked) {
+                    clickX = clickX - 50;
                     float distance = (float) Math.sqrt(Math.pow(player.getX() - clickX, 2)
                             + Math.pow(player.getY() - clickY, 2));
 

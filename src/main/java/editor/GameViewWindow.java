@@ -1,5 +1,6 @@
 package editor;
 
+import engine.ImGuiLayer;
 import engine.MouseListener;
 import engine.Window;
 import imgui.ImGui;
@@ -27,22 +28,26 @@ public class GameViewWindow {
     public void imGui(){
         ImGui.begin("Game Viewport", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse );
         ImVec2 frameSize1 = getLargestSizeForViewport();
-        frameSize1.x = 2560;
-        frameSize1.y = 1440;
+        frameSize1.x = SCREEN_WIDTH;
+        frameSize1.y = SCREEN_HEIGHT;
         contentWidth = frameSize1.x;
         contentHeight = frameSize1.y;
 
         ImVec2 screenPos = new ImVec2();
+        ImVec2 windowPos = new ImVec2();
         ImGui.getCursorScreenPos(screenPos);
 
-        contentX = screenPos.x;
-        contentY = screenPos.y;
+        contentX = screenPos.x + windowPos.x;
+        contentY = screenPos.y + windowPos.y - 24;
+
+        //TODO fix this disgusting 24 ^. when viewports are enabled some 23 pixel offset is happening and fucking up the screen pos
+
 
 
         int textureID = framebuffer.getTextureID();
         ImGui.image(textureID,contentWidth,contentHeight,0 , 1 , 1 ,0);
 
-        MouseListener.get().setGameViewportPos(new Vector2f(screenPos.x,screenPos.y));
+        MouseListener.get().setGameViewportPos(new Vector2f(contentX,contentY));
         MouseListener.get().setGameViewportSize(new Vector2f(contentWidth,contentHeight));
 
         ImGui.end();
