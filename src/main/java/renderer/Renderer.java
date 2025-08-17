@@ -23,7 +23,7 @@ public class Renderer {
         }
     }
 
-    public void addGameObject(GameObject ob) throws NullSpriteException {
+    public void addGameObject(GameObject ob) throws Exception {
         if(ob.getSprite() == null){
             throw new NullSpriteException("renderer.addGameObject, " + ob.getName() + "sprite is null");
         }
@@ -44,6 +44,7 @@ public class Renderer {
             newBatch.addGameObject(ob);
         }
     }
+
 
     public void clear(){
 

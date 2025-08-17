@@ -12,7 +12,7 @@ public class Player extends Component{
         Scene scene = Window.getInstance().getScene();
         Camera camera = scene.getCamera();
         scene.setPlayer(this.gameObject);
-        camera.setViewPoint(new Vector2f(this.gameObject.getTransform().position.x - camera.getProjectionSize().x  / 2,
-                this.gameObject.getTransform().position.y - camera.getProjectionSize().y / 2));
+        camera.setViewPoint(new Vector2f(this.gameObject.getX() - camera.getProjectionSize().x  / 2,
+                this.gameObject.getY() - camera.getProjectionSize().y / 2));
     }
 }

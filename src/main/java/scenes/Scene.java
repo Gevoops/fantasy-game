@@ -2,18 +2,16 @@ package scenes;
 
 import components.Component;
 import components.ComponentSerializer;
-import editor.GameViewWindow;
+import editor.GameViewport;
 import engine.Camera;
 import engine.GameObjectSerializer;
 import exceptions.GameObjectNotFoundException;
-import exceptions.NullSpriteException;
 import engine.GameObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import org.joml.Vector2f;
-import renderer.RenderBatch;
 import renderer.Renderer;
+
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -47,7 +45,7 @@ public abstract class Scene {
             ob.start();
             try{
                 this.renderer.addGameObject(ob);
-            } catch (NullSpriteException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -60,7 +58,7 @@ public abstract class Scene {
         if(isRunning) {
             try {
                 this.renderer.addGameObject(ob);
-            }catch (NullSpriteException e){
+            }catch (Exception e){
                 e.printStackTrace();
             }
             ob.start();
@@ -75,7 +73,7 @@ public abstract class Scene {
 
     }
 
-    public abstract GameViewWindow getGameViewport();
+    public abstract GameViewport getGameViewport();
 
     public void saveExit(){
         Gson gson = new GsonBuilder()
@@ -152,6 +150,12 @@ public abstract class Scene {
     }
     public void setPlayer(GameObject player) {
         this.player = player;
+    }
+
+    public boolean deleteGameObj(GameObject obj){
+        obj.getBatch().deleteGameObj(obj);
+        gameObjects.remove(obj);
+        return true;
     }
 
     // grid methods =============================================================================================================================================

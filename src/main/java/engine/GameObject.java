@@ -2,6 +2,7 @@ package engine;
 
 import components.Component;
 import org.joml.Vector2f;
+import renderer.RenderBatch;
 import renderer.Transform;
 import renderer.Sprite;
 import java.util.ArrayList;
@@ -17,6 +18,9 @@ public class GameObject {
     private boolean isDirty = true;
     private int zIndex = 0;
     private List<Component> components = new ArrayList<>();
+
+    private transient RenderBatch batch;
+    private transient int renderBufferIndex;
 
 
     public GameObject(){
@@ -155,5 +159,21 @@ public class GameObject {
     }
     public List<Component> getComponents() {
         return components;
+    }
+
+    public RenderBatch getBatch() {
+        return batch;
+    }
+
+    public void setBatch(RenderBatch batch) {
+        this.batch = batch;
+    }
+
+    public int getRenderBufferIndex() {
+        return renderBufferIndex;
+    }
+
+    public void setRenderBufferIndex(int renderBufferIndex) {
+        this.renderBufferIndex = renderBufferIndex;
     }
 }

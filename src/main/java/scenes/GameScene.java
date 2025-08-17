@@ -1,8 +1,7 @@
 package scenes;
 
-import editor.GameViewWindow;
+import editor.GameViewport;
 import engine.GameObject;
-import engine.Window;
 
 public class GameScene extends Scene {
     private static GameScene instance;
@@ -15,7 +14,7 @@ public class GameScene extends Scene {
 
 
     @Override
-    public GameViewWindow getGameViewport() {
+    public GameViewport getGameViewport() {
         return null;
     }
 

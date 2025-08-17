@@ -12,7 +12,7 @@ public class Camera {
     private Matrix4f viewMatrix, invViewMatrix, invScaleMatrix;
     private Matrix4f scaleMatrix;
     public Vector2f viewPoint;
-    private Vector2f projectionSize = new Vector2f(64.0f * 16f * 2 ,64.0f * 9.0f * 2);
+    private Vector2f projectionSize = new Vector2f(64 * 2 * 16  ,64 * 2  * 9 );
     private float zoom = 1f;
     private float cameraSpeed  = 1;
     private float cameraAcceleration = 0.2f;
@@ -20,6 +20,7 @@ public class Camera {
 
     public Camera(Vector2f viewPoint ){
         this.viewPoint = viewPoint;
+        System.out.println(viewPoint.x + " " + viewPoint.y);
         this.projectionMatrix = new Matrix4f();
         this.viewMatrix = new Matrix4f();
         this.invViewMatrix = viewMatrix.invert();
@@ -29,7 +30,7 @@ public class Camera {
 
     public void adjustProjection() {
         projectionMatrix.identity();
-        projectionMatrix.ortho(0.0f, projectionSize.x, 0.0f,projectionSize.y, 0.0f,100.0f);
+        projectionMatrix.ortho(viewPoint.x, projectionSize.x, viewPoint.y,projectionSize.y, 0.0f,100.0f);
 
         scaleMatrix = new Matrix4f( zoom, 0.0f, 0.0f, 0.0f,
                                     0.0f,  zoom ,0.0f, 0.0f,

@@ -17,6 +17,7 @@ public class Sprite{
     int spriteSheetIndex = 0;
 
     public Sprite() {
+        color = new Vector4f(0,0,0,0);
     }
 
     public Sprite(Texture texture, Vector2f[] texCoords){

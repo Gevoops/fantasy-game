@@ -1,11 +1,10 @@
 package scenes;
 
 import editor.EditorWindow;
-import editor.GameViewWindow;
+import editor.GameViewport;
 import editor.MouseControllerEditor;
 import editor.InspectorWindow;
 import engine.*;
-import imgui.ImGui;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import renderer.DebugDraw;
@@ -24,7 +23,7 @@ import static util.Settings.TILE_WIDTH;
 
 public class WorldEditorScene extends Scene {
     private static WorldEditorScene instance;
-    private GameViewWindow gameViewWindow;
+    private GameViewport gameViewport;
     private EditorWindow editorWindow;
     private InspectorWindow inspectorWindow;
     private MouseControllerStrategy mouseController;
@@ -43,11 +42,9 @@ public class WorldEditorScene extends Scene {
 
     @Override
     public void imGui() {
-        gameViewWindow.imGui();
+        gameViewport.imGui();
         editorWindow.imGui();
         inspectorWindow.imGui();
-
-
     }
 
     public void addGrid() {
@@ -95,11 +92,11 @@ public class WorldEditorScene extends Scene {
     public void init() {
         load();
         mouseController = new MouseControllerEditor();
-        gameViewWindow = new GameViewWindow();
+        gameViewport = new GameViewport();
         editorWindow = new EditorWindow(instance);
-        inspectorWindow = new InspectorWindow();
-        camera = new Camera(new Vector2f(0,0));
-        Window.getInstance().setFramebuffer(gameViewWindow.getFramebuffer());
+        inspectorWindow = new InspectorWindow(instance);
+        camera = new Camera(new Vector2f(Grid.gridToScreenX(0,0),0));
+        Window.getInstance().setFramebuffer(gameViewport.getFramebuffer());
     }
 
     protected void loadResources() {
@@ -145,8 +142,8 @@ public class WorldEditorScene extends Scene {
 
 
 
-    public GameViewWindow getGameViewport() {
-        return gameViewWindow;
+    public GameViewport getGameViewport() {
+        return gameViewport;
     }
 
     public MouseControllerStrategy getMouseControllerStrategy() {
@@ -175,5 +172,9 @@ public class WorldEditorScene extends Scene {
 
     public void setActiveGameObject(GameObject activeGameObject) {
         this.activeGameObject = activeGameObject;
+    }
+
+    public void removeGameObject(GameObject object){
+        gameObjects.remove(object);
     }
 }

@@ -29,6 +29,7 @@ public class MouseControllerGame implements MouseControllerStrategy {
         public void update(float dt) {
             if(MouseListener.mouseButtonDown(0)) {
                 this.clickX = MouseListener.getOrthoX();
+                System.out.println(this.clickX);
                 this.clickY = MouseListener.getOrthoY();
                 this.leftClicked = true;
             }
