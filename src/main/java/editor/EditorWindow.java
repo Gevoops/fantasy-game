@@ -4,7 +4,6 @@ import components.Player;
 import components.RigidBody;
 import components.SpriteSheetList;
 import engine.GameObject;
-import engine.KeyListener;
 import engine.Prefabs;
 import game.MouseControllerGame;
 import imgui.ImGui;
@@ -12,19 +11,16 @@ import imgui.ImGuiInputTextCallbackData;
 import imgui.ImVec2;
 import imgui.callback.ImGuiInputTextCallback;
 import imgui.flag.ImGuiInputTextFlags;
-import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImString;
 import org.joml.Vector2f;
 import renderer.Sprite;
 import renderer.Transform;
 import scenes.WorldEditorScene;
 import util.AssetPool;
-import util.Grid;
+import util.Tiles;
 
 import java.util.ArrayList;
 
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static util.Settings.TILE_HEIGHT;
 import static util.Settings.TILE_WIDTH;
 
@@ -72,7 +68,7 @@ public class EditorWindow {
                 try {
                     int x = Integer.parseInt(res[0]);
                     int y = Integer.parseInt(res[1]);
-                    editorScene.getCamera().viewPoint.set(Grid.gridToScreen(x, y));
+                    editorScene.getCamera().viewPoint.set(Tiles.tileToScreen(x, y));
 
                 } catch (Exception e) {
                     System.out.println("invalid x and y");
@@ -127,7 +123,7 @@ public class EditorWindow {
                     "valerie",
                     AssetPool.getSpriteSheet("Idle_KG_2").getSprite(0),
                     new Transform(new Vector2f(300, 300), new Vector2f(100, 64)),
-                    2);
+                    0);
             SpriteSheetList spriteSheetList = new SpriteSheetList();
             spriteSheetList.addSpriteSheet(AssetPool.getSpriteSheet("Idle_KG_2"));
             spriteSheetList.addSpriteSheet(AssetPool.getSpriteSheet("Walking_KG_2"));
@@ -145,7 +141,7 @@ public class EditorWindow {
             for (int y = 39; y >= 0; y--) {
                 for (int x = 0; x < 40; x++) {
                     GameObject ob = new GameObject("ground: " + x + "," + y,null,
-                            new Transform(Grid.cellSnapToGrid(x,y), new Vector2f(TILE_WIDTH, TILE_HEIGHT)),0);
+                            new Transform(Tiles.tileSnapToTile(x,y), new Vector2f(TILE_WIDTH, TILE_HEIGHT)),0);
                     SpriteSheetList list = new SpriteSheetList();
                     list.addSpriteSheet(AssetPool.getSpriteSheet("ground1"));
                     ob.addComponent(list);

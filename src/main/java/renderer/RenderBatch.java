@@ -9,6 +9,7 @@ import org.joml.Vector4f;
 import util.Time;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL15.*;
@@ -36,10 +37,7 @@ public class RenderBatch {
     private final int VERTEX_SIZE = 10;
     private final int VERTEX_SIZE_BYTES = VERTEX_SIZE * Float.BYTES;
 
-    private GameObject[] gameObjects;
-    private int gameObNum;
-    private int maxGameObIndex;
-    private boolean hasRoom;
+    private ArrayList<GameObject> gameObjects = new ArrayList<>();
     private float[] vertices;
     private int[] texSlots = {0,1,2,3,4,5,6,7};
 
@@ -48,18 +46,11 @@ public class RenderBatch {
     private int vaoID, vboID;
     private int maxBatchSize;
     private int zIndex;
-    private boolean reBufferData = false;
 
     public RenderBatch(int maxBatchSize, int zIndex) {
         this.zIndex = zIndex;
-        this.gameObjects = new GameObject[maxBatchSize];
         this.maxBatchSize = maxBatchSize;
-
         vertices = new float[VERTEX_SIZE * 4 * maxBatchSize]; //4 = vertices per quad
-
-        this.maxGameObIndex = 0;
-        this.gameObNum = 0;
-        this.hasRoom = true;
         this.textures = new ArrayList<>();
     }
 
@@ -120,25 +111,10 @@ public class RenderBatch {
         return elements;
     }
 
-    public void addGameObject(GameObject ob) throws Exception{
+    public void addGameObject(GameObject ob) {
         // get index and add GameObject
-        int index = 0;
-        for (int i =0; i < gameObjects.length; i++) { // look for first open slot
-            if (gameObjects[i] == null) {
-                index = i;
-                this.gameObjects[index] = ob;
-                break;
-            }
-            if (i == gameObjects.length - 1) {
-                throw new Exception("cant find open slot for rendering object");
-            }
-        }
-        this.gameObNum++;
-        if(gameObNum >= this.maxBatchSize) {
-            hasRoom = false;
-        }
+        gameObjects.add(ob);
         ob.setBatch(this);
-        ob.setRenderBufferIndex(index);
         if(!textures.contains(ob.getSprite().getTexture()) && ob.getSprite().getTexture() != null) {
             textures.add(ob.getSprite().getTexture());
         }
@@ -151,27 +127,14 @@ public class RenderBatch {
                 }
             }
         }
-
-        //Add properties to local vertices array
-        loadVertexProperties(index);
     }
 
     public void deleteGameObj(GameObject ob) {
-        for(int i =0 ; i < gameObjects.length; i++){
-            if(gameObjects[i] == ob) {
-                reBufferData = true;
-                ob.setSprite(new Sprite());
-                loadVertexProperties(ob.getRenderBufferIndex());
-                gameObjects[i] = null;
-                break;
-            }
-        }
-        gameObNum--;
-        hasRoom = true;
+       gameObjects.remove(ob);
     }
 
-    private void loadVertexProperties(int index) {
-        GameObject ob = this.gameObjects[index];
+    private void loadVertexProperties(GameObject ob) {
+        int index = gameObjects.indexOf(ob);
         Sprite sprite = ob.getSprite();
 
         // find offset within array (4 vertices per sprite)
@@ -190,7 +153,6 @@ public class RenderBatch {
                 }
             }
         }
-
 
         // Add vertices with the appropriate properties
         //going over the coordinates of a quad
@@ -231,22 +193,18 @@ public class RenderBatch {
     }
 
     public void render() {
-        for (int i = 0; i < maxBatchSize; i++) {
-            GameObject go = gameObjects[i];
-            if(go != null && go.isDirty()) {
-                loadVertexProperties(i);
-                go.setDirty(false);
-                reBufferData = true;
+        gameObjects.sort((o1,o2) -> Float.compare(
+              o1.getType() == GameObject.PLAYER ? -o1.getWorldX() - o1.getWorldY() + 2 : -o1.getWorldX() - o1.getWorldY(),
+               o2.getType() == GameObject.PLAYER ? -o2.getWorldX() - o2.getWorldY() + 2 : -o2.getWorldX() - o2.getWorldY()));
+        for (GameObject ob : gameObjects) {
+            if(ob != null) {
+                loadVertexProperties(ob);
             }
 
         }
-        if(reBufferData) {
-            //rebuffer only if changed
-            glBindBuffer(GL_ARRAY_BUFFER, vboID);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
-            reBufferData = false;
-        }
-
+        // rebuffer
+        glBindBuffer(GL_ARRAY_BUFFER, vboID);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
 
         // shader
         Shader shader = Renderer.getCurrentShader();
@@ -273,7 +231,7 @@ public class RenderBatch {
 
 
 
-        glDrawElements(GL_TRIANGLES, maxBatchSize * 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, gameObjects.size() * 6, GL_UNSIGNED_INT, 0);
 
         // unbind everything
         glDisableVertexAttribArray(0);
@@ -296,7 +254,7 @@ public class RenderBatch {
 
 
     public boolean hasRoom() {
-        return this.hasRoom;
+        return this.gameObjects.size() < maxBatchSize;
     }
 
     public boolean hasTextureRoom() {

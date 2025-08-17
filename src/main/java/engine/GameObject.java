@@ -5,6 +5,8 @@ import org.joml.Vector2f;
 import renderer.RenderBatch;
 import renderer.Transform;
 import renderer.Sprite;
+import util.Tiles;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,11 +18,17 @@ public class GameObject {
     private Transform transform = null;
     private Transform lastTransform = null;
     private boolean isDirty = true;
+    private int height;
     private int zIndex = 0;
     private List<Component> components = new ArrayList<>();
+    private int type = DEFAULT;
 
     private transient RenderBatch batch;
     private transient int renderBufferIndex;
+
+    public static final int DEFAULT = 0;
+    public static final int TILE = 1;
+    public static final int PLAYER = 2;
 
 
     public GameObject(){
@@ -176,4 +184,21 @@ public class GameObject {
     public void setRenderBufferIndex(int renderBufferIndex) {
         this.renderBufferIndex = renderBufferIndex;
     }
+
+    public float getWorldX(){
+        return  Tiles.screenToTileX(getX(),getY());
+    }
+
+    public float getWorldY(){
+        return Tiles.screenToTileY(getX(),getY());
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
 }

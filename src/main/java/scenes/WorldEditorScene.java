@@ -12,11 +12,11 @@ import renderer.DebugDraw;
 import renderer.SpriteSheet;
 
 import util.AssetPool;
-import util.Grid;
+import util.Tiles;
 
 
-import static util.Grid.gridToScreen;
-import static util.Grid.snapScreenToGrid;
+import static util.Tiles.tileToScreen;
+import static util.Tiles.snapScreenToTile;
 import static util.Settings.TILE_HEIGHT;
 import static util.Settings.TILE_WIDTH;
 
@@ -52,21 +52,21 @@ public class WorldEditorScene extends Scene {
         Vector3f color = new Vector3f(75f / 255, 75f / 255, 75f / 255);
         int lineNumX = 2*(int) ((camera.getProjectionSize().x / TILE_WIDTH) / zoom) + 15;
         int lineNumY = 2*(int) ((camera.getProjectionSize().y / TILE_HEIGHT) / zoom) + 15;
-        Vector2f snappedCamera = snapScreenToGrid(camera.getViewPoint());
+        Vector2f snappedCamera = Tiles.snapScreenToTile(camera.getViewPoint());
         Vector2f offset = new Vector2f(0,0);
         offset.add(snappedCamera);
         for (int i = -lineNumX; i < lineNumX; i++) {
-            DebugDraw.addLine2D(gridToScreen(-lineNumX, i).add(offset), gridToScreen(lineNumX, i).add(offset),color, 1,false);
+            DebugDraw.addLine2D(Tiles.tileToScreen(-lineNumX, i).add(offset), Tiles.tileToScreen(lineNumX, i).add(offset),color, 1,false);
         }
         for (int i = -lineNumY; i < lineNumY; i++ ) {
-            DebugDraw.addLine2D(gridToScreen(i,-lineNumY).add(offset), gridToScreen(i,lineNumY).add(offset),color,1,false);
+            DebugDraw.addLine2D(Tiles.tileToScreen(i,-lineNumY).add(offset), Tiles.tileToScreen(i,lineNumY).add(offset),color,1,false);
         }
-        DebugDraw.addLine2D(gridToScreen(0,0), gridToScreen(-2,-2));
+        DebugDraw.addLine2D(Tiles.tileToScreen(0,0), Tiles.tileToScreen(-2,-2));
     }
 
     public void addMouseSnapLines(){
         Vector2f mousePos = new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY());
-        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), snapScreenToGrid(mousePos));
+        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), Tiles.snapScreenToTile(mousePos));
     }
 
     @Override
@@ -95,7 +95,7 @@ public class WorldEditorScene extends Scene {
         gameViewport = new GameViewport();
         editorWindow = new EditorWindow(instance);
         inspectorWindow = new InspectorWindow(instance);
-        camera = new Camera(new Vector2f(Grid.gridToScreenX(0,0),0));
+        camera = new Camera(new Vector2f(Tiles.tileToScreenX(0,0),0));
         Window.getInstance().setFramebuffer(gameViewport.getFramebuffer());
     }
 

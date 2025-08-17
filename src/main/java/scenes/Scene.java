@@ -150,6 +150,7 @@ public abstract class Scene {
     }
     public void setPlayer(GameObject player) {
         this.player = player;
+        player.setType(GameObject.PLAYER);
     }
 
     public boolean deleteGameObj(GameObject obj){

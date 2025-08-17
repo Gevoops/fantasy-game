@@ -7,7 +7,7 @@ import engine.Window;
 import exceptions.GameObjectNotFoundException;
 import org.joml.Vector2f;
 import scenes.WorldEditorScene;
-import util.Grid;
+import util.Tiles;
 import util.Settings;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -73,7 +73,7 @@ public class MouseControllerEditor implements MouseControllerStrategy {
 
     private void dragObject(){
         GameObject ob = editorScene.getLiftedObject();
-        ob.setPosition(Grid.snapToGrid((float) orthoX, (float)orthoY).add(-(ob.getTransform().scale.x - Settings.TILE_WIDTH) / 2,0));
+        ob.setPosition(Tiles.snapToTile((float) orthoX, (float)orthoY).add(-(ob.getTransform().scale.x - Settings.TILE_WIDTH) / 2,0));
     }
 
     private void getMouseState(){

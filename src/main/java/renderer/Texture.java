@@ -16,9 +16,6 @@ public class Texture {
     private transient int texID;
     private int width, height;
 
-    public Texture() {
-    }
-
     public Texture(String filepath){
         this.filepath = filepath;
         //Generate texture on GPU

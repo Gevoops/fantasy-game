@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class Renderer {
-    private final int MAX_BATCH_SIZE = 1000;
+    private final int MAX_BATCH_SIZE = 2500;
     public List<RenderBatch> batches;
     public static Shader currentShader;
 
@@ -42,6 +42,7 @@ public class Renderer {
             newBatch.start();
             batches.add(newBatch);
             newBatch.addGameObject(ob);
+            System.out.println("new bactj");
         }
     }
 
