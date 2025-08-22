@@ -32,8 +32,8 @@ public class MouseControllerGame implements MouseControllerStrategy {
             if(MouseListener.mouseButtonDown(0)) {
                 this.clickX = MouseListener.getOrthoX();
                 this.clickY = MouseListener.getOrthoY();
-                Vector2f tile = Tiles.worldToTile(new Vector2f(clickX,clickY));
-                System.out.println((int)tile.x + "  " + (int)tile.y);
+                Vector2f pos = Tiles.getTileCoords(new Vector2f(clickX,clickY));
+                System.out.println(pos.x + " " + pos.y);
                 this.leftClicked = true;
             }
             Window.getInstance().getScene().getCamera().zoom(MouseListener.getScrollY());

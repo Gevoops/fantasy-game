@@ -9,7 +9,6 @@ import org.joml.Vector4f;
 import util.Time;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL15.*;
@@ -194,8 +193,8 @@ public class RenderBatch {
 
     public void render() {
         gameObjects.sort((o1,o2) -> Float.compare(
-               o2.getWorldX() + o2.getWorldY() + 0 ,
-               o1.getWorldX() + o1.getWorldY() + 0 ));
+               o1.getTileX() - o1.getTileY()  ,
+               o2.getTileX() - o2.getTileY()  ));
         for (GameObject ob : gameObjects) {
             if(ob != null) {
                 loadVertexProperties(ob);

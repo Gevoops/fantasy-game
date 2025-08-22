@@ -177,20 +177,12 @@ public class GameObject {
         this.batch = batch;
     }
 
-    public int getRenderBufferIndex() {
-        return renderBufferIndex;
+    public float getTileY(){
+        return  Tiles.worldToTileY(getX(),getY());
     }
 
-    public void setRenderBufferIndex(int renderBufferIndex) {
-        this.renderBufferIndex = renderBufferIndex;
-    }
-
-    public float getWorldX(){
-        return  Tiles.worldToTileX(getX(),getY());
-    }
-
-    public float getWorldY(){
-        return Tiles.worldToTileY(getX(),getY());
+    public float getTileX(){
+        return Tiles.worldToTileX(getX(),getY());
     }
 
     public int getType() {
