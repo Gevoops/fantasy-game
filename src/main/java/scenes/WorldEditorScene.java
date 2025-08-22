@@ -14,9 +14,6 @@ import renderer.SpriteSheet;
 import util.AssetPool;
 import util.Tiles;
 
-
-import static util.Tiles.tileToScreen;
-import static util.Tiles.snapScreenToTile;
 import static util.Settings.TILE_HEIGHT;
 import static util.Settings.TILE_WIDTH;
 
@@ -56,12 +53,12 @@ public class WorldEditorScene extends Scene {
         Vector2f offset = new Vector2f(0,0);
         offset.add(snappedCamera);
         for (int i = -lineNumX; i < lineNumX; i++) {
-            DebugDraw.addLine2D(Tiles.tileToScreen(-lineNumX, i).add(offset), Tiles.tileToScreen(lineNumX, i).add(offset),color, 1,false);
+            DebugDraw.addLine2D(Tiles.tileToWorld(-lineNumX, i).add(offset), Tiles.tileToWorld(lineNumX, i).add(offset),color, 1,false);
         }
         for (int i = -lineNumY; i < lineNumY; i++ ) {
-            DebugDraw.addLine2D(Tiles.tileToScreen(i,-lineNumY).add(offset), Tiles.tileToScreen(i,lineNumY).add(offset),color,1,false);
+            DebugDraw.addLine2D(Tiles.tileToWorld(i,-lineNumY).add(offset), Tiles.tileToWorld(i,lineNumY).add(offset),color,1,false);
         }
-        DebugDraw.addLine2D(Tiles.tileToScreen(0,0), Tiles.tileToScreen(-2,-2));
+        DebugDraw.addLine2D(Tiles.tileToWorld(0,0), Tiles.tileToWorld(-2,-2));
     }
 
     public void addMouseSnapLines(){
@@ -91,11 +88,11 @@ public class WorldEditorScene extends Scene {
     @Override
     public void init() {
         load();
-        mouseController = new MouseControllerEditor();
+        mouseController = new MouseControllerEditor(this);
         gameViewport = new GameViewport();
         editorWindow = new EditorWindow(instance);
         inspectorWindow = new InspectorWindow(instance);
-        camera = new Camera(new Vector2f(Tiles.tileToScreenX(0,0),0));
+        camera = new Camera(new Vector2f(Tiles.tileToWorld(0,0)));
         Window.getInstance().setFramebuffer(gameViewport.getFramebuffer());
     }
 
@@ -176,5 +173,9 @@ public class WorldEditorScene extends Scene {
 
     public void removeGameObject(GameObject object){
         gameObjects.remove(object);
+    }
+
+    public EditorWindow getEditorWindow() {
+        return editorWindow;
     }
 }

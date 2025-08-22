@@ -5,7 +5,9 @@ import engine.GameObject;
 import engine.MouseControllerStrategy;
 import engine.MouseListener;
 import engine.Window;
+import org.joml.Vector2f;
 import scenes.WorldEditorScene;
+import util.Tiles;
 
 
 public class MouseControllerGame implements MouseControllerStrategy {
@@ -29,8 +31,9 @@ public class MouseControllerGame implements MouseControllerStrategy {
         public void update(float dt) {
             if(MouseListener.mouseButtonDown(0)) {
                 this.clickX = MouseListener.getOrthoX();
-                System.out.println(this.clickX);
                 this.clickY = MouseListener.getOrthoY();
+                Vector2f tile = Tiles.worldToTile(new Vector2f(clickX,clickY));
+                System.out.println((int)tile.x + "  " + (int)tile.y);
                 this.leftClicked = true;
             }
             Window.getInstance().getScene().getCamera().zoom(MouseListener.getScrollY());

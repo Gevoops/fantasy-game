@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Scene {
 
@@ -28,8 +30,7 @@ public abstract class Scene {
     protected boolean levelLoaded = false;
     protected String savedWorldPath;
     protected GameObject player;
-
-
+    protected Map<Long, GameObject> tileMap = new HashMap<>();
 
 
     public Scene() {
@@ -53,7 +54,7 @@ public abstract class Scene {
         isRunning = true;
     }
 
-    public void addGameObjectToScene(GameObject ob) {
+    public void addGameObject(GameObject ob) {
         gameObjects.add(ob);
         if(isRunning) {
             try {
@@ -108,7 +109,7 @@ public abstract class Scene {
 
             ArrayList<GameObject> objects = gson.fromJson(inFile, new TypeToken<ArrayList<GameObject>>(){}.getType());
             for (GameObject go : objects) {
-                addGameObjectToScene(go);
+                addGameObject(go);
                 for (Component c : go.getComponents()){
                     if(c.getCompID() > maxCompId){
                         maxCompId = c.getCompID();

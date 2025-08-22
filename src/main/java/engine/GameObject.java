@@ -186,11 +186,11 @@ public class GameObject {
     }
 
     public float getWorldX(){
-        return  Tiles.screenToTileX(getX(),getY());
+        return  Tiles.worldToTileX(getX(),getY());
     }
 
     public float getWorldY(){
-        return Tiles.screenToTileY(getX(),getY());
+        return Tiles.worldToTileY(getX(),getY());
     }
 
     public int getType() {

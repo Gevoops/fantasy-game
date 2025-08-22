@@ -1,8 +1,11 @@
 package editor;
 
 import engine.GameObject;
+import engine.KeyListener;
 import imgui.ImGui;
 import scenes.WorldEditorScene;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 public class InspectorWindow {
     private WorldEditorScene scene;
@@ -17,11 +20,11 @@ public class InspectorWindow {
         if (o != null) {
             o.imGui();
             ImGui.text("active object: " + o.getID() );
-        }
-        if (ImGui.button("delete")) {
-            scene.deleteGameObj(o);
-            scene.setActiveGameObject(null);
-            scene.setLiftedObject(null);
+            if (ImGui.button("delete") || KeyListener.isKeyPressed(GLFW_KEY_DELETE)) {
+                scene.deleteGameObj(o);
+                scene.setActiveGameObject(null);
+                scene.setLiftedObject(null);
+            }
         }
         ImGui.sameLine();
         ImGui.end();

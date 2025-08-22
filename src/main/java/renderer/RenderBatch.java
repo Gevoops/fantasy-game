@@ -194,8 +194,8 @@ public class RenderBatch {
 
     public void render() {
         gameObjects.sort((o1,o2) -> Float.compare(
-              o1.getType() == GameObject.PLAYER ? -o1.getWorldX() - o1.getWorldY() + 2 : -o1.getWorldX() - o1.getWorldY(),
-               o2.getType() == GameObject.PLAYER ? -o2.getWorldX() - o2.getWorldY() + 2 : -o2.getWorldX() - o2.getWorldY()));
+               o2.getWorldX() + o2.getWorldY() + 0 ,
+               o1.getWorldX() + o1.getWorldY() + 0 ));
         for (GameObject ob : gameObjects) {
             if(ob != null) {
                 loadVertexProperties(ob);

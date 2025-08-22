@@ -5,6 +5,7 @@ import engine.MouseControllerStrategy;
 import engine.MouseListener;
 import engine.Window;
 import exceptions.GameObjectNotFoundException;
+import imgui.ImGui;
 import org.joml.Vector2f;
 import scenes.WorldEditorScene;
 import util.Tiles;
@@ -13,7 +14,7 @@ import util.Settings;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class MouseControllerEditor implements MouseControllerStrategy {
-    private WorldEditorScene editorScene = WorldEditorScene.getInstance();
+    private WorldEditorScene editorScene;
     Vector2f clickOrigin = new Vector2f();
     private float cameraDragDebounce = 0.032f;
     private double orthoX, orthoY, viewPortX, viewPortY, x, y;
@@ -22,13 +23,22 @@ public class MouseControllerEditor implements MouseControllerStrategy {
     private boolean middleDown;
 
 
+    public MouseControllerEditor(WorldEditorScene scene){
+        this.editorScene = WorldEditorScene.getInstance();
+    }
+
+
     public void update(float dt){
         getMouseState();
+
         cameraDrag(dt);
+        if (!editorScene.getEditorWindow().wantCaptureMouse(x,y) ){
+            editorScene.getCamera().zoom(MouseListener.getScrollY());
+        }
+
         GameObject liftedObject = editorScene.getLiftedObject();
 
         if(liftedObject == null && leftDown && !lastFrameLeftDown){
-            System.out.println("try lift");
             liftObject();
         } else if (liftedObject != null && leftDown && !lastFrameLeftDown) {
             placeObject();
@@ -36,7 +46,7 @@ public class MouseControllerEditor implements MouseControllerStrategy {
             dragObject();
         }
 
-        Window.getInstance().getScene().getCamera().zoom(MouseListener.getScrollY());
+
     }
 
     private void cameraDrag(float dt){
@@ -66,7 +76,6 @@ public class MouseControllerEditor implements MouseControllerStrategy {
         }
     }
     private void placeObject(){
-        System.out.println("place");
         editorScene.setActiveGameObject(editorScene.getLiftedObject());
         editorScene.setLiftedObject(null);
     }

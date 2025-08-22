@@ -20,7 +20,6 @@ public class Camera {
 
     public Camera(Vector2f viewPoint ){
         this.viewPoint = viewPoint;
-        System.out.println(viewPoint.x + " " + viewPoint.y);
         this.projectionMatrix = new Matrix4f();
         this.viewMatrix = new Matrix4f();
         this.invViewMatrix = viewMatrix.invert();

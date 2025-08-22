@@ -29,18 +29,16 @@ public class EditorWindow {
     private WorldEditorScene editorScene;
     private boolean editMode = true;
     int[] cameraPos = new int[2];
-
+    private float windowWidth, windowHeight, windowX, windowY;
 
 
     public EditorWindow(WorldEditorScene editorScene){
         this.editorScene = editorScene;
         initEditorSprites();
-
     }
 
     public void imGui(){
         ImGui.begin("editor gui");
-
         // buttons
 
         if (ImGui.button("play")) {
@@ -49,7 +47,7 @@ public class EditorWindow {
         }
         ImGui.sameLine();
         if (ImGui.button("edit")) {
-            editorScene.setMouseController(new MouseControllerEditor());
+            editorScene.setMouseController(new MouseControllerEditor(editorScene));
             editMode = true;
         }
         ImGui.setNextItemWidth(200);
@@ -68,7 +66,7 @@ public class EditorWindow {
                 try {
                     int x = Integer.parseInt(res[0]);
                     int y = Integer.parseInt(res[1]);
-                    editorScene.getCamera().viewPoint.set(Tiles.tileToScreen(x, y));
+                    editorScene.getCamera().viewPoint.set(Tiles.tileToWorld(x, y));
 
                 } catch (Exception e) {
                     System.out.println("invalid x and y");
@@ -79,8 +77,12 @@ public class EditorWindow {
 
         ImVec2 windowPos = new ImVec2();
         ImGui.getWindowPos(windowPos);
+        windowX = windowPos.x;
+        windowY = windowPos.y;
         ImVec2 windowSize = new ImVec2();
         ImGui.getWindowSize(windowSize);
+        windowWidth = windowSize.x;
+        windowHeight = windowSize.y;
         ImVec2 itemSpacing = new ImVec2();
         ImGui.getStyle().getItemSpacing(itemSpacing);
 
@@ -104,11 +106,10 @@ public class EditorWindow {
             ImGui.pushID(i);
             if(ImGui.imageButton(id,spriteWidth,spriteHeight,coords[2].x,coords[0].y,coords[0].x,coords[2].y) && editMode ){
                 GameObject liftedObject = Prefabs.generateSpriteObject(sprite,spriteWidth,spriteHeight);
-                editorScene.addGameObjectToScene(liftedObject);
+                editorScene.addGameObject(liftedObject);
                 editorScene.setLiftedObject(liftedObject);
             }
             ImGui.popID();
-
             ImVec2 lastButtonPos = new ImVec2();
             ImGui.getItemRectMax(lastButtonPos);
             float lastButtonX2 = lastButtonPos.x;
@@ -134,7 +135,7 @@ public class EditorWindow {
             player.addComponent(new RigidBody());
             player.addComponent(new Player());
             editorScene.setPlayer(player);
-            editorScene.addGameObjectToScene(player);
+            editorScene.addGameObject(player);
 
 
 
@@ -146,10 +147,12 @@ public class EditorWindow {
                     list.addSpriteSheet(AssetPool.getSpriteSheet("ground1"));
                     ob.addComponent(list);
                     ob.setSprite(list.getSpriteSheets().get(0).getSprite(0));
-                    editorScene.addGameObjectToScene(ob);
+                    editorScene.addGameObject(ob);
                 }
             }
         }
+
+
         ImGui.end();
     }
 
@@ -157,5 +160,10 @@ public class EditorWindow {
         editorSprites = new ArrayList<>();
         editorSprites.addAll(AssetPool.getSpriteSheet("ground1").getSprites());
         editorSprites.addAll(AssetPool.getSpriteSheet("isoTiles").getSprites());
+    }
+
+    public boolean wantCaptureMouse(double x, double y){
+        boolean res =  y >  windowY  && y < windowY +  windowHeight - 48;
+        return res;
     }
 }

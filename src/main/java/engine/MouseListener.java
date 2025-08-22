@@ -2,11 +2,7 @@ package engine;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
-import static util.Settings.SCREEN_HEIGHT;
-import static util.Settings.SCREEN_WIDTH;
-
 import imgui.ImGui;
-import org.joml.Vector4f;
 
 public class MouseListener {
     private static MouseListener instance;
