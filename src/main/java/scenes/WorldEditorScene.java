@@ -14,6 +14,9 @@ import renderer.SpriteSheet;
 import util.AssetPool;
 import util.Tiles;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static util.Settings.TILE_HEIGHT;
 import static util.Settings.TILE_WIDTH;
 
@@ -23,9 +26,9 @@ public class WorldEditorScene extends Scene {
     private GameViewport gameViewport;
     private EditorWindow editorWindow;
     private InspectorWindow inspectorWindow;
-    private MouseControllerStrategy mouseController;
     private GameObject liftedObject;
     private GameObject activeGameObject;
+    private Map<Long, GameObject> tileMap = new HashMap<>();
 
 
     private WorldEditorScene() {}
@@ -49,7 +52,7 @@ public class WorldEditorScene extends Scene {
         Vector3f color = new Vector3f(75f / 255, 75f / 255, 75f / 255);
         int lineNumX = 2*(int) ((camera.getProjectionSize().x / TILE_WIDTH) / zoom) + 15;
         int lineNumY = 2*(int) ((camera.getProjectionSize().y / TILE_HEIGHT) / zoom) + 15;
-        Vector2f snappedCamera = Tiles.snapScreenToTile(camera.getViewPoint());
+        Vector2f snappedCamera = Tiles.snapWorldToTile(camera.getViewPoint());
         Vector2f offset = new Vector2f(0,0);
         offset.add(snappedCamera);
         for (int i = -lineNumX; i < lineNumX; i++) {
@@ -58,12 +61,17 @@ public class WorldEditorScene extends Scene {
         for (int i = -lineNumY; i < lineNumY; i++ ) {
             DebugDraw.addLine2D(Tiles.tileToWorld(i,-lineNumY).add(offset), Tiles.tileToWorld(i,lineNumY).add(offset),color,1,false);
         }
-        DebugDraw.addLine2D(Tiles.tileToWorld(0,0), Tiles.tileToWorld(-2,-2));
     }
 
     public void addMouseSnapLines(){
         Vector2f mousePos = new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY());
-        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), Tiles.snapScreenToTile(mousePos));
+        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), Tiles.snapWorldToTile(mousePos));
+    }
+
+    @Override
+    public void addGameObject(GameObject go){
+        super.addGameObject(go);
+        tileMap.put(Tiles.calcMapKey(go),go);
     }
 
     @Override
@@ -79,7 +87,6 @@ public class WorldEditorScene extends Scene {
     public void render(){
         DebugDraw.beginFrame();
         addGrid();
-        addMouseSnapLines();
         DebugDraw.drawUnder();
         renderer.render();
         DebugDraw.drawOver();
@@ -171,11 +178,15 @@ public class WorldEditorScene extends Scene {
         this.activeGameObject = activeGameObject;
     }
 
-    public void removeGameObject(GameObject object){
-        gameObjects.remove(object);
-    }
-
     public EditorWindow getEditorWindow() {
         return editorWindow;
+    }
+
+    public void updateTileMap(GameObject go) {
+        GameObject go1 = tileMap.get(Tiles.calcMapKey(go));
+        if (go1 != null) {
+            deleteGameObj(go1);
+        }
+        tileMap.put(Tiles.calcMapKey(go),go);
     }
 }

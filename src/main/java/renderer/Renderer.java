@@ -42,7 +42,6 @@ public class Renderer {
             newBatch.start();
             batches.add(newBatch);
             newBatch.addGameObject(ob);
-            System.out.println("new bactj");
         }
     }
 

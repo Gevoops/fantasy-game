@@ -5,6 +5,7 @@ import components.ComponentSerializer;
 import editor.GameViewport;
 import engine.Camera;
 import engine.GameObjectSerializer;
+import engine.MouseControllerStrategy;
 import exceptions.GameObjectNotFoundException;
 import engine.GameObject;
 import com.google.gson.Gson;
@@ -31,6 +32,7 @@ public abstract class Scene {
     protected String savedWorldPath;
     protected GameObject player;
     protected Map<Long, GameObject> tileMap = new HashMap<>();
+    protected MouseControllerStrategy mouseController;
 
 
     public Scene() {
@@ -154,14 +156,15 @@ public abstract class Scene {
         player.setType(GameObject.PLAYER);
     }
 
-    public boolean deleteGameObj(GameObject obj){
-        obj.getBatch().deleteGameObj(obj);
-        gameObjects.remove(obj);
+    public boolean deleteGameObj(GameObject go){
+
+        go.getBatch().deleteGameObj(go);
+        gameObjects.remove(go);
         return true;
     }
 
-    // grid methods =============================================================================================================================================
-
-
+    public MouseControllerStrategy getMouseController() {
+        return mouseController;
+    }
 
 }

@@ -30,6 +30,7 @@ public class EditorWindow {
     private boolean editMode = true;
     int[] cameraPos = new int[2];
     private float windowWidth, windowHeight, windowX, windowY;
+    private boolean brushMode = false;
 
 
     public EditorWindow(WorldEditorScene editorScene){
@@ -105,7 +106,8 @@ public class EditorWindow {
 
             ImGui.pushID(i);
             if(ImGui.imageButton(id,spriteWidth,spriteHeight,coords[2].x,coords[0].y,coords[0].x,coords[2].y) && editMode ){
-                GameObject liftedObject = Prefabs.generateSpriteObject(sprite,spriteWidth,spriteHeight);
+                brushMode = true;
+                GameObject liftedObject = Prefabs.generateObject(sprite,spriteWidth,spriteHeight);
                 editorScene.addGameObject(liftedObject);
                 editorScene.setLiftedObject(liftedObject);
             }
@@ -141,13 +143,13 @@ public class EditorWindow {
 
             for (int y = 39; y >= 0; y--) {
                 for (int x = 0; x < 40; x++) {
-                    GameObject ob = new GameObject("ground: " + x + "," + y,null,
+                    GameObject go = new GameObject("ground: " + x + "," + y,null,
                             new Transform(Tiles.tileSnapToTile(x,y), new Vector2f(TILE_WIDTH, TILE_HEIGHT)),0);
                     SpriteSheetList list = new SpriteSheetList();
                     list.addSpriteSheet(AssetPool.getSpriteSheet("ground1"));
-                    ob.addComponent(list);
-                    ob.setSprite(list.getSpriteSheets().get(0).getSprite(0));
-                    editorScene.addGameObject(ob);
+                    go.addComponent(list);
+                    go.setSprite(list.getSpriteSheets().get(0).getSprite(0));
+                    editorScene.addGameObject(go);
                 }
             }
         }
@@ -165,5 +167,9 @@ public class EditorWindow {
     public boolean wantCaptureMouse(double x, double y){
         boolean res =  y >  windowY  && y < windowY +  windowHeight - 48;
         return res;
+    }
+
+    public boolean isBrushMode() {
+        return brushMode;
     }
 }

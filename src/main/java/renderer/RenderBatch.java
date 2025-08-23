@@ -193,8 +193,8 @@ public class RenderBatch {
 
     public void render() {
         gameObjects.sort((o1,o2) -> Float.compare(
-               o1.getTileX() - o1.getTileY()  ,
-               o2.getTileX() - o2.getTileY()  ));
+               o1.getTileCoordsX() - o1.getTileCoordsY()  ,
+               o2.getTileCoordsX() - o2.getTileCoordsY()  ));
         for (GameObject ob : gameObjects) {
             if(ob != null) {
                 loadVertexProperties(ob);

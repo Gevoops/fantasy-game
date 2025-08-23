@@ -1,5 +1,6 @@
 package util;
 
+import engine.GameObject;
 import org.joml.Vector2f;
 
 import static util.Settings.TILE_HEIGHT;
@@ -24,23 +25,23 @@ public class Tiles {
         return (screenY ) / TILE_HEIGHT + (screenX ) / TILE_WIDTH ;
     }
 
-    public static Vector2f worldToTile(Vector2f worldPos){
+    public static Vector2f worldToTileCoords(Vector2f worldPos){
         return new Vector2f(worldToTileX(worldPos.x,worldPos.y), worldToTileY(worldPos.x,worldPos.y));
     }
 
-    public static Vector2f getTileCoords(Vector2f worldPos){
-        return worldToTile(worldPos).floor();
+    public static Vector2f tileAt(Vector2f worldPos){
+        return worldToTileCoords(worldPos).floor();
     }
 
     public static Vector2f tileToWorld(float tileX, float tileY){
         return new Vector2f(tileToWorldX(tileX,tileY) , tileToWorldY(tileX,tileY) );
     }
 
-    // returns screen pos of bottom left corner of the tile screenX and screenY are in
+    // snap methods return world pos of bottom left corner of the tile screenX and screenY are in
 
-    public static Vector2f snapScreenToTile(Vector2f screenPos){
-        Vector2f worldPos = worldToTile(screenPos);
-        return tileToWorld((float)Math.floor(worldPos.x) ,(float) Math.floor(worldPos.y) );
+    public static Vector2f snapWorldToTile(Vector2f screenPos){
+        Vector2f tile = tileAt(screenPos);
+        return tileToWorld(tile.x ,tile.y);
     }
 
     public static Vector2f tileSnapToTile(float tileX, float tileY){
@@ -48,7 +49,13 @@ public class Tiles {
     }
 
     public static Vector2f snapToTile(float screenX, float screenY){
-        return snapScreenToTile(new Vector2f(screenX,screenY)).add(0 ,-TILE_HEIGHT/2);
+        return snapWorldToTile(new Vector2f(screenX,screenY)).add(0 ,-TILE_HEIGHT/2);
+    }
+
+    public static long calcMapKey(GameObject go){
+        int x = (int)go.getTileCoordsX();
+        int y = (int)go.getTileCoordsY();
+        return (long)x << 32 | (y & 0xFFFFFFFFL);
     }
 
 

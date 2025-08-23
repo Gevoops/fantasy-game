@@ -5,7 +5,6 @@ import engine.MouseControllerStrategy;
 import engine.MouseListener;
 import engine.Window;
 import exceptions.GameObjectNotFoundException;
-import imgui.ImGui;
 import org.joml.Vector2f;
 import scenes.WorldEditorScene;
 import util.Tiles;
@@ -21,12 +20,12 @@ public class MouseControllerEditor implements MouseControllerStrategy {
     private boolean leftDown;
     private boolean lastFrameLeftDown;
     private boolean middleDown;
+    private GameObject liftedObject;
 
 
     public MouseControllerEditor(WorldEditorScene scene){
-        this.editorScene = WorldEditorScene.getInstance();
+        this.editorScene = scene;
     }
-
 
     public void update(float dt){
         getMouseState();
@@ -36,8 +35,7 @@ public class MouseControllerEditor implements MouseControllerStrategy {
             editorScene.getCamera().zoom(MouseListener.getScrollY());
         }
 
-        GameObject liftedObject = editorScene.getLiftedObject();
-
+        liftedObject = editorScene.getLiftedObject();
         if(liftedObject == null && leftDown && !lastFrameLeftDown){
             liftObject();
         } else if (liftedObject != null && leftDown && !lastFrameLeftDown) {
@@ -48,6 +46,14 @@ public class MouseControllerEditor implements MouseControllerStrategy {
 
 
     }
+
+    @Override
+    public void handleRightClick() {
+        if(liftedObject != null){
+           System.out.println( editorScene.deleteGameObj(liftedObject));
+        }
+    }
+
 
     private void cameraDrag(float dt){
         if (middleDown && cameraDragDebounce > 0) {
@@ -76,13 +82,15 @@ public class MouseControllerEditor implements MouseControllerStrategy {
         }
     }
     private void placeObject(){
-        editorScene.setActiveGameObject(editorScene.getLiftedObject());
+        editorScene.setActiveGameObject(liftedObject);
+        editorScene.updateTileMap(liftedObject);
         editorScene.setLiftedObject(null);
+
     }
 
     private void dragObject(){
-        GameObject ob = editorScene.getLiftedObject();
-        ob.setPosition(Tiles.snapToTile((float) orthoX, (float)orthoY).add(-(ob.getTransform().scale.x - Settings.TILE_WIDTH) / 2,0));
+        liftedObject.setPosition(Tiles.snapToTile((float) orthoX, (float)orthoY)
+                .add(-(liftedObject.getTransform().scale.x - Settings.TILE_WIDTH) / 2,0));
     }
 
     private void getMouseState(){

@@ -32,7 +32,7 @@ public class MouseControllerGame implements MouseControllerStrategy {
             if(MouseListener.mouseButtonDown(0)) {
                 this.clickX = MouseListener.getOrthoX();
                 this.clickY = MouseListener.getOrthoY();
-                Vector2f pos = Tiles.getTileCoords(new Vector2f(clickX,clickY));
+                Vector2f pos = Tiles.tileAt(new Vector2f(clickX,clickY));
                 System.out.println(pos.x + " " + pos.y);
                 this.leftClicked = true;
             }
@@ -44,7 +44,12 @@ public class MouseControllerGame implements MouseControllerStrategy {
             leftClicked = false;
         }
 
-        public void movePlayer(float dt) {
+    @Override
+    public void handleRightClick() {
+
+    }
+
+    public void movePlayer(float dt) {
             animationCounter += dt;
             if (WorldEditorScene.getInstance().getPlayer() != null) {
 

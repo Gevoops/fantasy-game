@@ -24,7 +24,7 @@ public class GameObject {
     private int type = DEFAULT;
 
     private transient RenderBatch batch;
-    private transient int renderBufferIndex;
+    private transient Vector2f currentTile;
 
     public static final int DEFAULT = 0;
     public static final int TILE = 1;
@@ -42,6 +42,16 @@ public class GameObject {
             this.lastTransform = transform.copy();
             this.zIndex = zIndex;
             this.ID = ++ID_COUNTER;
+    }
+
+    public GameObject(GameObject go) {
+        this.name = go.name;
+        this.sprite = new Sprite(go.sprite);
+        this.transform = go.transform.copy();
+        this.lastTransform = go.lastTransform.copy();
+        this.zIndex = go.zIndex;
+        this.ID = ++ID_COUNTER;
+
     }
 
     public void update(double dt) {
@@ -177,11 +187,11 @@ public class GameObject {
         this.batch = batch;
     }
 
-    public float getTileY(){
+    public float getTileCoordsY(){
         return  Tiles.worldToTileY(getX(),getY());
     }
 
-    public float getTileX(){
+    public float getTileCoordsX(){
         return Tiles.worldToTileX(getX(),getY());
     }
 
