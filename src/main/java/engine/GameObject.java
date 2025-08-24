@@ -1,10 +1,12 @@
 package engine;
 
 import components.Component;
+import org.joml.Vector2d;
 import org.joml.Vector2f;
 import renderer.RenderBatch;
 import renderer.Transform;
 import renderer.Sprite;
+import util.Settings;
 import util.Tiles;
 
 import java.util.ArrayList;
@@ -148,25 +150,25 @@ public class GameObject {
     public Transform getLastTransform() {
         return lastTransform;
     }
-    public void moveX(float offset){
+    public void moveX(double offset){
         transform.position.x += offset;
     }
-    public void moveY(float offset){
+    public void moveY(double offset){
         transform.position.y += offset;
     }
-    public float getX(){
+    public double getX(){
         return transform.position.x;
     }
-    public float getY(){
+    public double getY(){
         return  transform.position.y;
     }
-    public void setX(float x){
+    public void setX(double x){
         this.transform.position.x = x;
     }
-    public void setY(float y){
+    public void setY(double y){
         this.transform.position.y = y;
     }
-    public void setPosition(Vector2f position){
+    public void setPosition(Vector2d position){
         this.transform.setPosition(position);
     }
     public static void init(int maxId){
@@ -187,12 +189,16 @@ public class GameObject {
         this.batch = batch;
     }
 
-    public float getTileCoordsY(){
+    public double getTileCoordsY(){
         return  Tiles.worldToTileY(getX(),getY());
     }
 
-    public float getTileCoordsX(){
+    public double getTileCoordsX(){
         return Tiles.worldToTileX(getX(),getY());
+    }
+
+    public Vector2d getCurrentTile(){
+        return Tiles.tileAt(getX() + transform.scale.x/2 ,getY() + 1);
     }
 
     public int getType() {

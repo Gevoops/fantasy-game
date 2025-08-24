@@ -5,6 +5,7 @@ import editor.GameViewport;
 import editor.MouseControllerEditor;
 import editor.InspectorWindow;
 import engine.*;
+import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import renderer.DebugDraw;
@@ -12,6 +13,7 @@ import renderer.DebugDraw;
 import renderer.SpriteSheet;
 
 import util.AssetPool;
+import util.Settings;
 import util.Tiles;
 
 import java.util.HashMap;
@@ -48,12 +50,12 @@ public class WorldEditorScene extends Scene {
     }
 
     public void addGrid() {
-        float zoom = camera.getZoom();
+        double zoom = camera.getZoom();
         Vector3f color = new Vector3f(75f / 255, 75f / 255, 75f / 255);
         int lineNumX = 2*(int) ((camera.getProjectionSize().x / TILE_WIDTH) / zoom) + 15;
         int lineNumY = 2*(int) ((camera.getProjectionSize().y / TILE_HEIGHT) / zoom) + 15;
-        Vector2f snappedCamera = Tiles.snapWorldToTile(camera.getViewPoint());
-        Vector2f offset = new Vector2f(0,0);
+        Vector2d snappedCamera = Tiles.snapWorldToTile(camera.getViewPoint());
+        Vector2d offset = new Vector2d(0,0);
         offset.add(snappedCamera);
         for (int i = -lineNumX; i < lineNumX; i++) {
             DebugDraw.addLine2D(Tiles.tileToWorld(-lineNumX, i).add(offset), Tiles.tileToWorld(lineNumX, i).add(offset),color, 1,false);
@@ -64,14 +66,8 @@ public class WorldEditorScene extends Scene {
     }
 
     public void addMouseSnapLines(){
-        Vector2f mousePos = new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY());
-        DebugDraw.addLine2D(new Vector2f(MouseListener.getOrthoX(),MouseListener.getOrthoY()), Tiles.snapWorldToTile(mousePos));
-    }
-
-    @Override
-    public void addGameObject(GameObject go){
-        super.addGameObject(go);
-        tileMap.put(Tiles.calcMapKey(go),go);
+        Vector2d mousePos = new Vector2d( MouseListener.getOrthoX(), MouseListener.getOrthoY());
+        DebugDraw.addLine2D(new Vector2d( MouseListener.getOrthoX(), MouseListener.getOrthoY()), Tiles.snapWorldToTile(mousePos));
     }
 
     @Override
@@ -99,7 +95,7 @@ public class WorldEditorScene extends Scene {
         gameViewport = new GameViewport();
         editorWindow = new EditorWindow(instance);
         inspectorWindow = new InspectorWindow(instance);
-        camera = new Camera(new Vector2f(Tiles.tileToWorld(0,0)));
+        camera = new Camera(new Vector2d(Tiles.tileToWorld(0,0)));
         Window.getInstance().setFramebuffer(gameViewport.getFramebuffer());
     }
 
@@ -182,11 +178,36 @@ public class WorldEditorScene extends Scene {
         return editorWindow;
     }
 
-    public void updateTileMap(GameObject go) {
-        GameObject go1 = tileMap.get(Tiles.calcMapKey(go));
-        if (go1 != null) {
+    public void addToTileMap(GameObject go) {
+        long key = Tiles.calcMapKey(go);
+        GameObject go1 = tileMap.get(key);
+        if (!(go == go1 ) && go1 != null ) {
             deleteGameObj(go1);
+            System.out.println("updatetilemap delete");
         }
-        tileMap.put(Tiles.calcMapKey(go),go);
+        tileMap.put(key,go);
+    }
+
+    public void removeFromTileMap(GameObject go){
+        long key = Tiles.calcMapKey(go);
+        tileMap.remove(key);
+    }
+
+    public void placeObject(){
+        addToTileMap(liftedObject);
+        setActiveGameObject(liftedObject);
+        setLiftedObject(null);
+    }
+
+    public void liftObject(GameObject go){
+        if (go == null) return;
+        setActiveGameObject(go);
+        setLiftedObject(go);
+        removeFromTileMap(go);
+    }
+
+    public void dragObject(double mousePosX, double mousePosY){
+        liftedObject.setPosition(Tiles.snapToTile( mousePosX, mousePosY)
+                .add(-(liftedObject.getTransform().scale.x - Settings.TILE_WIDTH) / 2,0));
     }
 }

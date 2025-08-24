@@ -1,27 +1,27 @@
 package renderer;
 
-import org.joml.Vector2f;
+import org.joml.Vector2d;
 import org.joml.Vector3f;
 
 public class Line2D {
-    private Vector2f start;
-    private Vector2f end;
+    private Vector2d start;
+    private Vector2d end;
     private Vector3f color;
     private int lifeTime;
 
-    public Line2D(Vector2f start, Vector2f end, Vector3f color, int lifeTime) {
+    public Line2D(Vector2d start, Vector2d end, Vector3f color, int lifeTime) {
         this.start = start;
         this.end = end;
         this.color = color;
         this.lifeTime = lifeTime;
     }
-    public Line2D(Vector2f start, Vector2f end, Vector3f color) {
+    public Line2D(Vector2d start, Vector2d end, Vector3f color) {
         this.start = start;
         this.end = end;
         this.color = color;
         this.lifeTime = 1;
     }
-    public Line2D(Vector2f start, Vector2f end) {
+    public Line2D(Vector2d start, Vector2d end) {
         this.start = start;
         this.end = end;
         this.color = new Vector3f(0,1,0);
@@ -34,19 +34,19 @@ public class Line2D {
         return this.lifeTime;
     }
 
-    public Vector2f getStart() {
+    public Vector2d getStart() {
         return start;
     }
 
-    public void setStart(Vector2f start) {
+    public void setStart(Vector2d start) {
         this.start = start;
     }
 
-    public Vector2f getEnd() {
+    public Vector2d getEnd() {
         return end;
     }
 
-    public void setEnd(Vector2f end) {
+    public void setEnd(Vector2d end) {
         this.end = end;
     }
 

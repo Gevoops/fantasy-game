@@ -1,27 +1,25 @@
 package engine;
 
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
+import org.joml.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_S;
 
 public class Camera {
-    private Matrix4f projectionMatrix, invProjectionMatrix;
-    private Matrix4f viewMatrix, invViewMatrix, invScaleMatrix;
-    private Matrix4f scaleMatrix;
-    public Vector2f viewPoint;
-    private Vector2f projectionSize = new Vector2f(64 * 2 * 16  ,64 * 2  * 9 );
-    private float zoom = 1f;
-    private float cameraSpeed  = 1;
-    private float cameraAcceleration = 0.2f;
+    private Matrix4d projectionMatrix, invProjectionMatrix;
+    private Matrix4d viewMatrix, invViewMatrix, invScaleMatrix;
+    private Matrix4d scaleMatrix;
+    public Vector2d viewPoint;
+    private Vector2d projectionSize = new Vector2d(64 * 2 * 16  ,64 * 2  * 9 );
+    private double zoom = 1f;
+    private double cameraSpeed  = 1;
+    private double cameraAcceleration = 0.2f;
 
 
-    public Camera(Vector2f viewPoint ){
+    public Camera(Vector2d viewPoint ){
         this.viewPoint = viewPoint;
-        this.projectionMatrix = new Matrix4f();
-        this.viewMatrix = new Matrix4f();
+        this.projectionMatrix = new Matrix4d();
+        this.viewMatrix = new Matrix4d();
         this.invViewMatrix = viewMatrix.invert();
 
         adjustProjection();
@@ -31,22 +29,22 @@ public class Camera {
         projectionMatrix.identity();
         projectionMatrix.ortho(viewPoint.x, projectionSize.x, viewPoint.y,projectionSize.y, 0.0f,100.0f);
 
-        scaleMatrix = new Matrix4f( zoom, 0.0f, 0.0f, 0.0f,
+        scaleMatrix = new Matrix4d( zoom, 0.0f, 0.0f, 0.0f,
                                     0.0f,  zoom ,0.0f, 0.0f,
                                     0.0f, 0.0f,  1.0f, 0.0f,
                                     0.0f, 0.0f,0.0f, 1.0f);
-        invProjectionMatrix = new Matrix4f(projectionMatrix).invert();
-        invScaleMatrix = new Matrix4f(scaleMatrix).invert();
+        invProjectionMatrix = new Matrix4d(projectionMatrix).invert();
+        invScaleMatrix = new Matrix4d(scaleMatrix).invert();
     }
 
-    public Matrix4f getViewMatrix(){
-        Vector3f cameraFront = new Vector3f(0.0f,0.0f,-1.0f);
-        Vector3f cameraUp = new Vector3f(0.0f,1.0f,0.0f);
+    public Matrix4d getViewMatrix(){
+        Vector3d cameraFront = new Vector3d(0.0f,0.0f,-1.0f);
+        Vector3d cameraUp = new Vector3d(0.0f,1.0f,0.0f);
         this.viewMatrix.identity();
-        this.viewMatrix.lookAt(new Vector3f(viewPoint.x,viewPoint.y,20f),
+        this.viewMatrix.lookAt(new Vector3d(viewPoint.x,viewPoint.y,20f),
                                 cameraFront.add(viewPoint.x,viewPoint.y, 0.f),
                                  cameraUp);
-        this.invViewMatrix = new Matrix4f((viewMatrix)).invert();
+        this.invViewMatrix = new Matrix4d((viewMatrix)).invert();
         return this.viewMatrix;
     }
 
@@ -58,30 +56,30 @@ public class Camera {
         scaleMatrix.invert(invScaleMatrix);
     }
 
-    public Matrix4f getProjectionMatrix(){
+    public Matrix4d getProjectionMatrix(){
         return this.projectionMatrix;
     }
-    public Matrix4f getScaleMatrix(){
+    public Matrix4d getScaleMatrix(){
         return this.scaleMatrix;
     }
 
-    public Matrix4f getInvProjectionMatrix() {
+    public Matrix4d getInvProjectionMatrix() {
         return invProjectionMatrix;
     }
 
-    public Matrix4f getInvViewMatrix() {
+    public Matrix4d getInvViewMatrix() {
         return invViewMatrix;
     }
 
-    public Vector2f getProjectionSize() {
+    public Vector2d getProjectionSize() {
         return projectionSize;
     }
 
-    public void setProjectionSize(Vector2f projectionSize) {
+    public void setProjectionSize(Vector2d projectionSize) {
         this.projectionSize = projectionSize;
     }
 
-    public float getZoom() {
+    public double getZoom() {
         return zoom;
     }
 
@@ -89,27 +87,27 @@ public class Camera {
         this.zoom = zoom;
     }
 
-    public Matrix4f getInvScaleMatrix() {
+    public Matrix4d getInvScaleMatrix() {
         return invScaleMatrix;
     }
 
-    public Vector2f getViewPoint() {
+    public Vector2d getViewPoint() {
         return viewPoint;
     }
 
-    public void setViewPoint(Vector2f viewPoint) {
+    public void setViewPoint(Vector2d viewPoint) {
         this.viewPoint = viewPoint;
     }
 
-    public void setViewPointX(float x) {
+    public void setViewPointX(double x) {
         this.viewPoint.x = x;
     }
-    public void setViewPointY(float y) {
+    public void setViewPointY(double y) {
         this.viewPoint.y = y;
     }
 
     public void update(float dt){
-        Vector2f move = new Vector2f(0,0);
+        Vector2d move = new Vector2d(0,0);
         if(KeyListener.isKeyPressed(GLFW_KEY_A)){
             move.x -= cameraSpeed;
         }

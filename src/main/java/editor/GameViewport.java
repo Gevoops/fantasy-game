@@ -6,6 +6,7 @@ import engine.Window;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiWindowFlags;
+import org.joml.Vector4d;
 import org.joml.Vector4f;
 import renderer.Framebuffer;
 
@@ -95,22 +96,22 @@ public class GameViewport {
     }
 
 
-    public float getOrthoX(float mouseX) {
-        float currentX = mouseX - contentX/2 ;
-        currentX = (currentX/contentWidth) * 2f - 1f;
-        Vector4f tmp = new Vector4f(currentX,0,0,1);
+    public double getOrthoX(double mouseX) {
+        double currentX = mouseX - contentX/2 ;
+        currentX = (currentX/contentWidth) * 2 - 1;
+        Vector4d tmp = new Vector4d(currentX,0,0,1);
         Camera camera = Window.getInstance().getScene().getCamera();
         tmp.mul(camera.getInvScaleMatrix()).mul(camera.getInvProjectionMatrix()).mul(camera.getInvViewMatrix());
         currentX = tmp.x;
         return currentX;
     }
 
-    public float getOrthoY(float mouseY) {
-        float currentY = mouseY - contentY/2;
+    public double getOrthoY(double mouseY) {
+        double currentY = mouseY - contentY/2;
         currentY = (currentY/contentHeight) * 2f - 1f;
         currentY *= -1; //something is flipped
 
-        Vector4f tmp = new Vector4f(0,currentY,0,1);
+        Vector4d tmp = new Vector4d(0,currentY,0,1);
         Camera camera = Window.getInstance().getScene().getCamera();
         tmp.mul(camera.getInvScaleMatrix()).mul(camera.getInvProjectionMatrix()).mul(camera.getInvViewMatrix());
         currentY = tmp.y;

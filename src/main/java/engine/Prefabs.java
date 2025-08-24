@@ -1,13 +1,13 @@
 package engine;
 
-import org.joml.Vector2f;
+import org.joml.Vector2d;
 import renderer.Sprite;
 import renderer.Transform;
 
 public class Prefabs {
 
-    public static GameObject generateObject(Sprite sprite, float sizeX, float sizeY){
+    public static GameObject generateObject(Sprite sprite, double sizeX, double sizeY){
         return new GameObject("Sprite_Object_Gen",sprite,
-                new Transform(new Vector2f(0,0),new Vector2f(sizeX,sizeY)),0);
+                new Transform(new Vector2d(0,0),new Vector2d(sizeX,sizeY)),0);
     }
 }

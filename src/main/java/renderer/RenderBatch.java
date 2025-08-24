@@ -6,9 +6,11 @@ import components.SpriteSheetList;
 import engine.Window;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
+import util.MatrixUtils;
 import util.Time;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL15.*;
@@ -166,10 +168,10 @@ public class RenderBatch {
                 yAdd = 1.0f;
             }
             // load position
-            vertices[offset] = ob.getX()
-                    + xAdd * ob.getTransform().scale.x;
-            vertices[offset + 1] = ob.getY()
-                    + yAdd * ob.getTransform().scale.y;
+            vertices[offset] = (float)( ob.getX()
+                    + xAdd * ob.getTransform().scale.x);
+            vertices[offset + 1] = (float)(ob.getY()
+                    + yAdd * ob.getTransform().scale.y);
 
             //load color
             vertices[offset + 2] = color.x;
@@ -192,9 +194,7 @@ public class RenderBatch {
     }
 
     public void render() {
-        gameObjects.sort((o1,o2) -> Float.compare(
-               o1.getTileCoordsX() - o1.getTileCoordsY()  ,
-               o2.getTileCoordsX() - o2.getTileCoordsY()  ));
+        gameObjects.sort(Comparator.comparingDouble(o -> o.getTileCoordsX() - o.getTileCoordsY()));
         for (GameObject ob : gameObjects) {
             if(ob != null) {
                 loadVertexProperties(ob);
@@ -208,9 +208,9 @@ public class RenderBatch {
         // shader
         Shader shader = Renderer.getCurrentShader();
         Camera camera = Window.getInstance().getCurrentScene().getCamera();
-        shader.uploadMat4f("uProjection", camera.getProjectionMatrix());
-        shader.uploadMat4f("uView", camera.getViewMatrix());
-        shader.uploadMat4f("scale", camera.getScaleMatrix());
+        shader.uploadMat4f("uProjection", MatrixUtils.toFloat(camera.getProjectionMatrix()));
+        shader.uploadMat4f("uView", MatrixUtils.toFloat(camera.getViewMatrix()));
+        shader.uploadMat4f("scale", MatrixUtils.toFloat(camera.getScaleMatrix()));
         shader.uploadFloat("uTime", Time.getTime());
         for(int i =0; i < textures.size(); i ++) {
             glActiveTexture(GL_TEXTURE0 + i + 1);

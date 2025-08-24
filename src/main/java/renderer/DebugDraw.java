@@ -2,10 +2,12 @@ package renderer;
 
 import engine.Camera;
 import engine.Window;
-import org.joml.Vector2f;
+import org.joml.Vector2d;
+import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.lwjgl.system.CallbackI;
 import util.AssetPool;
+import util.MatrixUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,17 +88,17 @@ public class DebugDraw {
         if(!started){
             start();
         }
-        glLineWidth( Window.getInstance().getScene().getCamera().getZoom());
+        glLineWidth((float)Window.getInstance().getScene().getCamera().getZoom());
         if(lines.size() == 0) {return;}
         int index = 0;
         for (Line2D line : lines){
             for (int i = 0; i < 2; i++){
-                Vector2f position = i == 0 ? line.getStart() : line.getEnd();
+                Vector2d position = i == 0 ? line.getStart() : line.getEnd();
                 Vector3f color = line.getColor();
 
                 // load position
-                vertexArray[index] = position.x;
-                vertexArray[index + 1] = position.y;
+                vertexArray[index] = (float) position.x;
+                vertexArray[index + 1] = (float) position.y;
                 vertexArray[index + 2] = -10.0f;
 
                 vertexArray[index + 3] = color.x;
@@ -115,9 +117,9 @@ public class DebugDraw {
         Camera camera = Window.getInstance().getScene().getCamera();
 
         shader.use();
-        shader.uploadMat4f("uProjection", camera.getProjectionMatrix());
-        shader.uploadMat4f("uView",camera.getViewMatrix());
-        shader.uploadMat4f("scale",camera.getScaleMatrix());
+        shader.uploadMat4f("uProjection", MatrixUtils.toFloat(camera.getProjectionMatrix()));
+        shader.uploadMat4f("uView",MatrixUtils.toFloat(camera.getViewMatrix()));
+        shader.uploadMat4f("scale",MatrixUtils.toFloat(camera.getScaleMatrix()));
 
         // bind the vao
         glBindVertexArray(vaoID);
@@ -144,15 +146,15 @@ public class DebugDraw {
     // Add Line2D methods
     // =============================================================
 
-    public static void addLine2D(Vector2f start, Vector2f end){
+    public static void addLine2D(Vector2d start, Vector2d end){
         addLine2D(start,end,DEFAULT_COLOR,1,true);
     }
 
-    public static void addLine2D(Vector2f start, Vector2f end,Vector3f color){
+    public static void addLine2D(Vector2d start, Vector2d end,Vector3f color){
         addLine2D(start,end,color,1,true);
     }
 
-    public static void addLine2D(Vector2f start, Vector2f end,Vector3f color,  int lifetime, boolean over){
+    public static void addLine2D(Vector2d start, Vector2d end,Vector3f color,  int lifetime, boolean over){
         if (overLines.size() + underLines.size() >= MAX_LINES){
             return;
         }
@@ -167,17 +169,17 @@ public class DebugDraw {
     // =============================================================
     // Box2D methods
     // =============================================================
-    public static void addBox2D(Vector2f center, Vector2f dimensions, float angle, Vector3f color,  int lifetime, boolean over){
-        Vector2f min = new Vector2f(center).sub(new Vector2f(dimensions).mul(0.5f));
-        Vector2f max = new Vector2f(center).add(new Vector2f(dimensions).mul(0.5f));
+    public static void addBox2D(Vector2d center, Vector2d dimensions, float angle, Vector3f color,  int lifetime, boolean over){
+        Vector2d min = new Vector2d(center).sub(new Vector2d(dimensions).mul(0.5f));
+        Vector2d max = new Vector2d(center).add(new Vector2d(dimensions).mul(0.5f));
 
-        Vector2f[] vertices = {
-                new Vector2f(min.x,min.y),new Vector2f(min.x,max.y),
-                new Vector2f(max.x,max.y),new Vector2f(max.x,min.y)
+        Vector2d[] vertices = {
+                new Vector2d(min.x,min.y),new Vector2d(min.x,max.y),
+                new Vector2d(max.x,max.y),new Vector2d(max.x,min.y)
         };
 
         if (angle != 0){
-            for (Vector2f vert : vertices){
+            for (Vector2d vert : vertices){
                 rotate(vert,angle,center);
             }
         }
@@ -189,34 +191,34 @@ public class DebugDraw {
 
     }
 
-    public static void addBox2D(Vector2f center, Vector2f dimensions, float angle, Vector3f color) {
+    public static void addBox2D(Vector2d center, Vector2d dimensions, float angle, Vector3f color) {
         addBox2D(center,dimensions,angle,color,1,true);
     }
-    public static void addBox2D(Vector2f center, Vector2f dimensions, float angle) {
+    public static void addBox2D(Vector2d center, Vector2d dimensions, float angle) {
         addBox2D(center,dimensions,angle,new Vector3f(0,1,0),1,true);
     }
     public static void addBox2D(Float centerX,Float centerY, Float width, Float height, float angle, Vector3f color,  int lifetime) {
-        addBox2D(new Vector2f(centerX,centerY),new Vector2f(width,height),angle,color,lifetime,true);
+        addBox2D(new Vector2d(centerX,centerY),new Vector2d(width,height),angle,color,lifetime,true);
     }
     public static void addBox2D(Float centerX,Float centerY, Float width, Float height, float angle,  int lifetime) {
-        addBox2D(new Vector2f(centerX,centerY),new Vector2f(width,height),angle,DEFAULT_COLOR,lifetime,true);
+        addBox2D(new Vector2d(centerX,centerY),new Vector2d(width,height),angle,DEFAULT_COLOR,lifetime,true);
     }public static void addBox2D(Float centerX,Float centerY, Float width, Float height, float angle) {
-        addBox2D(new Vector2f(centerX,centerY),new Vector2f(width,height),angle,DEFAULT_COLOR,1,true);
+        addBox2D(new Vector2d(centerX,centerY),new Vector2d(width,height),angle,DEFAULT_COLOR,1,true);
     }
 
 
     // =============================================================
     // Circle2D methods
     // =============================================================
-    public static void addCircle2D(Vector2f center,  float radius, Vector3f color,  int lifetime, boolean over){
-        Vector2f[] points = new Vector2f[(int)(radius / 3)];
+    public static void addCircle2D(Vector2d center,  float radius, Vector3f color,  int lifetime, boolean over){
+        Vector2d[] points = new Vector2d[(int)(radius / 3)];
         float increment = 360f / points.length;
         float currentAngle = 0;
 
         for (int i = 0; i < points.length; i ++) {
-            Vector2f tmp = new Vector2f(radius,0);
-            rotate(tmp,currentAngle,new Vector2f());
-            points[i] = new Vector2f(tmp.add(center));
+            Vector2d tmp = new Vector2d(radius,0);
+            rotate(tmp,currentAngle,new Vector2d());
+            points[i] = new Vector2d(tmp.add(center));
 
             if (i > 0) {
                 addLine2D(points[i - 1],points[i],color,lifetime,over);
@@ -232,10 +234,10 @@ public class DebugDraw {
     // helper methods
     // =============================================================
 
-    private static void rotate(Vector2f vec, float angleDeg, Vector2f origin) {
+    private static void rotate(Vector2d vec, float angleDeg, Vector2d origin) {
         vec.sub(origin);
-        Vector3f vec1 = new Vector3f(vec.x,vec.y,0);
-        vec1.rotateAxis((float) Math.toRadians(angleDeg),0f,0f,1f);
+        Vector3d vec1 = new Vector3d(vec.x,vec.y,0);
+        vec1.rotateAxis(Math.toRadians(angleDeg),0f,0f,1f);
         vec.x = vec1.x;
         vec.y = vec1.y;
         vec.add(origin);

@@ -84,12 +84,12 @@ public class MouseListener {
         return Window.getInstance().getCurrentScene().getGameViewport().getViewPortY((float)get().y);
     }
 
-    public static float getOrthoX() {
-        return Window.getInstance().getCurrentScene().getGameViewport().getOrthoX((float)get().x);
+    public static double getOrthoX() {
+        return Window.getInstance().getCurrentScene().getGameViewport().getOrthoX(get().x);
     }
 
-    public static float getOrthoY() {
-        return Window.getInstance().getCurrentScene().getGameViewport().getOrthoY((float)get().y);
+    public static double getOrthoY() {
+        return Window.getInstance().getCurrentScene().getGameViewport().getOrthoY(get().y);
     }
 
     public static float getDx() {

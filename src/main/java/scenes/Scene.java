@@ -134,7 +134,7 @@ public abstract class Scene {
     public abstract void render();
 
     protected abstract void loadResources();
-    public GameObject findGameObject(int gameObjectID) throws GameObjectNotFoundException {
+    public GameObject findGameObject(int gameObjectID) {
         if (gameObjectID <= 0) return null;
         for (GameObject ob : gameObjects){
             if (ob.getID() == gameObjectID){

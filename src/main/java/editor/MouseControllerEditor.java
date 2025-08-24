@@ -4,7 +4,6 @@ import engine.GameObject;
 import engine.MouseControllerStrategy;
 import engine.MouseListener;
 import engine.Window;
-import exceptions.GameObjectNotFoundException;
 import org.joml.Vector2f;
 import scenes.WorldEditorScene;
 import util.Tiles;
@@ -16,7 +15,7 @@ public class MouseControllerEditor implements MouseControllerStrategy {
     private WorldEditorScene editorScene;
     Vector2f clickOrigin = new Vector2f();
     private float cameraDragDebounce = 0.032f;
-    private double orthoX, orthoY, viewPortX, viewPortY, x, y;
+    private double orthoX, orthoY, cursorViewPortX, cursorViewPortY, x, y;
     private boolean leftDown;
     private boolean lastFrameLeftDown;
     private boolean middleDown;
@@ -37,11 +36,13 @@ public class MouseControllerEditor implements MouseControllerStrategy {
 
         liftedObject = editorScene.getLiftedObject();
         if(liftedObject == null && leftDown && !lastFrameLeftDown){
-            liftObject();
+            int id = Window.getInstance().getPickingTexture().readIDFromPixel((int)cursorViewPortX ,(int)cursorViewPortY);
+            GameObject go = editorScene.findGameObject(id);
+            editorScene.liftObject(go);
         } else if (liftedObject != null && leftDown && !lastFrameLeftDown) {
-            placeObject();
+            editorScene.placeObject();
         } else if (liftedObject != null){
-            dragObject();
+            editorScene.dragObject(orthoX,orthoY);
         }
 
 
@@ -71,35 +72,18 @@ public class MouseControllerEditor implements MouseControllerStrategy {
         }
     }
 
-    private void liftObject(){
-        int id = Window.getInstance().getPickingTexture().readIDFromPixel((int)(viewPortX) ,(int) (viewPortY));
-        try {
-            GameObject ob = editorScene.findGameObject(id);
-            editorScene.setActiveGameObject(ob);
-            editorScene.setLiftedObject(ob);
-        } catch (GameObjectNotFoundException e){
-            e.printStackTrace();
-        }
-    }
-    private void placeObject(){
-        editorScene.setActiveGameObject(liftedObject);
-        editorScene.updateTileMap(liftedObject);
-        editorScene.setLiftedObject(null);
 
-    }
 
-    private void dragObject(){
-        liftedObject.setPosition(Tiles.snapToTile((float) orthoX, (float)orthoY)
-                .add(-(liftedObject.getTransform().scale.x - Settings.TILE_WIDTH) / 2,0));
-    }
+
+
 
     private void getMouseState(){
         x = MouseListener.getX();
         y = MouseListener.getY();
         orthoX = MouseListener.getOrthoX();
         orthoY = MouseListener.getOrthoY();
-        viewPortX = MouseListener.getViewPortX();
-        viewPortY = MouseListener.getViewPortY();
+        cursorViewPortX = MouseListener.getViewPortX();
+        cursorViewPortY = MouseListener.getViewPortY();
         lastFrameLeftDown = leftDown;
         leftDown = MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT);
         middleDown = MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_MIDDLE);

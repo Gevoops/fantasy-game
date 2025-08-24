@@ -5,6 +5,7 @@ import engine.GameObject;
 import engine.MouseControllerStrategy;
 import engine.MouseListener;
 import engine.Window;
+import org.joml.Vector2d;
 import org.joml.Vector2f;
 import scenes.WorldEditorScene;
 import util.Tiles;
@@ -12,11 +13,11 @@ import util.Tiles;
 
 public class MouseControllerGame implements MouseControllerStrategy {
         private float animationCounter;
-        private float clickX;
-        private float clickY;
+        private double clickX;
+        private double clickY;
         private GameObject player;
-        private float stepX;
-        private float stepY;
+        private double stepX;
+        private double stepY;
         private int spriteIndex = 0, spriteIndex2 = 0;
         private boolean start;
         private boolean leftClicked = false;
@@ -32,7 +33,7 @@ public class MouseControllerGame implements MouseControllerStrategy {
             if(MouseListener.mouseButtonDown(0)) {
                 this.clickX = MouseListener.getOrthoX();
                 this.clickY = MouseListener.getOrthoY();
-                Vector2f pos = Tiles.tileAt(new Vector2f(clickX,clickY));
+                Vector2d pos = Tiles.tileAt(new Vector2d( clickX, clickY));
                 System.out.println(pos.x + " " + pos.y);
                 this.leftClicked = true;
             }
@@ -56,11 +57,11 @@ public class MouseControllerGame implements MouseControllerStrategy {
                 SpriteSheetList spriteSheets = player.getComponent(SpriteSheetList.class);
                 if (leftClicked) {
                     clickX = clickX - 50;
-                    float distance = (float) Math.sqrt(Math.pow(player.getX() - clickX, 2)
+                    double distance =  Math.sqrt(Math.pow(player.getX() - clickX, 2)
                             + Math.pow(player.getY() - clickY, 2));
 
-                    stepX = (clickX - player.getX()) / distance;
-                    stepY = (clickY - player.getY()) / distance;
+                    stepX = ( clickX - player.getX()) / distance;
+                    stepY = ( clickY - player.getY()) / distance;
 
                     start = true;
                 }
