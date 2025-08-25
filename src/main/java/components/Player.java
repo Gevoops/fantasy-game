@@ -3,7 +3,6 @@ package components;
 import engine.Camera;
 import engine.Window;
 import org.joml.Vector2d;
-import org.joml.Vector2f;
 import scenes.Scene;
 
 public class Player extends Component{

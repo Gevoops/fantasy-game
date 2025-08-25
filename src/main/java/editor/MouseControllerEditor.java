@@ -20,6 +20,7 @@ public class MouseControllerEditor implements MouseControllerStrategy {
     private boolean lastFrameLeftDown;
     private boolean middleDown;
     private GameObject liftedObject;
+    boolean brushMode = false;
 
 
     public MouseControllerEditor(WorldEditorScene scene){
@@ -35,12 +36,13 @@ public class MouseControllerEditor implements MouseControllerStrategy {
         }
 
         liftedObject = editorScene.getLiftedObject();
+
         if(liftedObject == null && leftDown && !lastFrameLeftDown){
             int id = Window.getInstance().getPickingTexture().readIDFromPixel((int)cursorViewPortX ,(int)cursorViewPortY);
             GameObject go = editorScene.findGameObject(id);
             editorScene.liftObject(go);
         } else if (liftedObject != null && leftDown && !lastFrameLeftDown) {
-            editorScene.placeObject();
+            editorScene.placeObject(liftedObject);
         } else if (liftedObject != null){
             editorScene.dragObject(orthoX,orthoY);
         }
@@ -87,5 +89,17 @@ public class MouseControllerEditor implements MouseControllerStrategy {
         lastFrameLeftDown = leftDown;
         leftDown = MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_LEFT);
         middleDown = MouseListener.mouseButtonDown(GLFW_MOUSE_BUTTON_MIDDLE);
+    }
+
+    public void setBrushMode(boolean brushMode) {
+        this.brushMode = brushMode;
+    }
+
+    public boolean isBrushMode() {
+        return brushMode;
+    }
+
+    public void toggleBrushMode(){
+        brushMode = !brushMode;
     }
 }

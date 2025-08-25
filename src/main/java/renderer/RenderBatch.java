@@ -194,7 +194,7 @@ public class RenderBatch {
     }
 
     public void render() {
-        gameObjects.sort(Comparator.comparingDouble(o -> o.getTileCoordsX() - o.getTileCoordsY()));
+        gameObjects.sort(Comparator.comparingDouble(o -> o.getTileCoordsX() - o.getTileCoordsY() + o.getHeight()));
         for (GameObject ob : gameObjects) {
             if(ob != null) {
                 loadVertexProperties(ob);

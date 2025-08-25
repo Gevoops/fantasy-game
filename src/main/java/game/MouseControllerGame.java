@@ -26,20 +26,20 @@ public class MouseControllerGame implements MouseControllerStrategy {
         public MouseControllerGame(){
             player = WorldEditorScene.getInstance().getPlayer();
             start = false;
-            clickX = player.getX();
-            clickY = player.getY();
+            if(player != null) {
+                clickX = player.getX();
+                clickY = player.getY();
+            }
         }
         public void update(float dt) {
             if(MouseListener.mouseButtonDown(0)) {
                 this.clickX = MouseListener.getOrthoX();
                 this.clickY = MouseListener.getOrthoY();
-                Vector2d pos = Tiles.tileAt(new Vector2d( clickX, clickY));
-                System.out.println(pos.x + " " + pos.y);
                 this.leftClicked = true;
             }
             Window.getInstance().getScene().getCamera().zoom(MouseListener.getScrollY());
-            movePlayer(dt);
             if (player!= null){
+                movePlayer(dt);
                 player.update(dt);
             }
             leftClicked = false;

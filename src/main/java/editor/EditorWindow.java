@@ -4,6 +4,7 @@ import components.Player;
 import components.RigidBody;
 import components.SpriteSheetList;
 import engine.GameObject;
+import engine.MouseControllerStrategy;
 import engine.Prefabs;
 import game.MouseControllerGame;
 import imgui.ImGui;
@@ -11,6 +12,7 @@ import imgui.ImGuiInputTextCallbackData;
 import imgui.ImVec2;
 import imgui.callback.ImGuiInputTextCallback;
 import imgui.flag.ImGuiInputTextFlags;
+import imgui.type.ImBoolean;
 import imgui.type.ImString;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
@@ -31,12 +33,13 @@ public class EditorWindow {
     private boolean editMode = true;
     int[] cameraPos = new int[2];
     private float windowWidth, windowHeight, windowX, windowY;
-    private boolean brushMode = false;
+    private final ImBoolean brushModeBox = new ImBoolean(false);
 
 
     public EditorWindow(WorldEditorScene editorScene){
         this.editorScene = editorScene;
         initEditorSprites();
+
     }
 
     public void imGui(){
@@ -44,14 +47,27 @@ public class EditorWindow {
         // buttons
 
         if (ImGui.button("play")) {
-            editorScene.setMouseController(new MouseControllerGame());
-            editMode = false;
+            if (!(editorScene.getPlayer() == null)){
+                editorScene.setMouseController(new MouseControllerGame());
+                editMode = false;
+            }
         }
         ImGui.sameLine();
         if (ImGui.button("edit")) {
-            editorScene.setMouseController(new MouseControllerEditor(editorScene));
+            MouseControllerEditor mc = new MouseControllerEditor(editorScene);
+            editorScene.setMouseController(mc);
             editMode = true;
         }
+        ImGui.sameLine();
+
+        if (ImGui.checkbox("brush mode", brushModeBox)) {
+            if (editMode) {
+                editorScene.getMouseControllerE().setBrushMode(brushModeBox.get());
+            }
+        }
+
+
+
         ImGui.setNextItemWidth(200);
 
         ImGuiInputTextCallback callback = new ImGuiInputTextCallback() {
@@ -107,10 +123,9 @@ public class EditorWindow {
 
             ImGui.pushID(i);
             if(ImGui.imageButton(id,spriteWidth,spriteHeight,coords[2].x,coords[0].y,coords[0].x,coords[2].y) && editMode ){
-                brushMode = true;
-                GameObject liftedObject = Prefabs.generateObject(sprite,spriteWidth,spriteHeight);
-                editorScene.addGameObject(liftedObject);
-                editorScene.setLiftedObject(liftedObject);
+                GameObject selectedGO = Prefabs.generateObject(sprite,spriteWidth,spriteHeight);
+                editorScene.addGameObject(selectedGO);
+                editorScene.liftObject(selectedGO);
             }
             ImGui.popID();
             ImVec2 lastButtonPos = new ImVec2();
@@ -151,6 +166,7 @@ public class EditorWindow {
                     go.addComponent(list);
                     go.setSprite(list.getSpriteSheets().get(0).getSprite(0));
                     editorScene.addGameObject(go);
+                    editorScene.placeObject(go);
                 }
             }
         }
@@ -169,7 +185,4 @@ public class EditorWindow {
         return y >  windowY  && y < windowY +  windowHeight - 48 && x > windowX && x < windowX + windowWidth;
     }
 
-    public boolean isBrushMode() {
-        return brushMode;
-    }
 }

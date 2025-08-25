@@ -111,6 +111,7 @@ public class Window {
         glfwSetScrollCallback(glfwWindow, MouseListener::mouseScrollCallback);
         glfwSetKeyCallback(glfwWindow, KeyListener::keyCallback);
 
+
         //make the openGL context current
         glfwMakeContextCurrent(glfwWindow);
         //enable v-sync

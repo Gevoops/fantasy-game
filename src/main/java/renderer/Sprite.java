@@ -25,7 +25,7 @@ public class Sprite{
         this.texCoords = texCoords;
     }
     public Sprite(Sprite sprite) {
-        this.color = sprite.color;
+        this.color = new Vector4f(sprite.color);
         this.texture = sprite.texture;
         this.texCoords = sprite.texCoords;
     }

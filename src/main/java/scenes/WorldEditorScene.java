@@ -5,6 +5,7 @@ import editor.GameViewport;
 import editor.MouseControllerEditor;
 import editor.InspectorWindow;
 import engine.*;
+import game.MouseControllerGame;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -31,6 +32,8 @@ public class WorldEditorScene extends Scene {
     private GameObject liftedObject;
     private GameObject activeGameObject;
     private Map<Long, GameObject> tileMap = new HashMap<>();
+    private MouseControllerEditor mouseControllerE;
+    private MouseControllerGame mouseControllerG;
 
 
     private WorldEditorScene() {}
@@ -91,7 +94,14 @@ public class WorldEditorScene extends Scene {
     @Override
     public void init() {
         load();
-        mouseController = new MouseControllerEditor(this);
+        for(GameObject go : gameObjects) {
+            if (go instanceof Tile){
+                placeObject(go);
+            }
+        }
+        mouseControllerG = new MouseControllerGame();
+        mouseControllerE = new MouseControllerEditor(this);
+        mouseController = mouseControllerE;
         gameViewport = new GameViewport();
         editorWindow = new EditorWindow(instance);
         inspectorWindow = new InspectorWindow(instance);
@@ -142,12 +152,62 @@ public class WorldEditorScene extends Scene {
 
 
 
-    public GameViewport getGameViewport() {
-        return gameViewport;
+
+    public void addToTileMap(GameObject go) {
+        long key = Tiles.calcMapKey(go);
+        GameObject go1 = tileMap.get(key);
+        if (!(go == go1 ) && go1 != null ) {
+            deleteGameObj(go1);
+        }
+        go.setTileMapKey(key);
+        tileMap.put(key,go);
     }
 
-    public MouseControllerStrategy getMouseControllerStrategy() {
-        return mouseController;
+    public void removeFromTileMap(GameObject go){
+        Long key = go.getTileMapKey();
+        if (key  == null) return;
+        tileMap.remove(key);
+    }
+
+    public void placeObject(GameObject go){
+        go.setAlpha(1f);
+        go.setHeight(0);
+        addToTileMap(go);
+        setActiveGameObject(go);
+        setLiftedObject(null);
+    }
+
+    public void liftObject(GameObject go){
+        if (go == null) return;
+        go.setHeight(0.5f);
+        go.setAlpha(0.5f);
+        setActiveGameObject(go);
+        setLiftedObject(go);
+        removeFromTileMap(go);
+    }
+
+    public void dragObject(double mousePosX, double mousePosY){
+        liftedObject.setPosition(Tiles.snapToTile( mousePosX, mousePosY)
+                .add(-(liftedObject.getTransform().scale.x - Settings.TILE_WIDTH) / 2,0));
+    }
+
+    public MouseControllerEditor getMouseControllerE() {
+        return mouseControllerE;
+    }
+
+    public void setMouseControllerE(MouseControllerEditor mouseControllerE) {
+        this.mouseControllerE = mouseControllerE;
+    }
+
+    public MouseControllerGame getMouseControllerG() {
+        return mouseControllerG;
+    }
+
+    public void setMouseControllerG(MouseControllerGame mouseControllerG) {
+        this.mouseControllerG = mouseControllerG;
+    }
+    public GameViewport getGameViewport() {
+        return gameViewport;
     }
 
     public GameObject getLiftedObject() {
@@ -162,10 +222,6 @@ public class WorldEditorScene extends Scene {
         return activeGameObject;
     }
 
-    public void setMouseController(MouseControllerStrategy mouseController) {
-        this.mouseController = mouseController;
-    }
-
     public void setLiftedObject(GameObject liftedObject) {
         this.liftedObject = liftedObject;
     }
@@ -176,38 +232,5 @@ public class WorldEditorScene extends Scene {
 
     public EditorWindow getEditorWindow() {
         return editorWindow;
-    }
-
-    public void addToTileMap(GameObject go) {
-        long key = Tiles.calcMapKey(go);
-        GameObject go1 = tileMap.get(key);
-        if (!(go == go1 ) && go1 != null ) {
-            deleteGameObj(go1);
-            System.out.println("updatetilemap delete");
-        }
-        tileMap.put(key,go);
-    }
-
-    public void removeFromTileMap(GameObject go){
-        long key = Tiles.calcMapKey(go);
-        tileMap.remove(key);
-    }
-
-    public void placeObject(){
-        addToTileMap(liftedObject);
-        setActiveGameObject(liftedObject);
-        setLiftedObject(null);
-    }
-
-    public void liftObject(GameObject go){
-        if (go == null) return;
-        setActiveGameObject(go);
-        setLiftedObject(go);
-        removeFromTileMap(go);
-    }
-
-    public void dragObject(double mousePosX, double mousePosY){
-        liftedObject.setPosition(Tiles.snapToTile( mousePosX, mousePosY)
-                .add(-(liftedObject.getTransform().scale.x - Settings.TILE_WIDTH) / 2,0));
     }
 }

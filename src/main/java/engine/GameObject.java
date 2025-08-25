@@ -3,6 +3,7 @@ package engine;
 import components.Component;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
+import org.joml.Vector4f;
 import renderer.RenderBatch;
 import renderer.Transform;
 import renderer.Sprite;
@@ -20,13 +21,14 @@ public class GameObject {
     private Transform transform = null;
     private Transform lastTransform = null;
     private boolean isDirty = true;
-    private int height;
+    private float height;
     private int zIndex = 0;
     private List<Component> components = new ArrayList<>();
     private int type = DEFAULT;
 
     private transient RenderBatch batch;
-    private transient Vector2f currentTile;
+    private transient Long tileMapKey = null;
+
 
     public static final int DEFAULT = 0;
     public static final int TILE = 1;
@@ -209,4 +211,23 @@ public class GameObject {
         this.type = type;
     }
 
+    public void setAlpha(float alpha) {
+        this.sprite.color.set(new Vector4f(1,1,1,alpha));
+    }
+
+    public Long getTileMapKey() {
+        return tileMapKey;
+    }
+
+    public void setTileMapKey(Long tileMapKey) {
+        this.tileMapKey = tileMapKey;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
 }

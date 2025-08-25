@@ -44,10 +44,10 @@ public abstract class Scene {
     }
 
     public void start(){
-        for(GameObject ob : gameObjects) {
-            ob.start();
+        for(GameObject go : gameObjects) {
+            go.start();
             try{
-                this.renderer.addGameObject(ob);
+                this.renderer.addGameObject(go);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -56,15 +56,15 @@ public abstract class Scene {
         isRunning = true;
     }
 
-    public void addGameObject(GameObject ob) {
-        gameObjects.add(ob);
+    public void addGameObject(GameObject go) {
+        gameObjects.add(go);
         if(isRunning) {
             try {
-                this.renderer.addGameObject(ob);
+                this.renderer.addGameObject(go);
             }catch (Exception e){
                 e.printStackTrace();
             }
-            ob.start();
+            go.start();
         }
     }
 
@@ -167,4 +167,7 @@ public abstract class Scene {
         return mouseController;
     }
 
+    public void setMouseController(MouseControllerStrategy mouseController) {
+        this.mouseController = mouseController;
+    }
 }
