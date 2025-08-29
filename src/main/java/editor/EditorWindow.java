@@ -4,7 +4,6 @@ import components.Player;
 import components.RigidBody;
 import components.SpriteSheetList;
 import engine.GameObject;
-import engine.MouseControllerStrategy;
 import engine.Prefabs;
 import game.MouseControllerGame;
 import imgui.ImGui;
@@ -34,6 +33,7 @@ public class EditorWindow {
     int[] cameraPos = new int[2];
     private float windowWidth, windowHeight, windowX, windowY;
     private final ImBoolean brushModeBox = new ImBoolean(false);
+    private ImString cameraInput = new ImString(256);
 
 
     public EditorWindow(WorldEditorScene editorScene){
@@ -77,15 +77,14 @@ public class EditorWindow {
             }
         };
 
-        ImString cameraInput = new ImString(256);
+
         if (ImGui.inputText("goto position",cameraInput,ImGuiInputTextFlags.EnterReturnsTrue)){
             String[] res = cameraInput.get().split(" ");
             if (res.length == 2) {
                 try {
                     int x = Integer.parseInt(res[0]);
                     int y = Integer.parseInt(res[1]);
-                    editorScene.getCamera().viewPoint.set(Tiles.tileToWorld(x, y));
-
+                    editorScene.getCamera().viewPoint.set(Tiles.tileToWorld(x, y ).sub(editorScene.getGameViewport().getViewportSize().x /2, editorScene.getGameViewport().getViewportSize().y / 2.0));
                 } catch (Exception e) {
                     System.out.println("invalid x and y");
                 }

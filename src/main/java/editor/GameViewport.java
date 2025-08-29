@@ -7,7 +7,6 @@ import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector4d;
-import org.joml.Vector4f;
 import renderer.Framebuffer;
 
 import static org.lwjgl.opengl.GL11.glViewport;
@@ -17,6 +16,7 @@ import static util.Settings.SCREEN_WIDTH;
 public class GameViewport {
     private float contentWidth, contentHeight, contentX, contentY;
     private Framebuffer framebuffer;
+    private ImVec2 viewPortSize;
 
     public GameViewport(){
         int width = SCREEN_WIDTH ;
@@ -28,6 +28,7 @@ public class GameViewport {
 
     public void imGui(){
         ImGui.begin("Game Viewport", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse );
+        viewPortSize = getViewportSizePvt();
         ImVec2 frameSize = new ImVec2();
         frameSize.x = SCREEN_WIDTH;
         frameSize.y = SCREEN_HEIGHT;
@@ -52,13 +53,7 @@ public class GameViewport {
         ImGui.end();
     }
 
-    private static ImVec2 getViewportWindowSize(){
-        ImVec2 windowSize = new ImVec2();
-        ImGui.getContentRegionAvail(windowSize);
-        windowSize.x -= ImGui.getScrollX();
-        windowSize.y -= ImGui.getScrollY();
-        return windowSize;
-    }
+
 
     public boolean wantCaptureMouse() {
         return  (MouseListener.getX() >= contentX / 2 && MouseListener.getX() <= contentX / 2 + contentWidth) &&
@@ -69,9 +64,6 @@ public class GameViewport {
         return framebuffer;
     }
 
-    public float getContentWidth() {
-        return contentWidth;
-    }
 
     public float getContentHeight() {
         return contentHeight;
@@ -117,5 +109,16 @@ public class GameViewport {
         currentY = tmp.y;
         return currentY;
     }
+
+    private ImVec2 getViewportSizePvt(){
+        ImVec2 size = new ImVec2();
+        ImGui.getContentRegionAvail(size);
+        return size;
+    }
+    public ImVec2 getViewportSize(){
+        return viewPortSize;
+    }
+
+
 
 }
