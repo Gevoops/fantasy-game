@@ -157,7 +157,6 @@ public abstract class Scene {
     }
 
     public boolean deleteGameObj(GameObject go){
-
         go.getBatch().deleteGameObj(go);
         gameObjects.remove(go);
         return true;

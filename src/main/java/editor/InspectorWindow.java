@@ -22,8 +22,8 @@ public class InspectorWindow {
             ImGui.text("active object: " + o.getID() );
             if (ImGui.button("delete") || KeyListener.isKeyPressed(GLFW_KEY_DELETE)) {
                 scene.deleteGameObj(o);
-                scene.setActiveGameObject(null);
                 scene.setLiftedObject(null);
+                scene.setActiveGameObject(null);
             }
         }
         ImGui.sameLine();

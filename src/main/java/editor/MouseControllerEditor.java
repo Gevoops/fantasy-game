@@ -53,7 +53,9 @@ public class MouseControllerEditor implements MouseControllerStrategy {
     @Override
     public void handleRightClick() {
         if(liftedObject != null){
-           System.out.println( editorScene.deleteGameObj(liftedObject));
+           System.out.println(editorScene.deleteGameObj(liftedObject));
+           editorScene.setLiftedObject(null);
+           editorScene.setActiveGameObject(null);
         }
     }
 

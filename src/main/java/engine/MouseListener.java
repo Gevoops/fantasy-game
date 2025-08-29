@@ -43,15 +43,14 @@ public class MouseListener {
             if (action == GLFW_PRESS) {
                 get().mouseButtonPressed[button] = true;
             }
+            if(button == 1){
+                Window.getInstance().getScene().getMouseController().handleRightClick();
+            }
         }
         if (action == GLFW_RELEASE) {
             get().mouseButtonPressed[button] = false;
             get().isDragging = false;
         }
-        if(button == 1){
-            Window.getInstance().getScene().getMouseController().handleRightClick();
-        }
-
     }
 
     public static void mouseScrollCallback(long window, double xOffset, double yOffset){
