@@ -12,8 +12,6 @@ public class Camera {
     public Vector2d viewPoint;
     private Vector2d projectionSize = new Vector2d(64 * 2 * 16  ,64 * 2  * 9 );
     private double zoom = 1f;
-    private double cameraSpeed  = 1;
-    private double cameraAcceleration = 0.2f;
 
 
     public Camera(Vector2d viewPoint ){
@@ -48,7 +46,7 @@ public class Camera {
         return this.viewMatrix;
     }
 
-    public void zoom(float scrollDirection){
+    public void zoom(double scrollDirection){
         if(scrollDirection == 0) return;
         zoom *= scrollDirection > 0 ? 1.05 : 0.95;
         scaleMatrix.m00(zoom);
@@ -107,23 +105,6 @@ public class Camera {
     }
 
     public void update(float dt){
-        Vector2d move = new Vector2d(0,0);
-        if(KeyListener.isKeyPressed(GLFW_KEY_A)){
-            move.x -= cameraSpeed;
-        }
-        if(KeyListener.isKeyPressed(GLFW_KEY_D)){
-            move.x += cameraSpeed;
-        }if(KeyListener.isKeyPressed(GLFW_KEY_W)){
-           move.y += cameraSpeed;
-        }if(KeyListener.isKeyPressed(GLFW_KEY_S)){
-            move.y -= cameraSpeed;
-        }
-        if (move.x != 0 || move.y != 0){
-            cameraSpeed = cameraSpeed >= 5 ? 5 : cameraSpeed + cameraAcceleration * dt;
-            viewPoint.add(move.normalize(cameraSpeed * dt));
-        }else {
-            cameraSpeed = 1;
-        }
 
     }
 }

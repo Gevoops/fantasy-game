@@ -76,11 +76,11 @@ public class MouseListener {
     }
 
 
-    public static float getViewPortX(){
-        return Window.getInstance().getCurrentScene().getGameViewport().getViewPortX((float)get().x);
+    public static double getViewPortX(){
+        return Window.getInstance().getCurrentScene().getGameViewport().getViewPortX(get().x);
     }
-    public static float getViewPortY(){
-        return Window.getInstance().getCurrentScene().getGameViewport().getViewPortY((float)get().y);
+    public static double getViewPortY(){
+        return Window.getInstance().getCurrentScene().getGameViewport().getViewPortY(get().y);
     }
 
     public static double getOrthoX() {
@@ -91,20 +91,20 @@ public class MouseListener {
         return Window.getInstance().getCurrentScene().getGameViewport().getOrthoY(get().y);
     }
 
-    public static float getDx() {
+    public static double getDx() {
         return (float) (get().x- get().lastX);
     }
 
-    public static float getDy() {
+    public static double getDy() {
         return (float) (get().y- get().lastY);
     }
 
-    public static float getScrollX() {
+    public static double getScrollX() {
         return (float)get().scrollX;
     }
 
-    public static float getScrollY() {
-        return (float)get().scrollY;
+    public static double getScrollY() {
+        return get().scrollY;
     }
 
     public static boolean getIsDragging() {

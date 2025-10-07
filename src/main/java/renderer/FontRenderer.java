@@ -6,7 +6,7 @@ public class FontRenderer {
 
 
 
-    public void update(double dt) {
+    public void update(float dt) {
 
     }
 }

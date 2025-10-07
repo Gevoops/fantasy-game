@@ -2,13 +2,11 @@ package engine;
 
 import components.Component;
 import org.joml.Vector2d;
-import org.joml.Vector2f;
 import org.joml.Vector4f;
 import renderer.RenderBatch;
 import renderer.Transform;
 import renderer.Sprite;
-import util.Settings;
-import util.Tiles;
+import util.TileGrid;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +20,12 @@ public class GameObject {
     private Transform lastTransform = null;
     private boolean isDirty = true;
     private float height;
+    private float elevation;
     private int zIndex = 0;
     private List<Component> components = new ArrayList<>();
     private int type = DEFAULT;
+    private boolean dynamic;
+
 
     private transient RenderBatch batch;
     private transient Long tileMapKey = null;
@@ -58,7 +59,7 @@ public class GameObject {
 
     }
 
-    public void update(double dt) {
+    public void update(float dt) {
         if(!this.transform.equals(lastTransform)) {
             this.transform.copy(lastTransform);
             isDirty = true;
@@ -192,15 +193,15 @@ public class GameObject {
     }
 
     public double getTileCoordsY(){
-        return  Tiles.worldToTileY(getX(),getY());
+        return  TileGrid.worldToTileY(getX(),getY());
     }
 
     public double getTileCoordsX(){
-        return Tiles.worldToTileX(getX(),getY());
+        return TileGrid.worldToTileX(getX(),getY());
     }
 
     public Vector2d getCurrentTile(){
-        return Tiles.tileAt(getX() + transform.scale.x/2 ,getY() + 1);
+        return TileGrid.tileAt(getX() + transform.scale.x/2 ,getY() + 1);
     }
 
     public int getType() {
@@ -230,4 +231,21 @@ public class GameObject {
     public void setHeight(float height) {
         this.height = height;
     }
+
+    public float getElevation() {
+        return elevation;
+    }
+
+    public void setElevation(float elevation) {
+        this.elevation = elevation;
+    }
+
+    public boolean isDynamic() {
+        return dynamic;
+    }
+
+    public void setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
+    }
+
 }

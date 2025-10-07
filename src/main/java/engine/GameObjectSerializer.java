@@ -23,10 +23,16 @@ public class GameObjectSerializer implements  JsonDeserializer<GameObject> {
         Sprite sprite = context.deserialize(jsonObject.get("sprite"),Sprite.class);
         int zIndex = context.deserialize(jsonObject.get("zIndex"),int.class);
         int type = context.deserialize(jsonObject.get("type"),int.class);
+        float height = context.deserialize(jsonObject.get("height"),float.class);
+        float elevation = context.deserialize(jsonObject.get("elevation"),float.class);
+        boolean dynamic = context.deserialize(jsonObject.get("dynamic"), boolean.class);
 
 
         GameObject ob1 = new GameObject(name, sprite,transform,zIndex);
         ob1.setType(type);
+        ob1.setHeight(height);
+        ob1.setElevation(elevation);
+        ob1.setDynamic(dynamic);
         for (JsonElement e : components){
             Component c = context.deserialize(e, Component.class);
             if(c.getClass().isAssignableFrom(SpriteSheetList.class)){

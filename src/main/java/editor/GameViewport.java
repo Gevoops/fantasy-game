@@ -17,11 +17,13 @@ public class GameViewport {
     private float contentWidth, contentHeight, contentX, contentY;
     private Framebuffer framebuffer;
     private ImVec2 viewPortSize;
+    private Camera camera;
 
-    public GameViewport(){
+    public GameViewport(Camera camera){
         int width = SCREEN_WIDTH ;
         int height = SCREEN_HEIGHT ;
         this.framebuffer = new Framebuffer(width ,height);
+        this.camera = camera;
         glViewport(0,0,width, height);
 
     }
@@ -77,13 +79,13 @@ public class GameViewport {
         return contentY;
     }
 
-    public float getViewPortX(float mouseX){
+    public double getViewPortX(double mouseX){
        return  mouseX - contentX / 2;
 
     }
 
-    public float getViewPortY(float mouseY){
-        float currentY = mouseY - contentY / 2;
+    public double getViewPortY(double mouseY){
+        double currentY = mouseY - contentY / 2;
         return SCREEN_HEIGHT - currentY;
     }
 
@@ -92,10 +94,16 @@ public class GameViewport {
         double currentX = mouseX - contentX/2 ;
         currentX = (currentX/contentWidth) * 2 - 1;
         Vector4d tmp = new Vector4d(currentX,0,0,1);
-        Camera camera = Window.getInstance().getScene().getCamera();
         tmp.mul(camera.getInvScaleMatrix()).mul(camera.getInvProjectionMatrix()).mul(camera.getInvViewMatrix());
         currentX = tmp.x;
         return currentX;
+    }
+
+
+    public double getAbsPosX(double orthoPositionX){
+        Vector4d tmp = new Vector4d(orthoPositionX, 0 ,0 ,1);
+        tmp.mul(camera.getViewMatrix()).mul(camera.getProjectionMatrix()).mul(camera.getScaleMatrix());
+        return  ((tmp.x + 1) * contentWidth / 2.0 ) + contentX/2;
     }
 
     public double getOrthoY(double mouseY) {
@@ -104,10 +112,16 @@ public class GameViewport {
         currentY *= -1; //something is flipped
 
         Vector4d tmp = new Vector4d(0,currentY,0,1);
-        Camera camera = Window.getInstance().getScene().getCamera();
         tmp.mul(camera.getInvScaleMatrix()).mul(camera.getInvProjectionMatrix()).mul(camera.getInvViewMatrix());
         currentY = tmp.y;
         return currentY;
+    }
+
+    public double getAbsPosY(double orthoPositionY){
+        Vector4d tmp = new Vector4d(0, orthoPositionY,0 ,1);
+        tmp.mul(camera.getViewMatrix()).mul(camera.getProjectionMatrix()).mul(camera.getScaleMatrix());
+        tmp.y *= -1;
+        return  ((tmp.y + 1) * contentHeight / 2.0 ) + contentY/2;
     }
 
     private ImVec2 getViewportSizePvt(){

@@ -1,106 +1,57 @@
 package game;
 
+import components.Player;
 import components.SpriteSheetList;
-import engine.GameObject;
-import engine.MouseControllerStrategy;
-import engine.MouseListener;
-import engine.Window;
+import engine.*;
 import org.joml.Vector2d;
-import org.joml.Vector2f;
 import scenes.WorldEditorScene;
-import util.Tiles;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 
 public class MouseControllerGame implements MouseControllerStrategy {
-        private float animationCounter;
-        private double clickX;
-        private double clickY;
-        private GameObject player;
-        private double stepX;
-        private double stepY;
-        private int spriteIndex = 0, spriteIndex2 = 0;
-        private boolean start;
-        private boolean leftClicked = false;
+
+    private GameObject player;
+    private static String direction = "right";
+
+    public MouseControllerGame(){
+        player = WorldEditorScene.getInstance().getPlayer();
 
 
-        public MouseControllerGame(){
-            player = WorldEditorScene.getInstance().getPlayer();
-            start = false;
-            if(player != null) {
-                clickX = player.getX();
-                clickY = player.getY();
-            }
-        }
-        public void update(float dt) {
-            if(MouseListener.mouseButtonDown(0)) {
-                this.clickX = MouseListener.getOrthoX();
-                this.clickY = MouseListener.getOrthoY();
-                this.leftClicked = true;
-            }
-            Window.getInstance().getScene().getCamera().zoom(MouseListener.getScrollY());
-            if (player!= null){
-                movePlayer(dt);
-                player.update(dt);
-            }
-            leftClicked = false;
-        }
-
+    }
+    public void update(float dt) {
+        Window.getInstance().getScene().getCamera().zoom(MouseListener.getScrollY());
+        movePlayer(dt);
+    }
     @Override
     public void handleRightClick() {
 
     }
 
     public void movePlayer(float dt) {
-            animationCounter += dt;
-            if (WorldEditorScene.getInstance().getPlayer() != null) {
 
-                SpriteSheetList spriteSheets = player.getComponent(SpriteSheetList.class);
-                if (leftClicked) {
-                    clickX = clickX - 50;
-                    double distance =  Math.sqrt(Math.pow(player.getX() - clickX, 2)
-                            + Math.pow(player.getY() - clickY, 2));
-
-                    stepX = ( clickX - player.getX()) / distance;
-                    stepY = ( clickY - player.getY()) / distance;
-
-                    start = true;
-                }
-
-                if ((Math.abs(player.getX() - clickX) >= 2) || (Math.abs(player.getY() - clickY) >= 2) && start) {
-                    if (animationCounter > 4) {
-                        animationCounter = 0;
-                        if (stepX > 0) {
-                            player.setSprite(spriteSheets.get(1).getSprite(spriteIndex));
-                            spriteIndex = spriteIndex == 6 ? 0 : spriteIndex + 1;
-                        } else {
-                            player.setSprite(spriteSheets.get(3).getSprite(spriteIndex));
-                            spriteIndex = spriteIndex == 0 ? 6 : spriteIndex - 1;
-                        }
-
-                        spriteIndex2 = 0;
-                    }
-                    if (Math.abs(player.getX() - clickX) >= 2) {
-                        player.moveX(stepX * 4 * dt);
-
-                    }
-                    if (Math.abs(player.getY() - clickY) >= 2) {
-                        player.moveY(stepY * 4 * dt);
-
-                    }
-                } else {
-                    if (animationCounter > 12) {
-                        animationCounter = 0;
-                        if (stepX >= 0) {
-                            player.setSprite(spriteSheets.get(0).getSprite(spriteIndex2));
-                            spriteIndex2 = spriteIndex2 == 3 ? 0 : spriteIndex2 + 1;
-                        } else {
-                            player.setSprite(spriteSheets.get(2).getSprite(spriteIndex2));
-                            spriteIndex2 = spriteIndex2 == 0 ? 3 : spriteIndex2 - 1;
-                        }
-
-                        spriteIndex = 6;
-                    }
-                }
+        double moveX = 0;
+        double moveY = 0;
+        if (WorldEditorScene.getInstance().getPlayer() != null) {
+            if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
+                moveX = -1;
             }
+            if (KeyListener.isKeyPressed(GLFW_KEY_W)){
+                moveY = 1;
+            }
+            if (KeyListener.isKeyPressed(GLFW_KEY_D)){
+                moveX = 1;
+            }
+            if(KeyListener.isKeyPressed(GLFW_KEY_S)){
+                moveY = -1;
+            }
+            if(moveX != 0 && moveY != 0){
+                moveX = moveX / Math.sqrt(2);
+                moveY = moveY / Math.sqrt(2);
+            }
+
+            Vector2d movement = new Vector2d(moveX, moveY);
+            player.getComponent(Player.class).move(movement);
         }
+    }
 }

@@ -1,7 +1,6 @@
 package editor;
 
 import components.Player;
-import components.RigidBody;
 import components.SpriteSheetList;
 import engine.GameObject;
 import engine.Prefabs;
@@ -19,7 +18,7 @@ import renderer.Sprite;
 import renderer.Transform;
 import scenes.WorldEditorScene;
 import util.AssetPool;
-import util.Tiles;
+import util.TileGrid;
 
 import java.util.ArrayList;
 
@@ -29,8 +28,6 @@ import static util.Settings.TILE_WIDTH;
 public class EditorWindow {
     private ArrayList<Sprite> editorSprites;
     private WorldEditorScene editorScene;
-    private boolean editMode = true;
-    int[] cameraPos = new int[2];
     private float windowWidth, windowHeight, windowX, windowY;
     private final ImBoolean brushModeBox = new ImBoolean(false);
     private ImString cameraInput = new ImString(256);
@@ -49,19 +46,19 @@ public class EditorWindow {
         if (ImGui.button("play")) {
             if (!(editorScene.getPlayer() == null)){
                 editorScene.setMouseController(new MouseControllerGame());
-                editMode = false;
+                editorScene.setEditMode(false);
             }
         }
         ImGui.sameLine();
         if (ImGui.button("edit")) {
             MouseControllerEditor mc = new MouseControllerEditor(editorScene);
             editorScene.setMouseController(mc);
-            editMode = true;
+            editorScene.setEditMode(true);
         }
         ImGui.sameLine();
 
         if (ImGui.checkbox("brush mode", brushModeBox)) {
-            if (editMode) {
+            if (editorScene.isEditMode()) {
                 editorScene.getMouseControllerE().setBrushMode(brushModeBox.get());
             }
         }
@@ -77,14 +74,13 @@ public class EditorWindow {
             }
         };
 
-
         if (ImGui.inputText("goto position",cameraInput,ImGuiInputTextFlags.EnterReturnsTrue)){
             String[] res = cameraInput.get().split(" ");
             if (res.length == 2) {
                 try {
                     int x = Integer.parseInt(res[0]);
                     int y = Integer.parseInt(res[1]);
-                    editorScene.getCamera().viewPoint.set(Tiles.tileToWorld(x, y ).sub(editorScene.getGameViewport().getViewportSize().x /2, editorScene.getGameViewport().getViewportSize().y / 2.0));
+                    editorScene.getCamera().viewPoint.set(TileGrid.tileToWorld(x, y ).sub(editorScene.getGameViewport().getViewportSize().x /2, editorScene.getGameViewport().getViewportSize().y / 2.0));
                 } catch (Exception e) {
                     System.out.println("invalid x and y");
                 }
@@ -121,7 +117,7 @@ public class EditorWindow {
             Vector2f[] coords = sprite.getTexCoords();
 
             ImGui.pushID(i);
-            if(ImGui.imageButton(id,spriteWidth,spriteHeight,coords[2].x,coords[0].y,coords[0].x,coords[2].y) && editMode ){
+            if(ImGui.imageButton(id,spriteWidth,spriteHeight,coords[2].x,coords[0].y,coords[0].x,coords[2].y) && editorScene.isEditMode() ){
                 GameObject selectedGO = Prefabs.generateObject(sprite,spriteWidth,spriteHeight);
                 editorScene.addGameObject(selectedGO);
                 editorScene.liftObject(selectedGO);
@@ -142,6 +138,7 @@ public class EditorWindow {
                     AssetPool.getSpriteSheet("Idle_KG_2").getSprite(0),
                     new Transform(new Vector2d(300, 300), new Vector2d(100, 64)),
                     0);
+            player.setDynamic(true);
             SpriteSheetList spriteSheetList = new SpriteSheetList();
             spriteSheetList.addSpriteSheet(AssetPool.getSpriteSheet("Idle_KG_2"));
             spriteSheetList.addSpriteSheet(AssetPool.getSpriteSheet("Walking_KG_2"));
@@ -149,7 +146,7 @@ public class EditorWindow {
             spriteSheetList.addSpriteSheet(AssetPool.getSpriteSheet("Walking_KG_2_left"));
             player.addComponent(spriteSheetList);
 
-            player.addComponent(new RigidBody());
+
             player.addComponent(new Player());
             editorScene.setPlayer(player);
             editorScene.addGameObject(player);
@@ -159,11 +156,11 @@ public class EditorWindow {
             for (int y = 39; y >= 0; y--) {
                 for (int x = 0; x < 40; x++) {
                     GameObject go = new GameObject("ground: " + x + "," + y,null,
-                            new Transform(Tiles.tileSnapToTile(x,y), new Vector2d(TILE_WIDTH, TILE_HEIGHT)),0);
+                            new Transform(TileGrid.tileSnapToTile(x,y), new Vector2d(TILE_WIDTH, TILE_HEIGHT)),0);
                     SpriteSheetList list = new SpriteSheetList();
                     list.addSpriteSheet(AssetPool.getSpriteSheet("ground1"));
                     go.addComponent(list);
-                    go.setSprite(list.getSpriteSheets().get(0).getSprite(0));
+                    go.setSprite(new Sprite(list.getSpriteSheets().get(0).getSprite(0)));
                     editorScene.addGameObject(go);
                     editorScene.placeObject(go);
                 }

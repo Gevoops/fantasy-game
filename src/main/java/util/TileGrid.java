@@ -1,8 +1,15 @@
 package util;
 
 import engine.GameObject;
+import engine.Tile;
 import org.joml.Vector2d;
-import org.joml.Vector2d;
+import scenes.Scene;
+
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static util.Settings.TILE_HEIGHT;
 import static util.Settings.TILE_WIDTH;
@@ -11,7 +18,37 @@ import static util.Settings.TILE_WIDTH;
 // screen is absolute screen x y
 
 
-public class Tiles {
+public class TileGrid {
+    Scene scene;
+    Map<Long, List<GameObject>> goMap = new HashMap<>();
+
+    public TileGrid(Scene currentScene){
+        scene = currentScene;
+    }
+    // TODO complete transfering tile map to this class .
+
+    public void removeFromTileMap(GameObject go){
+        Long key = go.getTileMapKey();
+        if (key  == null) return;
+        goMap.get(key).remove(go);
+    }
+    public void addToTileMap(GameObject go) {
+        long tileCoords = calcMapKey(go);
+        List<GameObject> objectsOnTile = goMap.get(tileCoords);
+        if(objectsOnTile == null){
+            objectsOnTile = new ArrayList<>();
+            goMap.put(tileCoords,objectsOnTile);
+        } else {
+            for(GameObject go1 : objectsOnTile) {
+                if (go != go1 && go instanceof Tile && go1 instanceof Tile) {
+                    scene.deleteGameObj(go1);
+                    break;
+                }
+            }
+        }
+        go.setTileMapKey(tileCoords);
+        objectsOnTile.add(go);
+    }
 
 
     public static double tileToWorldX(double tileX, double tileY){
@@ -62,14 +99,5 @@ public class Tiles {
         int y = (int)go.getCurrentTile().y;
         return (long)x << 32 | (y & 0xFFFFFFFFL);
     }
-
-
-
-
-
-
-
-
-
 
 }

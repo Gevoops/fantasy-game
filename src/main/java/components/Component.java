@@ -14,7 +14,7 @@ public abstract class Component {
 
     public transient GameObject gameObject = null;
 
-    public void update(double dt){
+    public void update(float dt){
 
     }
     public void start(){

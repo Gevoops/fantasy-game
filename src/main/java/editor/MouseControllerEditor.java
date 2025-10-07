@@ -6,7 +6,6 @@ import engine.MouseListener;
 import engine.Window;
 import org.joml.Vector2f;
 import scenes.WorldEditorScene;
-import util.Tiles;
 import util.Settings;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -39,6 +38,7 @@ public class MouseControllerEditor implements MouseControllerStrategy {
 
         if(liftedObject == null && leftDown && !lastFrameLeftDown){
             int id = Window.getInstance().getPickingTexture().readIDFromPixel((int)cursorViewPortX ,(int)cursorViewPortY);
+            System.out.println("picking  :: " + (int)cursorViewPortX );
             GameObject go = editorScene.findGameObject(id);
             editorScene.liftObject(go);
         } else if (liftedObject != null && leftDown && !lastFrameLeftDown) {
