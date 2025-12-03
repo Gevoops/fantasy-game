@@ -1,15 +1,13 @@
 package components;
 
-import editor.GameViewport;
 import engine.Camera;
 import engine.Window;
 import org.joml.Vector2d;
 import scenes.Scene;
-import scenes.WorldEditorScene;
 
 public class Player extends Component{
     boolean moveDirection = false;
-    boolean moved = false;
+    boolean wantsToMove = false;
     double speed = 4;
     Vector2d movement = new Vector2d();
     private float animationCounter = 0;
@@ -18,29 +16,32 @@ public class Player extends Component{
 
     public Player(){
         super();
-
     }
 
     @Override
     public void start(){
-        Scene scene = Window.getInstance().getScene();
+        Scene scene = Window.getInstance().getCurrentScene();
         Camera camera = scene.getCamera();
         scene.setPlayer(gameObject);
         camera.setViewPoint(new Vector2d(this.gameObject.getX() - camera.getProjectionSize().x  / 2,
                 this.gameObject.getY() - camera.getProjectionSize().y / 2));
+        gameObject.setDynamic(true);
+
     }
 
     public void update(float dt){
-        this.gameObject.moveX(movement.x * speed * dt);
-        this.gameObject.moveY(movement.y * speed * dt);
-        animate(dt);
-        moved = false;
+        if (animate){
+            this.gameObject.moveX(movement.x * speed * dt);
+            this.gameObject.moveY(movement.y * speed * dt);
+            animate(dt);
+        }
+        wantsToMove = false;
     }
 
     public void move(Vector2d movement){
         if (movement.x != 0 || movement.y != 0) {
-            moved = true;
-            moveDirection = movement.x > 0;
+            wantsToMove = true;
+            moveDirection = movement.x != 0 ? movement.x > 0 : moveDirection;
         }
         this.movement = movement;
         Window.getInstance().getCurrentScene().getCamera().setViewPoint(
@@ -49,10 +50,9 @@ public class Player extends Component{
     }
 
     public void animate(float dt){
-        if(!animate) return;
         animationCounter += dt;
         SpriteSheetList spriteSheets = this.gameObject.getComponent(SpriteSheetList.class);
-        if (moved && animationCounter > 4) {
+        if (wantsToMove && animationCounter > 4) {
             animationCounter = 0;
             if (moveDirection) {
                 this.gameObject.setSprite(spriteSheets.get(1).getSprite(spriteIndex));
@@ -63,7 +63,7 @@ public class Player extends Component{
             }
             spriteIndex2 = 0;
         }
-        if (animationCounter > 12 & !moved) {
+        if (animationCounter > 12 & !wantsToMove) {
             animationCounter = 0;
             if (moveDirection) {
                 this.gameObject.setSprite(spriteSheets.get(0).getSprite(spriteIndex2));
@@ -82,5 +82,13 @@ public class Player extends Component{
 
     public void setAnimate(boolean animate) {
         this.animate = animate;
+    }
+
+    public Vector2d getMovement() {
+        return movement;
+    }
+
+    public void setMovement(Vector2d movement) {
+        this.movement = movement;
     }
 }

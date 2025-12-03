@@ -6,12 +6,12 @@ import editor.GameViewport;
 import engine.Camera;
 import engine.GameObjectSerializer;
 import engine.MouseControllerStrategy;
-import exceptions.GameObjectNotFoundException;
 import engine.GameObject;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import renderer.Renderer;
+import tiles.TileObjectMap;
 
 
 import java.io.FileWriter;
@@ -19,19 +19,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+
 
 public abstract class Scene {
-
+    protected TileObjectMap objectMap;
     protected Renderer renderer = new Renderer();
     protected Camera camera;
     private boolean isRunning = false;
-    public ArrayList<GameObject> gameObjects = new ArrayList<>();
+    protected ArrayList<GameObject> gameObjects = new ArrayList<>();
+    protected HashSet<GameObject> gameObjectsForDeath = new HashSet<>();
     protected boolean levelLoaded = false;
     protected String savedWorldPath;
     protected GameObject player;
-    protected Map<Long, GameObject> tileMap = new HashMap<>();
     protected MouseControllerStrategy mouseController;
 
 
@@ -46,12 +46,6 @@ public abstract class Scene {
     public void start(){
         for(GameObject go : gameObjects) {
             go.start();
-            try{
-                this.renderer.addGameObject(go);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
         }
         isRunning = true;
     }
@@ -156,17 +150,23 @@ public abstract class Scene {
         player.setType(GameObject.PLAYER);
     }
 
-    public boolean deleteGameObj(GameObject go){
-        go.getBatch().deleteGameObj(go);
-        gameObjects.remove(go);
-        return true;
-    }
-
     public MouseControllerStrategy getMouseController() {
         return mouseController;
     }
 
     public void setMouseController(MouseControllerStrategy mouseController) {
         this.mouseController = mouseController;
+    }
+
+    public ArrayList<GameObject> getGameObjects() {
+        return gameObjects;
+    }
+
+    public TileObjectMap getObjectMap() {
+        return objectMap;
+    }
+
+    public boolean imGuiWantsMouse() {
+        return false;
     }
 }

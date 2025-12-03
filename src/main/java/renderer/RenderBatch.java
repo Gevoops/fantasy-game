@@ -10,7 +10,7 @@ import util.MatrixUtils;
 import util.Time;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL15.*;
@@ -18,6 +18,9 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
 public class RenderBatch {
+    private static int idCounter = 0;
+    private int id;
+
     //vertex
     // =====
     //pos              color                       texture coords  tex id
@@ -44,15 +47,16 @@ public class RenderBatch {
 
 
     private List<Texture> textures;
+    private ArrayList<Integer> texCounterArray = new ArrayList<>();
     private int vaoID, vboID;
     private int maxBatchSize;
-    private int zIndex;
 
-    public RenderBatch(int maxBatchSize, int zIndex) {
-        this.zIndex = zIndex;
+
+    public RenderBatch(int maxBatchSize) {
         this.maxBatchSize = maxBatchSize;
         vertices = new float[VERTEX_SIZE * 4 * maxBatchSize]; //4 = vertices per quad
-        this.textures = new ArrayList<>();
+        textures = new ArrayList<>();
+        id = idCounter++;
     }
 
     public void start() {
@@ -112,95 +116,81 @@ public class RenderBatch {
         return elements;
     }
 
-    public void addGameObject(GameObject ob) {
+    public void addGameObject(GameObject go) {
         // get index and add GameObject
-        gameObjects.add(ob);
-        ob.setBatch(this);
-        if(!textures.contains(ob.getSprite().getTexture()) && ob.getSprite().getTexture() != null) {
-            textures.add(ob.getSprite().getTexture());
+        if(gameObjects.contains(go)){
+            System.out.println("go already present in this render batch");
+            return;
         }
-        SpriteSheetList list  =  ob.getComponent(SpriteSheetList.class);
+        int index = Collections.binarySearch(gameObjects,go,
+                    Renderer.byDepth);
+        index = index < 0 ? -index - 1 : index;
+        gameObjects.add(index ,go);
+        go.setBatch(this);
+        SpriteSheetList list  =  go.getComponent(SpriteSheetList.class);
         if(list != null) {
             ArrayList<SpriteSheet> l = list.getSpriteSheets();
             for(SpriteSheet s : l){
                 if(!textures.contains(s.getTexture())) {
                     textures.add(s.getTexture());
+                    texCounterArray.add(1);
+                } else {
+                    int ind = textures.indexOf(s.getTexture());
+                    int oldVal = texCounterArray.get(ind);
+                    texCounterArray.set(ind,oldVal + 1);
+                }
+            }
+        } else {
+            if(!textures.contains(go.getSprite().getTexture()) && go.getSprite().getTexture() != null) {
+                textures.add(go.getSprite().getTexture());
+                texCounterArray.add(1);
+            } else {
+                int ind = textures.indexOf(go.getSprite().getTexture());
+                int oldVal = texCounterArray.get(ind);
+                texCounterArray.set(ind,oldVal + 1);
+            }
+        }
+
+
+    }
+
+    public void deleteGameObj(GameObject go) {
+        SpriteSheetList list  =  go.getComponent(SpriteSheetList.class);
+        if(list != null) {
+            ArrayList<SpriteSheet> l = list.getSpriteSheets();
+            for(SpriteSheet s : l){
+                if(textures.contains(s.getTexture())) {
+                    int ind = textures.indexOf(s.getTexture());
+                    int oldVal = texCounterArray.get(ind);
+                    texCounterArray.set(ind,oldVal - 1);
+                    if(oldVal == 1){
+                        texCounterArray.remove(ind);
+                        textures.remove(s.getTexture());
+                    }
+                }
+            }
+        } else {
+            if(!textures.contains(go.getSprite().getTexture()) && go.getSprite().getTexture() != null) {
+                int ind = textures.indexOf(go.getSprite().getTexture());
+                int oldVal = texCounterArray.get(ind);
+                texCounterArray.set(ind,oldVal - 1);
+                if(oldVal == 1){
+                    texCounterArray.remove(ind);
+                    textures.remove(go.getSprite().getTexture());
                 }
             }
         }
-    }
 
-    public void deleteGameObj(GameObject ob) {
-       gameObjects.remove(ob);
-    }
 
-    private void loadVertexProperties(GameObject ob) {
-        int index = gameObjects.indexOf(ob);
-        Sprite sprite = ob.getSprite();
-
-        // find offset within array (4 vertices per sprite)
-        int offset = index * 4 * VERTEX_SIZE;
-
-        Vector4f color = sprite.getColor();
-        Vector2f[] texCoords = sprite.getTexCoords();
-
-        int texId = 0;
-        //textures slot 0 is reserved for color.
-        if(sprite.getTexture() != null) {
-            for (int i = 0; i < textures.size(); i++) {
-                if(textures.get(i).equals(sprite.getTexture())) { // assumes all textures are added
-                    texId = i + 1;
-                    break;
-                }
-            }
-        }
-
-        // Add vertices with the appropriate properties
-        //going over the coordinates of a quad
-        float xAdd = 1.0f;
-        float yAdd = 1.0f;
-        for (int i = 0; i < 4; i ++) {
-            if(i == 1) {
-                yAdd = 0.0f;
-            } else if(i == 2) {
-                xAdd = 0.0f;
-            } else if (i == 3){
-                yAdd = 1.0f;
-            }
-            // load position
-            vertices[offset] = (float)( ob.getX()
-                    + xAdd * ob.getTransform().scale.x);
-            vertices[offset + 1] = (float)(ob.getY()
-                    + yAdd * ob.getTransform().scale.y);
-
-            //load color
-            vertices[offset + 2] = color.x;
-            vertices[offset + 3] = color.y;
-            vertices[offset + 4] = color.z;
-            vertices[offset + 5] = color.w;
-
-            //load texture coordinates
-            vertices[offset + 6] = texCoords[i].x;
-            vertices[offset + 7] = texCoords[i].y;
-
-            //load texture id
-            vertices[offset + 8] = texId;
-
-            // load Entity id
-            vertices[offset + 9] = ob.getID();
-
-            offset += VERTEX_SIZE;
-        }
+        gameObjects.remove(go);
     }
 
     public void render() {
-        gameObjects.sort(Comparator.comparingDouble(o -> o.getTileCoordsX() - o.getTileCoordsY() + o.getHeight() * 2.1 ));
-        for (GameObject ob : gameObjects) {
-            if(ob != null) {
-                loadVertexProperties(ob);
-            }
-
+        for (GameObject go : gameObjects) {
+            loadVertexProperties(go);
         }
+
+
         // rebuffer
         glBindBuffer(GL_ARRAY_BUFFER, vboID);
         glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
@@ -250,6 +240,67 @@ public class RenderBatch {
 
     }
 
+    private void loadVertexProperties(GameObject go) {
+        int index = gameObjects.indexOf(go);
+        Sprite sprite = go.getSprite();
+
+        // find offset within array (4 vertices per sprite)
+        int offset = index * 4 * VERTEX_SIZE;
+
+        Vector4f color = sprite.getColor();
+        Vector2f[] texCoords = sprite.getTexCoords();
+
+        int texId = 0;
+        //textures slot 0 is reserved for color.
+        if(sprite.getTexture() != null) {
+            for (int i = 0; i < textures.size(); i++) {
+                if(textures.get(i).equals(sprite.getTexture())) { // assumes all textures are added
+                    texId = i + 1;
+                    break;
+                }
+            }
+        }
+
+        // Add vertices with the appropriate properties
+        //going over the coordinates of a quad
+        float xAdd = 1.0f;
+        float yAdd = 1.0f;
+        for (int i = 0; i < 4; i ++) {
+            if(i == 1) {
+                yAdd = 0.0f;
+            } else if(i == 2) {
+                xAdd = 0.0f;
+            } else if (i == 3){
+                yAdd = 1.0f;
+            }
+            // load position
+            vertices[offset] = (float)( go.getX()
+                    + xAdd * go.getTransform().scale.x);
+            vertices[offset + 1] = (float)(go.getY()
+                    + yAdd * go.getTransform().scale.y);
+
+            //load color
+            vertices[offset + 2] = color.x;
+            vertices[offset + 3] = color.y;
+            vertices[offset + 4] = color.z;
+            vertices[offset + 5] = color.w;
+
+            //load texture coordinates
+            vertices[offset + 6] = texCoords[i].x;
+            vertices[offset + 7] = texCoords[i].y;
+
+            //load texture id
+            vertices[offset + 8] = texId;
+
+            // load Entity id
+            vertices[offset + 9] = go.getID();
+
+            offset += VERTEX_SIZE;
+        }
+    }
+
+
+
 
 
     public boolean hasRoom() {
@@ -260,9 +311,27 @@ public class RenderBatch {
         return  this.textures.size() < 8 ;
     }
 
-
-    public int getZIndex() {
-        return zIndex;
+    public int getIndex() {
+        return id;
     }
 
+    public void setIndex(int index) {
+        this.id = index;
+    }
+
+    public boolean isEmpty(){
+        return gameObjects.isEmpty();
+    }
+
+    public GameObject get(int index){
+        return gameObjects.get(index);
+    }
+
+    public int size(){
+        return gameObjects.size();
+    }
+
+    public ArrayList<GameObject> getGameObjects() {
+        return gameObjects;
+    }
 }

@@ -88,7 +88,7 @@ public class DebugDraw {
         if(!started){
             start();
         }
-        glLineWidth((float)Window.getInstance().getScene().getCamera().getZoom());
+        glLineWidth((float)Window.getInstance().getCurrentScene().getCamera().getZoom());
         if(lines.size() == 0) {return;}
         int index = 0;
         for (Line2D line : lines){
@@ -114,7 +114,7 @@ public class DebugDraw {
 
 
         //use shader
-        Camera camera = Window.getInstance().getScene().getCamera();
+        Camera camera = Window.getInstance().getCurrentScene().getCamera();
 
         shader.use();
         shader.uploadMat4f("uProjection", MatrixUtils.toFloat(camera.getProjectionMatrix()));

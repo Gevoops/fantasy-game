@@ -2,6 +2,8 @@ package engine;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+
+import editor.EditorWindow;
 import imgui.ImGui;
 
 public class MouseListener {
@@ -39,12 +41,13 @@ public class MouseListener {
     }
 
     public static void mouseButtonCallback(long window, int button, int action, int mod) {
-        if (button < get().mouseButtonPressed.length && (!ImGui.getIO().getWantCaptureMouse() || Window.getInstance().getScene().getGameViewport().wantCaptureMouse())) {
+        if(button >  2) return;
+        if (Window.getInstance().getCurrentScene().getGameViewport().wantCaptureMouse() && !Window.getInstance().getCurrentScene().imGuiWantsMouse()){
             if (action == GLFW_PRESS) {
                 get().mouseButtonPressed[button] = true;
             }
             if(button == 1){
-                Window.getInstance().getScene().getMouseController().handleRightClick();
+                Window.getInstance().getCurrentScene().getMouseController().handleRightClick();
             }
         }
         if (action == GLFW_RELEASE) {
@@ -54,7 +57,7 @@ public class MouseListener {
     }
 
     public static void mouseScrollCallback(long window, double xOffset, double yOffset){
-        if(!ImGui.getIO().getWantCaptureMouse() || Window.getInstance().getScene().getGameViewport().wantCaptureMouse()){
+        if(!ImGui.getIO().getWantCaptureMouse() || Window.getInstance().getCurrentScene().getGameViewport().wantCaptureMouse()){
             get().scrollX = xOffset;
             get().scrollY = yOffset;
         }

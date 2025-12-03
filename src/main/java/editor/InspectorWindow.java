@@ -16,22 +16,23 @@ public class InspectorWindow {
         this.scene = scene;
     }
     public void imGui() {
-        GameObject o = scene.getActiveGameObject();
+        GameObject activeGo = scene.getActiveGameObject();
         ImGui.begin("inspector");
-        if (o == null) { ImGui.end(); return;}
+        if (activeGo == null) { ImGui.end(); return;}
 
-        o.imGui();
-        ImGui.text("active object: " + o.getID() );
+        activeGo.imGui();
+        ImGui.text("active object: " + activeGo.getID() );
+        ImGui.text("type: " + activeGo.getType());
         if (ImGui.button("delete") || KeyListener.isKeyPressed(GLFW_KEY_DELETE)) {
-            scene.deleteGameObj(o);
+            activeGo.setDeathMark(true);
             scene.setLiftedObject(null);
             scene.setActiveGameObject(null);
         }
 
 
-        ImFloat height = new ImFloat(o.getHeight());
+        ImFloat height = new ImFloat(activeGo.getHeight());
         if(ImGui.inputFloat(" height", height)){
-            o.setHeight(height.get());
+            activeGo.setHeight(height.get());
         }
         ImGui.end();
     }

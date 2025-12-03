@@ -4,6 +4,7 @@ import engine.GameObject;
 import engine.MouseControllerStrategy;
 import engine.MouseListener;
 import engine.Window;
+import imgui.ImGui;
 import org.joml.Vector2f;
 import scenes.WorldEditorScene;
 import util.Settings;
@@ -38,7 +39,6 @@ public class MouseControllerEditor implements MouseControllerStrategy {
 
         if(liftedObject == null && leftDown && !lastFrameLeftDown){
             int id = Window.getInstance().getPickingTexture().readIDFromPixel((int)cursorViewPortX ,(int)cursorViewPortY);
-            System.out.println("picking  :: " + (int)cursorViewPortX );
             GameObject go = editorScene.findGameObject(id);
             editorScene.liftObject(go);
         } else if (liftedObject != null && leftDown && !lastFrameLeftDown) {
@@ -53,7 +53,7 @@ public class MouseControllerEditor implements MouseControllerStrategy {
     @Override
     public void handleRightClick() {
         if(liftedObject != null){
-           System.out.println(editorScene.deleteGameObj(liftedObject));
+           liftedObject.setDeathMark(true);
            editorScene.setLiftedObject(null);
            editorScene.setActiveGameObject(null);
         }

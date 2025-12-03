@@ -20,7 +20,7 @@ public class MouseControllerGame implements MouseControllerStrategy {
 
     }
     public void update(float dt) {
-        Window.getInstance().getScene().getCamera().zoom(MouseListener.getScrollY());
+        Window.getInstance().getCurrentScene().getCamera().zoom(MouseListener.getScrollY());
         movePlayer(dt);
     }
     @Override

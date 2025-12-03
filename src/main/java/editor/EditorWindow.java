@@ -1,8 +1,10 @@
 package editor;
 
+import components.Collider;
 import components.Player;
 import components.SpriteSheetList;
 import engine.GameObject;
+import engine.MouseListener;
 import engine.Prefabs;
 import game.MouseControllerGame;
 import imgui.ImGui;
@@ -18,7 +20,7 @@ import renderer.Sprite;
 import renderer.Transform;
 import scenes.WorldEditorScene;
 import util.AssetPool;
-import util.TileGrid;
+import tiles.TileGrid;
 
 import java.util.ArrayList;
 
@@ -36,7 +38,6 @@ public class EditorWindow {
     public EditorWindow(WorldEditorScene editorScene){
         this.editorScene = editorScene;
         initEditorSprites();
-
     }
 
     public void imGui(){
@@ -44,6 +45,9 @@ public class EditorWindow {
         // buttons
 
         if (ImGui.button("play")) {
+            if(editorScene.getLiftedObject() != null){
+                editorScene.placeObject(editorScene.getLiftedObject());
+            }
             if (!(editorScene.getPlayer() == null)){
                 editorScene.setMouseController(new MouseControllerGame());
                 editorScene.setEditMode(false);
@@ -117,8 +121,11 @@ public class EditorWindow {
             Vector2f[] coords = sprite.getTexCoords();
 
             ImGui.pushID(i);
-            if(ImGui.imageButton(id,spriteWidth,spriteHeight,coords[2].x,coords[0].y,coords[0].x,coords[2].y) && editorScene.isEditMode() ){
-                GameObject selectedGO = Prefabs.generateObject(sprite,spriteWidth,spriteHeight);
+            if(ImGui.imageButton(id, spriteWidth, spriteHeight, coords[2].x, coords[0].y, coords[0].x, coords[2].y) && editorScene.isEditMode() ){
+                GameObject selectedGO = Prefabs.generateObject(sprite, spriteWidth, spriteHeight);
+                if(editorScene.getLiftedObject() != null){
+                    editorScene.getLiftedObject().setDeathMark(true);
+                }
                 editorScene.addGameObject(selectedGO);
                 editorScene.liftObject(selectedGO);
             }
@@ -148,18 +155,20 @@ public class EditorWindow {
 
 
             player.addComponent(new Player());
+            player.addComponent(new Collider());
             editorScene.setPlayer(player);
             editorScene.addGameObject(player);
 
 
 
-            for (int y = 39; y >= 0; y--) {
-                for (int x = 0; x < 40; x++) {
+            for (int y = 500; y >= 0; y--) {
+                for (int x = 0; x < 50; x++) {
                     GameObject go = new GameObject("ground: " + x + "," + y,null,
                             new Transform(TileGrid.tileSnapToTile(x,y), new Vector2d(TILE_WIDTH, TILE_HEIGHT)),0);
                     SpriteSheetList list = new SpriteSheetList();
                     list.addSpriteSheet(AssetPool.getSpriteSheet("ground1"));
                     go.addComponent(list);
+                    go.setType(GameObject.TILE);
                     go.setSprite(new Sprite(list.getSpriteSheets().get(0).getSprite(0)));
                     editorScene.addGameObject(go);
                     editorScene.placeObject(go);
@@ -179,6 +188,9 @@ public class EditorWindow {
 
     public boolean wantCaptureMouse(double x, double y){
         return y >  windowY  && y < windowY +  windowHeight - 48 && x > windowX && x < windowX + windowWidth;
+    }
+    public boolean wantCaptureMouse(){
+        return wantCaptureMouse(MouseListener.getX(),MouseListener.getY());
     }
 
 }

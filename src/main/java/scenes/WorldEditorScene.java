@@ -13,12 +13,10 @@ import renderer.DebugDraw;
 
 import renderer.SpriteSheet;
 
+import tiles.TileObjectMap;
 import util.AssetPool;
 import util.Settings;
-import util.TileGrid;
-
-import java.util.HashMap;
-import java.util.Map;
+import tiles.TileGrid;
 
 import static util.Settings.TILE_HEIGHT;
 import static util.Settings.TILE_WIDTH;
@@ -31,10 +29,10 @@ public class WorldEditorScene extends Scene {
     private InspectorWindow inspectorWindow;
     private GameObject liftedObject;
     private GameObject activeGameObject;
-    private Map<Long, GameObject> tileMap = new HashMap<>();
     private MouseControllerEditor mouseControllerE;
     private MouseControllerGame mouseControllerG;
     private boolean editMode;
+
 
 
     private WorldEditorScene() {}
@@ -78,9 +76,26 @@ public class WorldEditorScene extends Scene {
     public void update(float dt) {
         mouseController.update(dt);
         camera.update(dt);
-        for (GameObject ob : gameObjects){
-            ob.update(dt);
+        for (GameObject go : gameObjects){
+            if (go.isDirty()){
+                renderer.dirtyList.add(go);
+            }
+            go.update(dt);
+            if(go.isDeathMarked()){
+                gameObjectsForDeath.add(go);
+                System.out.println(go.getName());
+            }
         }
+        killMarkedObjects();
+    }
+
+    private void killMarkedObjects() {
+        for (GameObject go : gameObjectsForDeath) {
+            objectMap.remove(go);
+            go.getRenderBatch().deleteGameObj(go);
+        }
+        gameObjects.removeAll(gameObjectsForDeath);
+        gameObjectsForDeath.clear();
     }
 
     @Override
@@ -95,19 +110,23 @@ public class WorldEditorScene extends Scene {
     @Override
     public void init() {
         load();
+        objectMap = new TileObjectMap(this);
         for(GameObject go : gameObjects) {
-            if (go instanceof Tile){
+            renderer.addGameObject(go);
+            if (go.getType() ==  GameObject.TILE){
                 placeObject(go);
             }
         }
         mouseControllerG = new MouseControllerGame();
         mouseControllerE = new MouseControllerEditor(this);
         mouseController = mouseControllerE;
-        editorWindow = new EditorWindow(instance);
-        inspectorWindow = new InspectorWindow(instance);
+        editorWindow = new EditorWindow(this);
+        inspectorWindow = new InspectorWindow(this);
         camera = new Camera(new Vector2d(TileGrid.tileToWorld(0,0)));
         gameViewport = new GameViewport(camera);
         Window.getInstance().setFramebuffer(gameViewport.getFramebuffer());
+
+
     }
 
     protected void loadResources() {
@@ -154,35 +173,22 @@ public class WorldEditorScene extends Scene {
 
 
 
-    public void addToTileMap(GameObject go) {
-        long key = TileGrid.calcMapKey(go);
-        GameObject go1 = tileMap.get(key);
-        if (!(go == go1 ) && go1 != null ) {
-            deleteGameObj(go1);
-        }
-        go.setTileMapKey(key);
-        tileMap.put(key,go);
-    }
 
-    public void removeFromTileMap(GameObject go){
-        Long key = go.getTileMapKey();
-        if (key  == null) return;
-        tileMap.remove(key);
-    }
+
 
     public void placeObject(GameObject go){
         go.setAlpha(1f);
-        addToTileMap(go);
+        objectMap.add(go);
         setActiveGameObject(go);
         setLiftedObject(null);
     }
 
     public void liftObject(GameObject go){
         if (go == null) return;
+        System.out.println(go.getName());
         go.setAlpha(0.5f);
-        setActiveGameObject(go);
         setLiftedObject(go);
-        removeFromTileMap(go);
+        objectMap.remove(go);
     }
 
     public void dragObject(double mousePosX, double mousePosY){
@@ -221,8 +227,9 @@ public class WorldEditorScene extends Scene {
         return activeGameObject;
     }
 
-    public void setLiftedObject(GameObject liftedObject) {
-        this.liftedObject = liftedObject;
+    public void setLiftedObject(GameObject go) {
+        if(go != null ){setActiveGameObject(go);}
+        this.liftedObject = go;
     }
 
     public void setActiveGameObject(GameObject activeGameObject) {
@@ -238,7 +245,13 @@ public class WorldEditorScene extends Scene {
     }
 
     public void setEditMode(boolean editMode) {
-        this.player.getComponent(Player.class).setAnimate(!editMode);
+        if(this.player != null) {this.player.getComponent(Player.class).setAnimate(!editMode);}
         this.editMode = editMode;
+    }
+
+    @Override
+    public boolean imGuiWantsMouse() {
+        System.out.println(this.editorWindow.wantCaptureMouse());
+        return this.editorWindow.wantCaptureMouse();
     }
 }

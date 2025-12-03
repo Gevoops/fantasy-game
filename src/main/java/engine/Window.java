@@ -1,6 +1,6 @@
 package engine;
 
-import com.sun.marlin.Version;
+
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -69,9 +69,7 @@ public class Window {
         return Window.instance;
     }
 
-    public Scene getScene() {
-        return currentScene;
-    }
+
 
     public void run() {
         init();
@@ -228,5 +226,6 @@ public class Window {
     public ImGuiLayer getGui() {
         return gui;
     }
+
 }
 

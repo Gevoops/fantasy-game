@@ -6,7 +6,7 @@ import org.joml.Vector4f;
 import renderer.RenderBatch;
 import renderer.Transform;
 import renderer.Sprite;
-import util.TileGrid;
+import tiles.TileGrid;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,17 +18,18 @@ public class GameObject {
     private Sprite sprite = null;
     private Transform transform = null;
     private Transform lastTransform = null;
-    private boolean isDirty = true;
     private float height;
     private float elevation;
-    private int zIndex = 0;
     private List<Component> components = new ArrayList<>();
     private int type = DEFAULT;
     private boolean dynamic;
+    private boolean isDirty = true;
+    private boolean deathMark = false;
 
 
     private transient RenderBatch batch;
     private transient Long tileMapKey = null;
+
 
 
     public static final int DEFAULT = 0;
@@ -40,13 +41,13 @@ public class GameObject {
 
     }
 
-    public GameObject(String name, Sprite sprite, Transform transform, int zIndex){
+    public GameObject(String name, Sprite sprite, Transform transform, int type){
             this.name = name;
             this.sprite = sprite;
             this.transform = transform;
             this.lastTransform = transform.copy();
-            this.zIndex = zIndex;
             this.ID = ++ID_COUNTER;
+            this.type = type;
     }
 
     public GameObject(GameObject go) {
@@ -54,8 +55,8 @@ public class GameObject {
         this.sprite = new Sprite(go.sprite);
         this.transform = go.transform.copy();
         this.lastTransform = go.lastTransform.copy();
-        this.zIndex = go.zIndex;
         this.ID = ++ID_COUNTER;
+        this.type = go.type;
 
     }
 
@@ -128,22 +129,16 @@ public class GameObject {
         isDirty = dirty;
     }
 
-    public void setZIndex(int zIndex) {
-        this.zIndex = zIndex;
-    }
+
 
     public void setSprite(Sprite sprite){
         this.sprite = sprite;
-        this.isDirty = true;
     }
 
     public Sprite getSprite() {
         return sprite;
     }
 
-    public int getZIndex() {
-        return this.zIndex;
-    }
     public String getName() {
         return name;
     }
@@ -184,7 +179,7 @@ public class GameObject {
         return components;
     }
 
-    public RenderBatch getBatch() {
+    public RenderBatch getRenderBatch() {
         return batch;
     }
 
@@ -201,7 +196,10 @@ public class GameObject {
     }
 
     public Vector2d getCurrentTile(){
+
+
         return TileGrid.tileAt(getX() + transform.scale.x/2 ,getY() + 1);
+
     }
 
     public int getType() {
@@ -248,4 +246,11 @@ public class GameObject {
         this.dynamic = dynamic;
     }
 
+    public boolean isDeathMarked() {
+        return deathMark;
+    }
+
+    public void setDeathMark(boolean deathMark) {
+        this.deathMark = deathMark;
+    }
 }
